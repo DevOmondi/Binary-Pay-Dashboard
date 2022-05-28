@@ -3,9 +3,8 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 const { CustomError, getUserByUsername } = require("../../utility");
 
-const authRoutes = (Doctor, Patient, Admin) => {
+const authRoutes = (User) => {
   const authRouter = express.Router();
-  const models = { admin: Admin, doctor: Doctor, patient: Patient };
 
   authRouter.route("/login").post(
     passport.authenticate("local", {
@@ -40,15 +39,17 @@ const authRoutes = (Doctor, Patient, Admin) => {
         return res.status(400).json({ message: "Username already in use" });
       }
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
-      const user = new models[req.body.accountType]({
+      const user = new User({
         ...req.body,
         password: hashedPassword,
       });
       user.save((err) => {
         if (err) throw err;
       });
-      return res.status(201).redirect("/dashboard");
-      // .json({ message: user.username + " account successfully created." });
+      return res.status(201).json({
+        message: user.username + " account successfully created.",
+        success: true,
+      });
     } catch (error) {
       res.json({ error: error.message, code: error.name });
     }
@@ -56,7 +57,9 @@ const authRoutes = (Doctor, Patient, Admin) => {
 
   authRouter.route("/logout").delete((req, res) => {
     req.logOut();
-    req.redirect("/login");
+    res
+      .status(200)
+      .json({ message: "user succesfully logged out", success: true });
   });
 
   authRouter.route("/currentUser").get((req, res) => {
