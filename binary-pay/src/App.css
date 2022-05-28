@@ -1,0 +1,87 @@
+.App {
+  text-align: center;
+}
+
+.revenue-section{
+  display: block;
+}
+
+#revenue-title{
+  align-items: center;
+  color: #1B3B57;
+}
+
+.revenue-form{
+  display: inline;
+}
+
+.revenue-form input {
+  margin-right: 7px;
+  border: solid 1px #1B3B57;
+}
+
+.revenue-form input:focus-visible{
+  outline: none;
+}
+
+.revenue-form input:focus{
+  border: solid 1px #F3B500;
+}
+
+
+
+#reload-btn{
+  background-color: #F3B500;
+  border: none;
+  padding: 3px;
+  cursor: pointer;
+}
+
+#reload-btn:hover{
+  color: white;
+}
+
+.export-section{
+  margin-top: 7px;
+}
+
+.export-section button{
+  margin-right: 10px;
+  background-color: #1B3B57;
+  cursor: pointer;
+  border: none;
+  padding: 5px;
+  color: white;
+}
+
+.export-section button:hover{
+  filter: brightness(1.5);
+}
+
+.transactions-form{
+  margin-bottom: 7px;
+}
+
+#entries{
+  background-color: #F3B500;
+  color: white;
+}
+
+#transactions-title{
+  align-items: center;
+  color: #1B3B57;
+}
+#transactions{
+  background-color: #F3B500;
+  color: white;
+}
+
+#trnsactions:hover{
+  background-color: #1B3B57;
+  cursor: pointer;
+}
+
+#entries:hover{
+  background-color: #1B3B57;
+  cursor: pointer;
+}

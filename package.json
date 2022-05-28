@@ -1,0 +1,7 @@
+{
+  "script": {
+    "api": "cd backend && npm start",
+    "client": "cd binary-pay && npm start",
+    "postinstall": "cd backend && npm i && cd binary-pay npm i"
+  }
+}
