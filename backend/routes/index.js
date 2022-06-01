@@ -10,8 +10,6 @@ router.use("/auth", authRoutes);
 router.use("/api/transaction", transactionRoutes);
 
 // frontend routes
-router.get("/*", (req, res) =>
-  res.sendFile(path.join(__dirname, "/static/index.html"))
-);
+router.get("/*", (req, res) => res.sendFile("index.html"));
 
 module.exports = router;
