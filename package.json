@@ -2,6 +2,23 @@
   "script": {
     "api": "cd backend && npm start",
     "client": "cd binary-pay && npm start",
-    "postinstall": "cd backend && npm i && cd binary-pay npm i"
-  }
+    "api:dev": "cd backend && npm run start:dev"
+  },
+  "name": "binary-pay",
+  "description": "- To run in development run the commands as follows:",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Colcoder/Binary-Pay-Dashboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Colcoder/Binary-Pay-Dashboard/issues"
+  },
+  "homepage": "https://github.com/Colcoder/Binary-Pay-Dashboard#readme"
 }
