@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Logo from "../BP LOGO.svg";
+import Logo from "../Website_logo.svg";
 
 function Copyright(props) {
   return (

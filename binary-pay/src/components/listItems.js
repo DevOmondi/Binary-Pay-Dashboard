@@ -5,32 +5,39 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import MoneyIcon from '@mui/icons-material/Money';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { Link } from '@mui/material';
 
 export const mainListItems = (
   <React.Fragment>
-    <ListItemButton>
+   <Link id='Dashboard-link' href='#'>
+      <ListItemButton>
       <ListItemIcon>
-        <DashboardIcon />
+        <DashboardIcon className='icon'/>
       </ListItemIcon>
       <ListItemText 
       primary="Dashboard"
        />
-    </ListItemButton>
-    <ListItemButton>
+      </ListItemButton>
+    </Link>
+    <Link id='Transactions-link' href='#'>
+      <ListItemButton>
       <ListItemIcon>
-        <MoneyIcon/>
+        <MoneyIcon className='icon'/>
       </ListItemIcon>
       <ListItemText 
       primary="Transactions"
        />
-    </ListItemButton>
-    <ListItemButton>
+      </ListItemButton>
+    </Link>
+    <Link id='Settings-link' href='/settings'>
+     <ListItemButton>
       <ListItemIcon>
-        <SettingsIcon/>
+        <SettingsIcon className='icon'/>
       </ListItemIcon>
       <ListItemText 
       primary="Settings"
        />
-    </ListItemButton>
+     </ListItemButton>
+    </Link>
   </React.Fragment>
 );
