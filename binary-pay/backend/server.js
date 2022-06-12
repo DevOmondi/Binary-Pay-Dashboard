@@ -1,8 +1,8 @@
 //require installed packages
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyparser = require("body-parser");
-const cookieParser = require("cookie-parser");
+//const bodyparser = require("body-parser");
+//const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const session = require("express-session");
 const cors = require("cors");
@@ -14,7 +14,7 @@ require("dotenv").config();
 const initializePassport = require("./passport-config");
 
 //Get environment variables and explicitly declare variables
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const DB_URL = process.env.MONGODB_URI || "mongodb://localhost/binarypay";
 const app = express();
 const pathToKey = path.join(__dirname, "./cryptography/id_rsa_pub.pem");
@@ -29,7 +29,13 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(cookieParser());
 
 // adding static files
-app.use(express.static(path.join(__dirname, "../binary-pay/build")));
+app.use(express.static(path.join(__dirname,"..", "build")));
+app.use(express.static("public"));
+
+//to enable react routing
+app.use((req, res, next) => {
+  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+});
 
 // routing intergration
 app.use(require("./routes"));
@@ -63,9 +69,11 @@ mongoose.connect(
 );
 
 //maintain connection to the database
-mongoose.connection;
+//mongoose.connection;
 
 //start server
 app.listen(port, () => {
   console.log(`Server is running on port : ${port}`);
 });
+
+
