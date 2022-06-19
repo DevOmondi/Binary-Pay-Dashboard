@@ -7,7 +7,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Logo from "../BP LOGO.svg";
+import Logo from "../Website_logo.svg";
+import axios from "axios";
 
 function Copyright(props) {
   return (
@@ -27,9 +28,10 @@ const theme = createTheme();
 export default function SignUp() {
   const handleSubmit = (event) => {
     event.preventDefault();
+    axios.post("http://localhost:5000/register")
     const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get('username'),
+      username: data.get('username'),
       password: data.get('password'),
     });
   };
@@ -77,6 +79,7 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
+              onSubmit={handleSubmit}
             >
               Sign Up
             </Button>

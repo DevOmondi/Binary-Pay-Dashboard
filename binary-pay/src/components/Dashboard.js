@@ -20,9 +20,9 @@ import Float from './Float';
 import Revenue from './Revenue';
 import Sales from './Sales';
 import Transactions from './Transactions';
-import Logo from "../LogoBgwhite.svg";
+import Logo from "../Website_logo_White.svg";
 import Profits from './Profits';
-import Settings from "./Settings"
+
 
 function Copyright(props) {
   return (
@@ -137,13 +137,13 @@ function DashboardContent() {
               backgroundColor: "#F3B500"
             }}
           >
-            <img src={Logo} alt= "binary-pay-white-logo"></img>
+            <img id="white-logo" src={Logo} alt= "binary-pay-white-logo"></img>
             <IconButton onClick={toggleDrawer}>
               <ChevronLeftIcon />
             </IconButton>
           </Toolbar>
           <Divider />
-          <List component="nav" sx={{backgroundColor: "#1B3B57", color: "white"}}>
+          <List component="nav" sx={{backgroundColor: "#1B3B57", color: "white", height: "100vh"}}>
             {mainListItems}
             <Divider sx={{ my: 1 }} /> 
           </List>
@@ -215,7 +215,7 @@ function DashboardContent() {
           </Container>
         </Box>
       </Box>
-      <Settings/>
+      
     </ThemeProvider>
   );
 }
