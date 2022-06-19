@@ -1,15 +1,13 @@
 {
-  "script": {
-    "api": "cd backend && npm start",
-    "client": "cd binary-pay && npm start",
-    "api:dev": "cd backend && npm run start:dev"
-  },
   "name": "binary-pay",
   "description": "- To run in development run the commands as follows:",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "api": "cd backend && npm start",
+    "client": "cd binary-pay && npm start",
+    "api:dev": "cd backend && npm run start:dev"
   },
   "repository": {
     "type": "git",
