@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -26,14 +27,19 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    axios.post("http://localhost:5000/register")
-    const data = new FormData(event.currentTarget);
-    console.log({
-      username: data.get('username'),
-      password: data.get('password'),
-    });
+  const [registerUsername,setRegisterUsername] = useState("");
+  const [registerPassword,setRegisterPassword] = useState("");
+  const [confirmPassword,setConfirmPassword] = useState("");
+  const signUpHandler = (e) => {
+    e.preventDefault();
+  
+   axios.post(
+    process.env.API_URL + "/api/auth/register",
+   {
+    username:registerUsername,
+    password:registerPassword,
+    cPassword:confirmPassword
+   })
   };
 
   return (
@@ -52,7 +58,7 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={signUpHandler} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -62,6 +68,7 @@ export default function SignUp() {
               name="username"
               autoComplete="username"
               autoFocus
+              onChange={e => setRegisterUsername(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -72,6 +79,19 @@ export default function SignUp() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={e => setRegisterPassword(e.target.value)}
+            />
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="cPassword"
+              label="Confirm Password"
+              type="password"
+              id="cPassword"
+              autoComplete="current-password"
+              onChange={e => setConfirmPassword(e.target.value)}
             />
            
             <Button
@@ -79,7 +99,7 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
-              onSubmit={handleSubmit}
+             
             >
               Sign Up
             </Button>

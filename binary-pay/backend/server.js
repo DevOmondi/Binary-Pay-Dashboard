@@ -24,9 +24,6 @@ const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(bodyparser.urlencoded({ extended: false }));
-// app.use(bodyparser.json());
-// app.use(cookieParser());
 
 // adding static files
 app.use(express.static(path.join(__dirname,"..", "build")));
@@ -37,7 +34,7 @@ app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "..", "build", "index.html"));
 });
 
-// routing intergration
+// routing integration
 app.use(require("./routes"));
 
 // setup session management to allow for a logged in user session to be maintained

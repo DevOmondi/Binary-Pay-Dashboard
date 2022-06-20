@@ -1,4 +1,6 @@
 import * as React from 'react';
+import {useState} from "react";
+import axios from "axios";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -30,14 +32,31 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('username'),
-      password: data.get('password'),
-    });
-  };
+  const [userName, setUserName] = useState("");
+  const [passWord,setPassWord] = useState("");
+  const signInHandler = (e)=> {
+    e.preventDefault();
+   /* axios({
+      method : "post",
+      url: process.env.API_URL + "/api/auth/login",
+      data : {
+        username: userName,
+        password: passWord
+      },
+      withCredentials:true
+    })*/
+    axios.post(
+      "http:localhost:5000/api/auth/login",{
+        username: userName,
+        password: passWord
+    })
+    .then(response => {
+      console.log(response)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -58,7 +77,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={signInHandler} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -68,6 +87,7 @@ export default function SignIn() {
               name="username"
               autoComplete="username"
               autoFocus
+              onChange={e => setUserName(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -78,6 +98,7 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={e => setPassWord(e.target.value)}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -88,6 +109,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
+              
             >
               Sign In
             </Button>
