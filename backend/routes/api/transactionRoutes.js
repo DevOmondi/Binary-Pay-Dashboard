@@ -55,7 +55,7 @@ const purchaseTransaction = (_payload) => {
 const transactionRoutes = () => {
   const transactionsRouter = express.Router();
 
-  transactionRoutes.post("/purchase", (req, res) => {
+  transactionsRouter.route("/purchase").post((req, res) => {
     try {
       console.log(req.body);
       //   const _response = purchaseTransaction(req.body);
@@ -68,9 +68,7 @@ const transactionRoutes = () => {
     }
   });
 
-  transactionRoutes("/history", (req, res) => {
-    
-  });
+  transactionsRouter.route("/history").post((req, res) => {});
 
   return transactionsRouter;
 };
