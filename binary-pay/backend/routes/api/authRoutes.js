@@ -8,26 +8,27 @@ const authRoutes = (User) => {
 
   authRouter.route("/login").post(
     passport.authenticate("local", {
-      failureRedirect: "/login",
+      successRedirect: "/dashboard",
+      failureRedirect: "/",
     }),
-    (req, res) => {
+   /* (req, res) => {
       req.body.accountType === req.user.accountType
         ? res.redirect("/dashboard")
         : res.send(
             "<h1>Sorry credentials are mismatched. Login with correct user level.</h1>"
           );
-    }
+    }*/
   );
 
   // registration endpoint for all account types
   authRouter.route("/register").post(async (req, res) => {
-    // request body must contain a password, username and accountType based on account type to be created
+    // request body must contain a password and a  username 
     try {
       const salt = await bcrypt.genSalt();
       if (req.body.password !== req.body.cPassword) {
         throw new CustomError("Password Mismatch.", "Password Mismatch");
       }
-      if (!req.body.password || !req.body.accountType || !req.body.username) {
+      if (!req.body.password || !req.body.username) {
         throw new CustomError(
           "Password and username required.",
           "Missing Field"
