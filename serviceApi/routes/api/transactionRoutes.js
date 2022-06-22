@@ -26,7 +26,7 @@ const purchaseTransaction = (_payload) => {
       serviceCode: _payload.serviceCode,
       msisdn: _payload.msisdn,
       accountNumber: _payload.accountNumber,
-      amountPaid: _payload.ammountPaid,
+      amountPaid: _payload.amountPaid,
     },
   });
 

@@ -25,6 +25,71 @@
   color: white;
 }
 
+.purchase-section{
+  display: block;
+}
+
+#purchase-title{
+  align-items: center;
+  color: #1B3B57;
+}
+
+.purchase-form{
+  display: inline;
+}
+
+.purchase-form input {
+  margin-right: 7px;
+  border: solid 1px #1B3B57;
+}
+
+.purchase-form input:focus-visible{
+  outline: none;
+}
+
+.purchase-form input:focus{
+  border: solid 1px #F3B500;
+}
+
+#amount-txt{
+  margin-left:5px;
+}
+
+#purchase-btn{
+  background-color: #F3B500;
+  border: none;
+  padding: 3px;
+  cursor: pointer;
+}
+
+#purchase-btn:hover{
+  color: white;
+}
+
+.services-form{
+  margin-bottom: 7px;
+}
+
+
+
+#services-title{
+  align-items: center;
+  color: #1B3B57;
+}
+#services{
+  background-color: #F3B500;
+  color: white;
+}
+
+#services:hover{
+  background-color: #1B3B57;
+  cursor: pointer;
+}
+
+#services:hover{
+  background-color: #1B3B57;
+  cursor: pointer;
+}
 
 .revenue-section{
   display: block;
@@ -51,8 +116,6 @@
 .revenue-form input:focus{
   border: solid 1px #F3B500;
 }
-
-
 
 #reload-btn{
   background-color: #F3B500;

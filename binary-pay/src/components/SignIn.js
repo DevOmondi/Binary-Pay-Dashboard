@@ -46,10 +46,11 @@ export default function SignIn() {
       withCredentials:true
     })*/
     axios.post(
-      "http:localhost:5000/api/auth/login",{
+      `http:localhost:5000/api/auth/login`,
+      {
         username: userName,
         password: passWord
-    })
+      })
     .then(response => {
       console.log(response)
     })

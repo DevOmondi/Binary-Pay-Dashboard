@@ -22,6 +22,7 @@ import Sales from './Sales';
 import Transactions from './Transactions';
 import Logo from "../Website_logo_White.svg";
 import Profits from './Profits';
+import Purchase from './Purchase';
 
 
 function Copyright(props) {
@@ -163,6 +164,7 @@ function DashboardContent() {
           <Toolbar/>
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={4}>
+              <Purchase/>
              {/* current Total Float */}
               <Grid item xs={12} md={4} lg={3}>
                 <Paper

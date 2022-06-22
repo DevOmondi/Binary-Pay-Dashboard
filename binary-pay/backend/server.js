@@ -23,7 +23,8 @@ const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
 //middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true}));
+
 
 // adding static files
 app.use(express.static(path.join(__dirname,"..", "build")));

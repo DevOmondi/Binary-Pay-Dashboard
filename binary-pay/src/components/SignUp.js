@@ -34,12 +34,19 @@ export default function SignUp() {
     e.preventDefault();
   
    axios.post(
-    process.env.API_URL + "/api/auth/register",
+    `http://localhost:5000/api/auth/register`,
    {
     username:registerUsername,
     password:registerPassword,
     cPassword:confirmPassword
    })
+   .then(response => {
+    console.log(response)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+   
   };
 
   return (
