@@ -1,13 +1,8 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const transactionSchema = mongoose.Schema(
-  {},
-  {
-    timestamps: true,
-  },
-  {
-    collection: "transactions",
-  }
-);
+const transactionSchema = Schema({
+  time: { type: Date },
+  response: { type: Object },
+});
 
-module.export = mongoose.model("Transaction", transactionSchema);
+module.exports = model("Transaction", transactionSchema);
