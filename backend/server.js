@@ -23,17 +23,11 @@ const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
 //middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
-
+app.use(express.urlencoded({ extended: true }));
 
 // adding static files
-app.use(express.static(path.join(__dirname,"..", "build")));
+app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.static("public"));
-
-//to enable react routing
-app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
-});
 
 // routing integration
 app.use(require("./routes"));
@@ -73,5 +67,3 @@ mongoose.connect(
 app.listen(port, () => {
   console.log(`Server is running on port : ${port}`);
 });
-
-

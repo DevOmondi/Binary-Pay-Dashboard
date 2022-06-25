@@ -34,11 +34,13 @@ const authRoutes = (User) => {
           "Missing Field"
         );
       }
+
       // check if username already in use
       const userExists = await getUserByUsername(req.body.username);
       if (userExists) {
         return res.status(400).json({ message: "Username already in use" });
       }
+
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
       const user = new User({
         ...req.body,
@@ -52,6 +54,7 @@ const authRoutes = (User) => {
         success: true,
       });
     } catch (error) {
+      console.log(error);
       res.json({ error: error.message, code: error.name });
     }
   });
