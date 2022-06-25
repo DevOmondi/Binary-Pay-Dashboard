@@ -1,7 +1,9 @@
 const { Schema, model } = require("mongoose");
 
 const transactionSchema = Schema({
-  time: { type: Date },
+  date: { type: Date },
+  accountNumber: { type: String },
+  amount: { type: String },
   response: { type: Object },
 });
 
