@@ -31,7 +31,6 @@ const purchaseTransaction = (_payload) => {
     },
   });
 
-  // console.log(reqObject);
   return axios({
     method: "post",
     headers: {
@@ -43,7 +42,6 @@ const purchaseTransaction = (_payload) => {
   })
     .then((_response) => {
       const _data = _response.data;
-      console.log("api: ", _data);
       if (_data.status === "200") return _data;
       throw new CustomError(_data.message, "paymentError");
     })
@@ -62,11 +60,11 @@ const transactionRoutes = (Transaction) => {
     try {
       const _response = await purchaseTransaction(req.body);
       const _newTransaction = new Transaction({
-        time: new Date(),
+        date: new Date(),
         response: _response,
+        accountNumber: req.body.accountNumber,
+        amount: req.body.amountPaid,
       });
-
-      console.log("new: ", _newTransaction);
 
       _newTransaction.save().then((_data) => {
         console.log("some: ", _data);
@@ -114,6 +112,10 @@ const transactionRoutes = (Transaction) => {
           .status(500)
           .json({ errorMessage: "Sorry an error occured. Please try again." });
       });
+  });
+
+  transactionsRouter.route("/float").get((req, res) => {
+
   });
 
   return transactionsRouter;
