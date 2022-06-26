@@ -3,14 +3,38 @@ const axios = require("axios");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config({ path: path.join(__dirname, "../../.env") });
+const { CustomError } = require("../../utility");
+
+
 
 const services = {
-  "Safaricom Airtime": { serviceID: 101, serviceCode: "SAFCOM" },
-  "Airtel Airtime ": { serviceID: 102, serviceCode: "AIRTEL" },
-  "Telkom Airtime": { serviceID: 103, serviceCode: "TELKOM" },
-  "KPLC Postpaid": { serviceID: 104, serviceCode: "KPLCPOSTPAID" },
-  "KPLC Prepaid": { serviceID: 105, serviceCode: " KPLCPREPAID" },
+  "Safaricom Airtime": { 
+     serviceID: 101,
+     serviceCode:"SAFCOM"
+     },
+
+  "Airtel Airtime ": {
+      serviceID: 102,
+      serviceCode: "AIRTEL"
+     },
+
+  "Telkom Airtime": {
+      serviceID: 103,
+      serviceCode:  "TELKOM"
+     },
+
+  "KPLC Postpaid": {  
+    serviceID: 104, 
+    serviceCode: "KPLCPOSTPAID"
+    },
+
+  "KPLC Prepaid": { 
+      serviceID: 105,
+      serviceCode:  " KPLCPREPAID"
+   },
 };
+
+
 
 // helper functions
 const purchaseTransaction = (_payload) => {
@@ -26,7 +50,7 @@ const purchaseTransaction = (_payload) => {
       serviceCode: _payload.serviceCode,
       msisdn: _payload.msisdn,
       accountNumber: _payload.accountNumber,
-      amountPaid: _payload.ammountPaid,
+      amountPaid: _payload.amountPaid,
     },
   });
 

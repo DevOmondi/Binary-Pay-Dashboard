@@ -34,7 +34,7 @@ export default function SignUp() {
     e.preventDefault();
   
    axios.post(
-    `http://localhost:5000/api/auth/register`,
+    `http://localhost:5000/auth/register`,
    {
     username:registerUsername,
     password:registerPassword,

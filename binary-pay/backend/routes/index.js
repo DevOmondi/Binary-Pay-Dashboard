@@ -6,7 +6,7 @@ const authRoutes = require("./api/authRoutes")(User);
 const transactionRoutes = require("./api/transactionRoutes")(Transaction);
 
 // api routing
-router.use("/api/auth", authRoutes);
+router.use("/auth", authRoutes);
 router.use("/api/transaction", transactionRoutes);
 
 // frontend routes
