@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "api": "cd backend && npm start",
     "client": "cd binary-pay && npm start",
-    "api:dev": "cd backend && npm run start:dev"
+    "api:dev": "cd backend && npm run start:dev",
+    "install": "cd backend && npm i",
+    "postinstall": "cd binary-pay && npm i"
   },
   "repository": {
     "type": "git",
