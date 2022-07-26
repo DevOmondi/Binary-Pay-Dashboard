@@ -34,29 +34,25 @@ const theme = createTheme();
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord,setPassWord] = useState("");
+
+  
   const signInHandler = (e)=> {
     e.preventDefault();
-   /* axios({
-      method : "post",
-      url: process.env.API_URL + "/api/auth/login",
-      data : {
-        username: userName,
-        password: passWord
-      },
-      withCredentials:true
-    })*/
+   
     axios.post(
-      `http:localhost:5000/api/auth/login`,
+      `http://localhost:5000/auth/login`,
       {
         username: userName,
         password: passWord
       })
+
     .then(response => {
       console.log(response)
     })
     .catch(error => {
       console.log(error)
     })
+    
   }
 
   return (

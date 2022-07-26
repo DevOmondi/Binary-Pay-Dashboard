@@ -38,9 +38,14 @@
   display: inline;
 }
 
+.purchase-form label{
+   font-size: large;
+}
+
 .purchase-form input {
   margin-right: 7px;
-  border: solid 1px #1B3B57;
+  border: solid 1.2px #1B3B57;
+  padding: 5px;
 }
 
 .purchase-form input:focus-visible{
@@ -48,7 +53,7 @@
 }
 
 .purchase-form input:focus{
-  border: solid 1px #F3B500;
+  border: solid 1.2px #F3B500;
 }
 
 #amount-txt{
@@ -171,4 +176,18 @@
 #entries:hover{
   background-color: #1B3B57;
   cursor: pointer;
+}
+
+@media(max-width:768px){
+  .purchase-form label{
+    display: block;
+  }
+
+  .transactions-form label{
+    display: block;
+  }
+
+  .revenue-form label{
+    display: block;
+  }
 }

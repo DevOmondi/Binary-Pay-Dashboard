@@ -4,20 +4,37 @@ import { useState } from 'react';
 import axios from "axios";
 
 const Purchase = () => {
-   const [accountNumber,setAccountNumber] = useState("");
-   const [amountPaid, setAmountPaid] = useState("");
-   const [serviceCode, setServiceCode] = useState("");
 
+   const services = {
+      "Safaricom Airtime": { serviceID: 101, serviceCode: "SAFCOM" },
+      "Airtel Airtime": { serviceID: 102, serviceCode: "AIRTEL" },
+      "Telkom Airtime": { serviceID: 103, serviceCode: "TELKOM" },
+      "KPLC Postpaid": { serviceID: 104, serviceCode: "KPLCPOSTPAID" },
+      "KPLC Prepaid": { serviceID: 105, serviceCode: " KPLCPREPAID" },
+    };
+    const [accountNumber,setAccountNumber] = useState("");
+    const [amountPaid, setAmountPaid] = useState("");
+    const [payload, setPayload] = useState({});
+    
+    const changeServiceFunc = (event) => {
+      const _service = event.target.value;
+
+      setPayload({
+        serviceCode: services[_service].serviceCode,
+        serviceID: services[_service].serviceID.toString(),
+      });
+    };
+    
    
-
-   const purchaseHandler = (e)=> {
+   const purchaseHandler = (e) => {
       e.preventDefault();
       axios.post(
          `http://localhost:5000/api/transaction/purchase`,
          {
             accountNumber:accountNumber,
             amountPaid:amountPaid,
-            serviceCode:serviceCode
+            serviceCode:payload.serviceCode,
+            serviceID: payload.serviceID
          }
       )
       .then(response => {
@@ -36,23 +53,25 @@ const Purchase = () => {
                  <div className="purchase-section">
                     <h1 id="purchase-title">Manual purchase</h1>
                        <div>
-                          <form className='purchase-form' onSubmit={purchaseHandler}>
+                          <form className='purchase-form' onSubmit={purchaseHandler} >
                              <label>Phone number :</label>
-                             <input typeof="number" onChange={(e) => setAccountNumber(e.target.value)}></input> 
+                             <input typeof="number" onChange={(e) => setAccountNumber(e.target.value)} placeholder="254xxxxxxxxx" ></input> 
 
                              <label htmlFor='services'>Type of Service:</label>
-                               <select id="services" onChange={(e) => setServiceCode(e.target.value)}>
-                                 <option selected value="" hidden disabled>--select service--</option>
-                                 <option value="SAFCOM">SAFCOM</option>
-                                 <option value="AIRTEL">AIRTEL</option>
-                                 <option value="TELKOM">TELKOM</option>
+                               <select id="services" onChange={changeServiceFunc}>
+                                <option selected value="" hidden disabled>--select service--</option> 
+                                 {Object.keys(services).map((_service) => (
+                                    <option key={_service} value={_service}>
+                                    {_service}
+                                    </option>
+                                 ))}
                                </select>
 
                              <label id="amount-txt">Amount :</label>
                              <input typeof="number" onChange={(e) => setAmountPaid(e.target.value)}></input>
                              <button 
                              id='purchase-btn'
-                             value = "submit"
+                             type='submit'
                              >
                               Purchase
                              </button>

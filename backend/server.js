@@ -2,7 +2,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 //const bodyparser = require("body-parser");
-//const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const session = require("express-session");
 const cors = require("cors");
@@ -26,7 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // adding static files
-app.use(express.static(path.join(__dirname, "..", "build")));
+app.use(express.static(path.join(__dirname, "../binary-pay", "build")));
 app.use(express.static("public"));
 
 // routing integration
@@ -45,6 +44,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 initializePassport(passport);
+
 
 //connect to database
 mongoose.connect(

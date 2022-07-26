@@ -11,12 +11,10 @@ const authRoutes = (User) => {
       successRedirect: "/dashboard",
       failureRedirect: "/",
     }),
-   /* (req, res) => {
-      req.body.accountType === req.user.accountType
-        ? res.redirect("/dashboard")
-        : res.send(
-            "<h1>Sorry credentials are mismatched. Login with correct user level.</h1>"
-          );
+    /*(req, res) => {
+      req.body.username === req.user.username && req.body.password === req.user.password
+        ? res.send(true)
+        : res.send(false);
     }*/
   );
 

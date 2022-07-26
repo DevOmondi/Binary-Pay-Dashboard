@@ -19,10 +19,10 @@ import { mainListItems } from './listItems';
 import Float from './Float';
 import Revenue from './Revenue';
 import Sales from './Sales';
-import Transactions from './Transactions';
 import Logo from "../Website_logo_White.svg";
 import Profits from './Profits';
 import Purchase from './Purchase';
+import NewTransactions from "./NewTransactions"
 
 
 function Copyright(props) {
@@ -209,7 +209,7 @@ function DashboardContent() {
               {/* Transactions*/}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Transactions/>
+                  <NewTransactions/>
                 </Paper>
               </Grid>
             </Grid>

@@ -11,8 +11,8 @@ router.use("/api/transaction", transactionRoutes);
 
 // frontend routes
 //to enable react routing
-router.use((req, res, next) => {
-  console.log("everything");
+router.use("/",(req, res, next) => {
+  //console.log("everything");
   res.sendFile(path.join(__dirname, "../../binary-pay/build/index.html"));
 });
 

@@ -8,6 +8,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import SuccessModal from './SuccessModal';
+import FailureModal from './FailureModal';
 import Logo from "../Website_logo.svg";
 import axios from "axios";
 
@@ -27,9 +29,17 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp() {
+  //form state management
   const [registerUsername,setRegisterUsername] = useState("");
   const [registerPassword,setRegisterPassword] = useState("");
   const [confirmPassword,setConfirmPassword] = useState("");
+  //modal state management
+  const [showSuccessModal,setShowSuccessModal] = useState(false);
+  const [showFailureModal,setShowFailureModal] = useState(false);
+  //state setting functions
+  const handleClose = () => setShowSuccessModal(false)
+  const handleFailureClose = () => setShowFailureModal(false)
+  //sign up handler
   const signUpHandler = (e) => {
     e.preventDefault();
   
@@ -40,9 +50,14 @@ export default function SignUp() {
     password:registerPassword,
     cPassword:confirmPassword
    })
-   .then(response => {
-    console.log(response)
-  })
+   .then( response => {
+    if (response.status === 201) {
+      setShowSuccessModal(true)
+    } 
+    else if(response.status !== 201) {
+    setShowFailureModal(true)
+    }
+   })
   .catch(error => {
     console.log(error)
   })
@@ -113,7 +128,10 @@ export default function SignUp() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+        <SuccessModal open={showSuccessModal} handleClose={handleClose}/>
+        <FailureModal openFailure={showFailureModal} handleFailureClose={handleFailureClose}/>
       </Container>
     </ThemeProvider>
+    
   );
 }

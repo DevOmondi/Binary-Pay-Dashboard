@@ -30,6 +30,7 @@ const purchaseTransaction = (_payload) => {
       amountPaid: _payload.amountPaid,
     },
   });
+ console.log(reqObject)
 
   return axios({
     method: "post",
@@ -46,10 +47,11 @@ const purchaseTransaction = (_payload) => {
       throw new CustomError(_data.message, "paymentError");
     })
     .catch((_err) => {
-      throw new CustomError(
+      console.log(_err)
+     /* throw new CustomError(
         "Problem connecting to Payment System.",
         "paymentError"
-      );
+      );*/
     });
 };
 
@@ -106,18 +108,17 @@ const transactionRoutes = (Transaction) => {
       .then((_res) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");
         res.status(200).json({ message: _float.join(".") });
+        console.log(_float)
       })
       .catch((_err) => {
+        console.log(_err);
         res
           .status(500)
           .json({ errorMessage: "Sorry an error occured. Please try again." });
       });
   });
 
-  transactionsRouter.route("/float").get((req, res) => {
-
-  });
-
+  
   return transactionsRouter;
 };
 
