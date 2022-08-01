@@ -1,9 +1,9 @@
 //require installed packages
 const express = require("express");
 const mongoose = require("mongoose");
-//const bodyparser = require("body-parser");
 const fs = require("fs");
 const session = require("express-session");
+const FileStore = require('session-file-store')(session);
 const cors = require("cors");
 const passport = require("passport");
 const path = require("path");
@@ -32,8 +32,10 @@ app.use(express.static("public"));
 app.use(require("./routes"));
 
 // setup session management to allow for a logged in user session to be maintained
+var fileStoreOptions = {};
 app.use(
   session({
+    store: new FileStore(fileStoreOptions),
     secret: PUB_KEY,
     resave: true,
     saveUninitialized: false,

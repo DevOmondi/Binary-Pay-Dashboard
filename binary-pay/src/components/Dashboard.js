@@ -17,10 +17,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from './listItems';
 import Float from './Float';
-import Revenue from './Revenue';
 import Sales from './Sales';
+import Revenue from "./Revenue"
 import Logo from "../Website_logo_White.svg";
-import Profits from './Profits';
 import Purchase from './Purchase';
 import NewTransactions from "./NewTransactions"
 
@@ -205,7 +204,6 @@ function DashboardContent() {
                   <Revenue/>
                 </Paper>
               </Grid>
-              <Profits/>
               {/* Transactions*/}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
