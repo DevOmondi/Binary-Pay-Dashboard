@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -24,9 +23,7 @@ const rows = [
  
 ];
 
-function preventDefault(event) {
-  event.preventDefault();
-}
+
 
 export default function Transactions() {
   return (
@@ -84,9 +81,7 @@ export default function Transactions() {
           ))}
         </TableBody>
       </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-        See more transactions
-      </Link>
+      
     </React.Fragment>
   );
 }
