@@ -31,34 +31,68 @@ const purchaseTransaction = (_payload) => {
     },
   });
 
-  return axios({
-    method: "post",
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": reqObject.length,
-    },
-    url: process.env.PAYMENT_API,
-    data: reqObject,
-  })
-    .then((_response) => {
+  try {
+    return axios({
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": reqObject.length,
+      },
+      url: process.env.PAYMENT_API,
+      data: reqObject,
+    }).then((_response) => {
       const _data = _response.data;
       if (_data.status === "200") return _data;
       throw new CustomError(_data.message, "paymentError");
-    })
-    .catch((_err) => {
-      throw new CustomError(
+    });
+  } catch (error) {
+    return {
+      error: new CustomError(
         "Problem connecting to Payment System.",
         "paymentError"
-      );
-    });
+      ),
+      _error: error,
+    };
+  }
 };
 
+const getToken = () => {
+  let unirest = require("unirest");
+
+  let req = unirest(
+    "GET",
+    "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+  )
+    .headers({
+      Authorization:
+        "Bearer cFJZcjZ6anEwaThMMXp6d1FETUxwWkIzeVBDa2hNc2M6UmYyMkJmWm9nMHFRR2xWOQ==",
+    })
+    .send()
+    .end((res) => {
+      if (res.error) throw new Error(res.error);
+      console.log(res.raw_body);
+    });
+};
 const transactionRoutes = (Transaction) => {
   const transactionsRouter = express.Router();
 
   transactionsRouter.route("/purchase").post(async (req, res) => {
     try {
+      const _transaction = {
+        date: new Date(),
+        accountNumber: req.body.accountNumber,
+        amount: req.body.amountPaid,
+        statusCompleted: false,
+      };
+
       const _response = await purchaseTransaction(req.body);
+      if (_response.error) {
+        console.log("problem: ", _response._error);
+        throw _response.error;
+      }
+      _transaction.statusCompleted = true;
+      _transaction.response = _response;
+
       const _newTransaction = new Transaction({
         date: new Date(),
         response: _response,
@@ -71,13 +105,77 @@ const transactionRoutes = (Transaction) => {
         res.status(200).json(_response);
       });
     } catch (_err) {
-      console.log("ss: ", _err);
+      // TODO: log error
       res
         .status(500)
         .json({ errorMessage: "Sorry an error occured. Please try again." });
     }
   });
 
+  transactionsRouter.route("/mpesa-validation").post(async (req, res) => {
+    try {
+      try {
+        const _transaction = {
+          dateInit: new Date(),
+          details: req.body,
+          ref: req.body.billRefNumber,
+          statusCompleted: false,
+        };
+
+        const _newTransaction = new Transaction({
+          ..._transaction,
+        });
+
+        _newTransaction.save().then((_data) => {
+          console.log("some: ", _data);
+          res.status(200).json({  "ResultCode": 0,  "ResultDesc": "Accepted"});
+        });
+      } catch (_err) {
+        // TODO: log error
+        res
+          .status(500)
+          .json({"resultCode": 1,  "resultDesc": "Rejected"});
+      }
+    } catch (_err) {
+      console.log("ss: ", _err);
+      res
+        .status(500)
+        .json({"resultCode": 1,  "resultDesc": "Rejected"});
+    }
+  });
+
+  transactionsRouter.route("/mpesa-confirmation").post((req, res) => {
+    console.log("confirmation: ", req.body);
+    if (req.body) {
+      const _purchaseBody = {};
+
+      const _response = await purchaseTransaction(req.body);
+        if (_response.error) {
+          throw _response.error;
+        }
+Transaction.findOneAndUpdate({},{
+
+})
+        _transaction.statusCompleted = true;
+        _transaction.response = _response;
+      //       {
+      //   "transAmount": "string",
+      //   "msisdn": "string",
+      //   "billRefNumber": "string",
+      //   "transID": "string",
+      //   "firstName": "string",
+      //   "lastName": "string",
+      //   "transTime": "string",
+      //   "transactionType": "string",
+      //   "businessShortCode": "string",
+      //   "invoiceNumber": "string",
+      //   "middleName": "string",
+      //   "orgAccountBalance": "string",
+      //   "thirdPartyTransID": "string"
+      // }
+      return res.json({ ResponseCode: 0, ResultDesc: "" });
+    }
+  });
   transactionsRouter.route("/history").get((req, res) => {
     Transaction.find({})
       .then((_res) => {
@@ -114,9 +212,7 @@ const transactionRoutes = (Transaction) => {
       });
   });
 
-  transactionsRouter.route("/float").get((req, res) => {
-
-  });
+  transactionsRouter.route("/float").get((req, res) => {});
 
   return transactionsRouter;
 };
