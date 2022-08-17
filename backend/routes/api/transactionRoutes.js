@@ -1,18 +1,62 @@
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
-const { CustomError } = require("../../utility");
-require("dotenv").config({ path: path.join(__dirname, "../../.env") });
+const {
+  v4: uuidv4
+} = require("uuid");
+const {
+  CustomError
+} = require("../../utility");
+require("dotenv").config({
+  path: path.join(__dirname, "../../.env")
+});
 
 const services = {
-  "Safaricom Airtime": { serviceID: 101, serviceCode: "SAFCOM" },
-  "Airtel Airtime ": { serviceID: 102, serviceCode: "AIRTEL" },
-  "Telkom Airtime": { serviceID: 103, serviceCode: "TELKOM" },
-  "KPLC Postpaid": { serviceID: 104, serviceCode: "KPLCPOSTPAID" },
-  "KPLC Prepaid": { serviceID: 105, serviceCode: " KPLCPREPAID" },
+  "Safaricom Airtime": {
+    serviceID: 101,
+    serviceCode: "SAFCOM"
+  },
+  "Airtel Airtime ": {
+    serviceID: 102,
+    serviceCode: "AIRTEL"
+  },
+  "Telkom Airtime": {
+    serviceID: 103,
+    serviceCode: "TELKOM"
+  },
+  "KPLC Postpaid": {
+    serviceID: 104,
+    serviceCode: "KPLCPOSTPAID"
+  },
+  "KPLC Prepaid": {
+    serviceID: 105,
+    serviceCode: " KPLCPREPAID"
+  },
 };
 
+const getProvider = (_accNo) => {
+  const serviceProviders = {
+    safaricom: ["070", "071", "072", "074", "0757", "0758", "0759", "0768", "0769", "079", "011", "011"],
+    airtel: ["073", "0750", "0751", "0752", "0753", "0754", "0755", "0756", "0785", "0786", "0787", "0788", "0789", "010", "010", "010"],
+    telkom: ["077"],
+    "kplc-prepaid": [],
+    "kplc-postpaid": []
+  }
+
+  const _prefix1 = _accNo.substring(0, 4);
+  const _prefix2 = _accNo.substring(0, 3);
+
+  if (serviceProviders.safaricom.includes(_prefix1) || serviceProviders.safaricom.includes(_prefix2)) {
+    return "Safaricom Airtime";
+  } else if (serviceProviders.airtel.includes(_prefix1) || serviceProviders.airtel.includes(_prefix2)) {
+    return "Airtel Airtime";
+  } else if (serviceProviders.telkom.includes(_prefix1) || serviceProviders.telkom.includes(_prefix2)) {
+    return "Telkom Airtime";
+  } else {
+    return
+  }
+
+}
 // helper functions
 const purchaseTransaction = (_payload) => {
   const reqObject = JSON.stringify({
@@ -60,12 +104,11 @@ const getToken = () => {
   let unirest = require("unirest");
 
   let req = unirest(
-    "GET",
-    "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-  )
+      "GET",
+      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    )
     .headers({
-      Authorization:
-        "Bearer cFJZcjZ6anEwaThMMXp6d1FETUxwWkIzeVBDa2hNc2M6UmYyMkJmWm9nMHFRR2xWOQ==",
+      Authorization: "Bearer cFJZcjZ6anEwaThMMXp6d1FETUxwWkIzeVBDa2hNc2M6UmYyMkJmWm9nMHFRR2xWOQ==",
     })
     .send()
     .end((res) => {
@@ -108,39 +151,60 @@ const transactionRoutes = (Transaction) => {
       // TODO: log error
       res
         .status(500)
-        .json({ errorMessage: "Sorry an error occured. Please try again." });
+        .json({
+          errorMessage: "Sorry an error occured. Please try again."
+        });
     }
   });
 
   transactionsRouter.route("/mpesa-validation").post(async (req, res) => {
     try {
       try {
-        const _transaction = {
-          dateInit: new Date(),
-          details: req.body,
-          ref: req.body.billRefNumber,
-          statusCompleted: false,
-        };
 
-        const _newTransaction = new Transaction({
-          ..._transaction,
-        });
+        if (getProvider()) {
+          const _transaction = {
+            dateInit: new Date(),
+            details: req.body,
+            ref: req.body.billRefNumber,
+            statusCompleted: false,
+          };
 
-        _newTransaction.save().then((_data) => {
-          console.log("some: ", _data);
-          res.status(200).json({  "ResultCode": 0,  "ResultDesc": "Accepted"});
-        });
+          const _newTransaction = new Transaction({
+            ..._transaction,
+          });
+
+          _newTransaction.save().then((_data) => {
+            console.log("some: ", _data);
+            res.status(200).json({
+              "ResultCode": 0,
+              "ResultDesc": "Accepted"
+            });
+          });
+        } else {
+          res
+            .status(500)
+            .json({
+              "resultCode": 1,
+              "resultDesc": "Rejected"
+            });
+        }
       } catch (_err) {
         // TODO: log error
         res
           .status(500)
-          .json({"resultCode": 1,  "resultDesc": "Rejected"});
+          .json({
+            "resultCode": 1,
+            "resultDesc": "Rejected"
+          });
       }
     } catch (_err) {
       console.log("ss: ", _err);
       res
         .status(500)
-        .json({"resultCode": 1,  "resultDesc": "Rejected"});
+        .json({
+          "resultCode": 1,
+          "resultDesc": "Rejected"
+        });
     }
   });
 
@@ -150,14 +214,14 @@ const transactionRoutes = (Transaction) => {
       const _purchaseBody = {};
 
       const _response = await purchaseTransaction(req.body);
-        if (_response.error) {
-          throw _response.error;
-        }
-Transaction.findOneAndUpdate({},{
+      if (_response.error) {
+        throw _response.error;
+      }
+      Transaction.findOneAndUpdate({}, {
 
-})
-        _transaction.statusCompleted = true;
-        _transaction.response = _response;
+      })
+      _transaction.statusCompleted = true;
+      _transaction.response = _response;
       //       {
       //   "transAmount": "string",
       //   "msisdn": "string",
@@ -173,7 +237,10 @@ Transaction.findOneAndUpdate({},{
       //   "orgAccountBalance": "string",
       //   "thirdPartyTransID": "string"
       // }
-      return res.json({ ResponseCode: 0, ResultDesc: "" });
+      return res.json({
+        ResponseCode: 0,
+        ResultDesc: ""
+      });
     }
   });
   transactionsRouter.route("/history").get((req, res) => {
@@ -194,21 +261,29 @@ Transaction.findOneAndUpdate({},{
         console.log(_err);
         res
           .status(500)
-          .json({ errorMessage: "Sorry an error occured. Please try again." });
+          .json({
+            errorMessage: "Sorry an error occured. Please try again."
+          });
       });
   });
 
   transactionsRouter.route("/float").get((req, res) => {
     Transaction.findOne({})
-      .sort({ time: -1 })
+      .sort({
+        time: -1
+      })
       .then((_res) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");
-        res.status(200).json({ message: _float.join(".") });
+        res.status(200).json({
+          message: _float.join(".")
+        });
       })
       .catch((_err) => {
         res
           .status(500)
-          .json({ errorMessage: "Sorry an error occured. Please try again." });
+          .json({
+            errorMessage: "Sorry an error occured. Please try again."
+          });
       });
   });
 
