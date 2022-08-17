@@ -1,8 +1,4 @@
-const models = {
-  doctor: require("./models/doctorModel"),
-  patient: require("./models/patientModel"),
-  admin: require("./models/adminModel"),
-};
+const User = require("./models/userModel");
 
 class CustomError extends Error {
   // generate customized error messages and codes
@@ -15,69 +11,32 @@ class CustomError extends Error {
 
 const getUserByUsername = async (username) => {
   // check across the three account collections to find user with given username
-  let _user;
-  const searchInCategory = async (category, username) => {
-    const handleError = (err) => (err ? err : null);
-    await models[category]
-      .findOne({ username })
-      .then((user) => {
-        if (user && user !== undefined) {
-          _user = user;
-        }
-        return _user;
-      })
-      .catch((err) => handleError(err));
-  };
-
-  const isPatient = searchInCategory("patient", username);
-  const isDoctor = searchInCategory("doctor", username);
-  const isAdmin = await searchInCategory("admin", username);
-
-  return Promise.all([isAdmin, isPatient, isDoctor]).then((results) => {
-    return _user;
-  });
+  const handleError = (err) => (err ? err : null);
+  return await User.findOne({ username })
+    .then((user) => {
+      if (user && user !== undefined) {
+        return user;
+      }
+      return;
+    })
+    .catch((err) => handleError(err));
 };
 
 const getUserByDBId = async (id) => {
-  // check across the three account collections to find user with given id
-  let _user;
-  const searchInCategory = async (category, id) => {
-    const handleError = (err) => (err ? err : null);
-    await models[category]
-      .findById(id)
-      .then((user) => {
-        if (user && user !== undefined) {
-          _user = user;
-        }
-      })
-      .catch((err) => handleError(err));
-    return _user;
-  };
-
-  const isPatient = searchInCategory("patient", id);
-  const isDoctor = searchInCategory("doctor", id);
-  const isAdmin = searchInCategory("admin", id);
-  return Promise.all([isAdmin, isPatient, isDoctor]).then((results) => {
-    return _user;
-  });
+  const handleError = (err) => (err ? err : null);
+  return await User.findById(id)
+    .then((user) => {
+      if (user && user !== undefined) {
+        return user;
+      }
+    })
+    .catch((err) => handleError(err));
 };
 
-const verifyAdmin = (req, res, next) => {
-  return !req.user || (res.user && req.user.accountType !== "admin")
-    ? res.status(401).json({ message: "Sorry! User Unauthorized." })
-    : next();
-};
-
-const verifyDoctor = (req, res, next) => {
-  return !req.user || (res.user && req.user.accountType !== "doctor")
-    ? res.status(401).json({ errorMessage: "Sorry! User Unauthorized." })
-    : next();
-};
-
-const verifyPatient = (req, res, next) => {
-  return !req.user || (res.user && req.user.accountType !== "patient")
-    ? res.status(401).json({ errorMessage: "Sorry! User Unauthorized." })
-    : next();
+const verifyAuth = (req, res, next) => {
+  return req.user
+    ? next()
+    : res.status(401).json({ message: "Sorry! User Unauthorized." });
 };
 
 const handleResponseErrors = (res, _err) => {
@@ -91,7 +50,5 @@ module.exports = {
   CustomError,
   getUserByDBId,
   getUserByUsername,
-  verifyAdmin,
-  verifyDoctor,
-  verifyPatient,
+  verifyAuth,
 };

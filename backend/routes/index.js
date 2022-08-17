@@ -6,12 +6,14 @@ const authRoutes = require("./api/authRoutes")(User);
 const transactionRoutes = require("./api/transactionRoutes")(Transaction);
 
 // api routing
-router.use("/auth", authRoutes);
+router.use("/api/auth", authRoutes);
 router.use("/api/transaction", transactionRoutes);
 
 // frontend routes
-router.get("/*", (req, res) =>
-  res.sendFile(path.join(__dirname, "/static/index.html"))
-);
+//to enable react routing
+router.use((req, res, next) => {
+  console.log("everything");
+  res.sendFile(path.join(__dirname, "../../binary-pay/build/index.html"));
+});
 
 module.exports = router;
