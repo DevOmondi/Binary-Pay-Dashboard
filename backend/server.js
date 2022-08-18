@@ -26,8 +26,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // adding static files
-app.use(express.static(path.join(__dirname, "..", "build")));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "../binary-pay/build")));
+// app.use(express.static("public"));
 
 // routing integration
 app.use(require("./routes"));
