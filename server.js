@@ -14,7 +14,7 @@ require("dotenv").config();
 const initializePassport = require("./passport-config");
 
 //Get environment variables and explicitly declare variables
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 const DB_URL = process.env.MONGODB_URI || "mongodb://localhost/binarypay";
 const app = express();
 const pathToKey = path.join(__dirname, "./cryptography/id_rsa_pub.pem");
@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // adding static files
-app.use(express.static(path.join(__dirname, "../binary-pay/build")));
+app.use(express.static(path.join(__dirname, "./binary-pay/build")));
 // app.use(express.static("public"));
 
 // routing integration
