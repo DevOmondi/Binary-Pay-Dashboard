@@ -8,6 +8,8 @@
     "api": "cd backend && npm start",
     "client": "cd binary-pay && npm start",
     "api:dev": "cd backend && npm run start:dev",
+    "start": "cd backend && npm run start",
+    "preinstall": "pwd && ls",
     "install": "cd backend && npm i",
     "postinstall": "cd binary-pay && npm i && npm run build"
   },
@@ -20,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Colcoder/Binary-Pay-Dashboard/issues"
   },
-  "homepage": "https://github.com/Colcoder/Binary-Pay-Dashboard#readme"
+  "homepage": "https://github.com/Colcoder/Binary-Pay-Dashboard#readme",
+  "node": {
+    "version": ""
+  }
 }

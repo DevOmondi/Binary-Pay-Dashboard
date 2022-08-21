@@ -56,7 +56,7 @@ mongoose.connect(
   (err) => {
     err
       ? console.log(`There was an error: ${err.message}`)
-      : console.log("Connected successfully to database!!");
+      : console.log("Connected successfully to database!!" + DB_URL);
   }
 );
 
