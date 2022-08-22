@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import axios from "axios";
+import config from "../config";
 
 function Copyright(props) {
   return (
@@ -39,7 +40,7 @@ export default function SignUp() {
     e.preventDefault();
 
     axios
-      .post(`${process.env.API_URL}/api/auth/register`, {
+      .post(`${config.API_URL}/api/auth/register`, {
         username: registerUsername,
         password: registerPassword,
         cPassword: confirmPassword,

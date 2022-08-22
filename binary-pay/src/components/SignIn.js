@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
+import config from "../config";
 
 function Copyright(props) {
   return (
@@ -51,7 +52,7 @@ export default function SignIn() {
       withCredentials:true
     })*/
     axios
-      .post(`${process.env.API_URL}/api/auth/login`, {
+      .post(`${config.API_URL}/api/auth/login`, {
         username: userName,
         password: passWord,
       })
