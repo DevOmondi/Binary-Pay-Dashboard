@@ -151,6 +151,7 @@ const getToken = () => {
       console.log(res.raw_body);
     });
 };
+
 const transactionRoutes = (Transaction) => {
   const transactionsRouter = express.Router();
 
@@ -190,31 +191,38 @@ const transactionRoutes = (Transaction) => {
     }
   });
 
-  transactionsRouter.route("/mpesa-validation").post(async (req, res) => {
+  transactionsRouter.route("/validation").post(async (req, res) => {
     try {
       try {
-        if (getProvider()) {
-          const _transaction = {
-            dateInit: new Date(),
-            details: req.body,
-            ref: req.body.billRefNumber,
-            statusCompleted: false,
-          };
+        if (getProvider(req.body.MSISDN || req.body.msisdn)) {
+          if (parseInt(req.body.TransAmount) > 5) {
+            const _transaction = {
+              dateInit: new Date(),
+              details: req.body,
+              ref: req.body.billRefNumber,
+              statusCompleted: false,
+            };
 
-          const _newTransaction = new Transaction({
-            ..._transaction,
-          });
-
-          _newTransaction.save().then((_data) => {
-            console.log("some: ", _data);
-            res.status(200).json({
-              ResultCode: 0,
-              ResultDesc: "Accepted",
+            const _newTransaction = new Transaction({
+              ..._transaction,
             });
-          });
+
+            _newTransaction.save().then((_data) => {
+              console.log("some: ", _data);
+              res.status(200).json({
+                ResultCode: 0,
+                ResultDesc: "Accepted",
+              });
+            });
+          } else {
+            res.status(400).json({
+              resultCode: "C2B00013",
+              resultDesc: "Rejected",
+            });
+          }
         } else {
-          res.status(500).json({
-            resultCode: 1,
+          res.status(400).json({
+            resultCode: "C2B00012",
             resultDesc: "Rejected",
           });
         }
@@ -228,24 +236,41 @@ const transactionRoutes = (Transaction) => {
     } catch (_err) {
       console.log("ss: ", _err);
       res.status(500).json({
-        resultCode: 1,
+        resultCode: "C2B00016",
         resultDesc: "Rejected",
       });
     }
   });
 
-  transactionsRouter.route("/mpesa-confirmation").post(async (req, res) => {
+  transactionsRouter.route("/confirmation").post(async (req, res) => {
     console.log("confirmation: ", req.body);
     if (req.body) {
-      const _purchaseBody = {};
+      const _accountProvider = getProvider(req.body.MSISDN || req.body.msisdn);
 
+      const _purchaseBody = {
+        serviceID: services[_accountProvider].serviceID,
+        serviceCode: services[_accountProvider].serviceCode,
+        msisdn: req.body.MSISDN || req.body.msisdn,
+        accountNumber: req.body.MSISDN || req.body.msisdn,
+        amountPaid: parseInt(req.body.TransAmount || req.body.transAmount),
+      };
+
+      console.log("purchase: ", _purchaseBody);
       const _response = await purchaseTransaction(req.body);
       if (_response.error) {
-        throw _response.error;
+        console.log("error: ", _response.error);
+        // TODO: record send email for transaction to be manually done
+        console.log("do manual transaction");
+        return res.json({
+          ResponseCode: "1",
+          ResultDesc: "",
+        });
       }
-      Transaction.findOneAndUpdate({}, {});
-      _transaction.statusCompleted = true;
-      _transaction.response = _response;
+
+      // let _transaction = await Transaction.findOneAndUpdate({}, {});
+      // console.log(_transaction)
+      // _transaction.statusCompleted = true;
+      // _transaction.response = _response;
       //       {
       //   "transAmount": "string",
       //   "msisdn": "string",
@@ -261,6 +286,7 @@ const transactionRoutes = (Transaction) => {
       //   "orgAccountBalance": "string",
       //   "thirdPartyTransID": "string"
       // }
+      console.log("successfully purchased");
       return res.json({
         ResponseCode: 0,
         ResultDesc: "",
