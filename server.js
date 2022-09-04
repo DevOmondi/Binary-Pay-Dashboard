@@ -21,7 +21,15 @@ const pathToKey = path.join(__dirname, "./cryptography/id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
 
 //middlewares
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    mehods: ["GET, PATCH, POST, DELETE"],
+    allowedHeaders: ["Authorization", "Content-Type", "credentials"],
+    exposedHeaders: ["authorization", "credentials"],
+    preflightContinue: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -47,7 +55,7 @@ initializePassport(passport);
 
 //connect to database and crate tables if they don't exist
 db.sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     console.log("Synced db.");
   })

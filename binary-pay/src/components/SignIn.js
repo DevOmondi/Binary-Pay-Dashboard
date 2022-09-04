@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -16,6 +17,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import config from "../config";
+import { storeToken } from "../utilities/utilityFunctions";
 
 function Copyright(props) {
   return (
@@ -40,6 +42,8 @@ const theme = createTheme();
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
+  const navigate = useNavigate();
+
   const signInHandler = (e) => {
     e.preventDefault();
     /* axios({
@@ -52,15 +56,21 @@ export default function SignIn() {
       withCredentials:true
     })*/
     axios
-      .post(`${config.API_URL}/api/auth/login`, {
+      .post(`${config.API_URL}/auth/login`, {
         username: userName,
         password: passWord,
       })
       .then((response) => {
-        console.log(response);
+        if (response) {
+          console.log(response);
+          if (response.data) alert(response.data.message);
+          if (response.headers) storeToken(response.headers.authorization);
+          navigate("/dashboard", { replace: true });
+        }
       })
       .catch((error) => {
-        console.log(error);
+        console.log("error: ", error);
+        if (error.response.data) alert(error.response.data.errorMessage);
       });
   };
 
