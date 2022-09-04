@@ -1,7 +1,12 @@
 const router = require("express").Router();
 const path = require("path");
-const User = require("../models/userModel");
-const Transaction = require("../models/transactionModel");
+const db = require("../models");
+const User = require("../models/userModel")(db.sequelize, db.Sequelize);
+const Transaction = require("../models/transactionModel")(
+  db.sequelize,
+  db.Sequelize
+);
+
 const authRoutes = require("./api/authRoutes")(User);
 const transactionRoutes = require("./api/transactionRoutes")(Transaction);
 

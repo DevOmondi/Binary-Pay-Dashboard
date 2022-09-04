@@ -1,4 +1,5 @@
-const User = require("./models/userModel");
+const db = require("./models");
+const User = require("./models/userModel")(db.sequelize, db.Sequelize);
 
 class CustomError extends Error {
   // generate customized error messages and codes
@@ -12,10 +13,10 @@ class CustomError extends Error {
 const getUserByUsername = async (username) => {
   // check across the three account collections to find user with given username
   const handleError = (err) => (err ? err : null);
-  return await User.findOne({ username })
+  return await User.findOne({ where: { username } })
     .then((user) => {
       if (user && user !== undefined) {
-        return user;
+        return user.toJSON();
       }
       return;
     })
@@ -24,10 +25,10 @@ const getUserByUsername = async (username) => {
 
 const getUserByDBId = async (id) => {
   const handleError = (err) => (err ? err : null);
-  return await User.findById(id)
+  return await User.findOne({ where: { id: _id } })
     .then((user) => {
       if (user && user !== undefined) {
-        return user;
+        return user.toJSON();
       }
     })
     .catch((err) => handleError(err));

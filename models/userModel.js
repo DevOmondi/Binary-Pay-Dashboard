@@ -24,4 +24,5 @@ const userSchema = (sequelize, Sequelize) => {
   return User;
 };
 
+
 module.exports = userSchema;

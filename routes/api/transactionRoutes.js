@@ -158,10 +158,9 @@ const transactionRoutes = (Transaction) => {
   transactionsRouter.route("/purchase").post(async (req, res) => {
     try {
       const _transaction = {
-        date: new Date(),
         accountNumber: req.body.accountNumber,
         amount: req.body.amountPaid,
-        statusCompleted: false,
+        statusComplete: false,
       };
 
       const _response = await purchaseTransaction(req.body);
@@ -169,18 +168,15 @@ const transactionRoutes = (Transaction) => {
         console.log("problem: ", _response._error);
         throw _response.error;
       }
-      _transaction.statusCompleted = true;
+      _transaction.statusComplete = true;
       _transaction.response = _response;
 
-      const _newTransaction = new Transaction({
-        date: new Date(),
+      Transaction.create({
         response: _response,
         accountNumber: req.body.accountNumber,
         amount: req.body.amountPaid,
-      });
-
-      _newTransaction.save().then((_data) => {
-        console.log("some: ", _data);
+      }).then((_data) => {
+        // console.log("some: ", _data.toJSON());
         res.status(200).json(_response);
       });
     } catch (_err) {
@@ -197,17 +193,14 @@ const transactionRoutes = (Transaction) => {
         if (getProvider(req.body.MSISDN || req.body.msisdn)) {
           if (parseInt(req.body.TransAmount) > 5) {
             const _transaction = {
-              dateInit: new Date(),
               details: req.body,
               ref: req.body.billRefNumber,
-              statusCompleted: false,
+              statusComplete: false,
             };
 
-            const _newTransaction = new Transaction({
+            Transaction.create({
               ..._transaction,
-            });
-
-            _newTransaction.save().then((_data) => {
+            }).then((_data) => {
               console.log("some: ", _data);
               res.status(200).json({
                 ResultCode: 0,
@@ -267,9 +260,25 @@ const transactionRoutes = (Transaction) => {
         });
       }
 
+      // Transaction.update(
+      //   { statusComplete: true, response: _response },
+      //   { where: { ref: req.body.billRefNumber } }
+      // )
+      //   .then((_res) => {
+      //     console.log("done: ", _res.toJSON());
+      //   })
+      //   .catch((_err) => {
+      //     console.log("error: ", _err);
+      //   });
+
+      console.log("successfully purchased");
+      return res.json({
+        ResponseCode: 0,
+        ResultDesc: "",
+      });
       // let _transaction = await Transaction.findOneAndUpdate({}, {});
       // console.log(_transaction)
-      // _transaction.statusCompleted = true;
+      // _transaction.statusComplete = true;
       // _transaction.response = _response;
       //       {
       //   "transAmount": "string",
@@ -286,26 +295,23 @@ const transactionRoutes = (Transaction) => {
       //   "orgAccountBalance": "string",
       //   "thirdPartyTransID": "string"
       // }
-      console.log("successfully purchased");
-      return res.json({
-        ResponseCode: 0,
-        ResultDesc: "",
-      });
     }
   });
-  transactionsRouter.route("/history").get((req, res) => {
-    Transaction.find({})
-      .then((_res) => {
-        let _transactionsList = [];
-        if (_res) {
-          _transactionsList = _res.map((_item) => {
-            const _newItem = _item.toJSON();
 
-            delete _newItem.__v;
-            return _newItem;
-          });
-        }
-        return res.status(200).json(_transactionsList);
+  transactionsRouter.route("/history").get((req, res) => {
+    Transaction.findAll()
+      .then((_res) => {
+        console.log("ss: ", _res);
+        // let _transactionsList = [];
+        // if (_res) {
+        //   _transactionsList = _res.map((_item) => {
+        //     const _newItem = _item.toJSON();
+
+        //     delete _newItem.__v;
+        //     return _newItem;
+        //   });
+        // }
+        // return res.status(200).json(_transactionsList);
       })
       .catch((_err) => {
         console.log(_err);

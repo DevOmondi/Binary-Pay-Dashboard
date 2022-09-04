@@ -5,11 +5,14 @@ const transactionSchema = (sequelize, Sequelize) => {
       amount: { type: Sequelize.STRING },
       accountNumber: { type: Sequelize.STRING },
       response: { type: Sequelize.JSONB },
+      details: { type: Sequelize.JSONB },
       statusComplete: { type: Sequelize.BOOLEAN },
+      ref: { type: Sequelize.STRING },
     },
     { timestamps: true }
   );
 
   return Transaction;
 };
+
 module.exports = transactionSchema;
