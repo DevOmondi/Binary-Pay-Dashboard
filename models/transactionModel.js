@@ -1,11 +1,15 @@
-const { Schema, model } = require("mongoose");
+const transactionSchema = (sequelize, Sequelize) => {
+  const Transaction = sequelize.define(
+    "Transaction",
+    {
+      amount: { type: Sequelize.STRING },
+      accountNumber: { type: Sequelize.STRING },
+      response: { type: Sequelize.JSONB },
+      statusComplete: { type: Sequelize.BOOLEAN },
+    },
+    { timestamps: true }
+  );
 
-const transactionSchema = Schema({
-  date: { type: Date },
-  accountNumber: { type: String },
-  amount: { type: String },
-  response: { type: Object },
-  statusComplete: { type: Boolean },
-});
-
-module.exports = model("Transaction", transactionSchema);
+  return Transaction;
+};
+module.exports = transactionSchema;

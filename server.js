@@ -8,6 +8,7 @@ const session = require("express-session");
 const cors = require("cors");
 const passport = require("passport");
 const path = require("path");
+const db = require("./models");
 require("dotenv").config();
 
 // local imports
@@ -47,18 +48,27 @@ app.use(passport.session());
 initializePassport(passport);
 
 //connect to database
-mongoose.connect(
-  DB_URL,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  (err) => {
-    err
-      ? console.log(`There was an error: ${err.message}`)
-      : console.log("Connected successfully to database!!" + DB_URL);
-  }
-);
+db.sequelize
+  .sync()
+  .then(() => {
+    console.log("Synced db.");
+  })
+  .catch((err) => {
+    console.log("Failed to sync db: " + err.message);
+  });
+
+// mongoose.connect(
+//   DB_URL,
+//   {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   },
+//   (err) => {
+//     err
+//       ? console.log(`There was an error: ${err.message}`)
+//       : console.log("Connected successfully to database!!" + DB_URL);
+//   }
+// );
 
 //maintain connection to the database
 //mongoose.connection;
