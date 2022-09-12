@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const { CustomError } = require("../../utility");
 require("dotenv").config({
@@ -33,43 +34,43 @@ const services = {
 const getProvider = (_accNo) => {
   const serviceProviders = {
     safaricom: [
-      "070",
-      "071",
-      "072",
-      "074",
-      "0757",
-      "0758",
-      "0759",
-      "0768",
-      "0769",
-      "079",
-      "011",
-      "011",
+      "25470",
+      "25471",
+      "25472",
+      "25474",
+      "254757",
+      "254758",
+      "254759",
+      "254768",
+      "254769",
+      "25479",
+      "25411",
+      "25411",
     ],
     airtel: [
-      "073",
-      "0750",
-      "0751",
-      "0752",
-      "0753",
-      "0754",
-      "0755",
-      "0756",
-      "0785",
-      "0786",
-      "0787",
-      "0788",
-      "0789",
-      "010",
-      "010",
-      "010",
+      "25473",
+      "254750",
+      "254751",
+      "254752",
+      "254753",
+      "254754",
+      "254755",
+      "254756",
+      "254785",
+      "254786",
+      "254787",
+      "254788",
+      "254789",
+      "25410",
+      "25410",
+      "25410",
     ],
-    telkom: ["077"],
+    telkom: ["25477"],
     "kplc-prepaid": [],
     "kplc-postpaid": [],
   };
 
-  const _prefix1 = _accNo.substring(0, 4);
+  const _prefix1 = _accNo.substring(0, 5);
   const _prefix2 = _accNo.substring(0, 3);
 
   if (
@@ -93,6 +94,7 @@ const getProvider = (_accNo) => {
 };
 // helper functions
 const purchaseTransaction = (_payload) => {
+  console.log(_payload);
   const reqObject = JSON.stringify({
     Credentials: {
       merchantCode: process.env.MERCHANT_CODE,
@@ -109,6 +111,7 @@ const purchaseTransaction = (_payload) => {
     },
   });
 
+  console.log("request: ", reqObject);
   try {
     return axios({
       method: "post",
@@ -121,6 +124,7 @@ const purchaseTransaction = (_payload) => {
     }).then((_response) => {
       const _data = _response.data;
       if (_data.status === "200") return _data;
+      console.log(_data.message);
       throw new CustomError(_data.message, "paymentError");
     });
   } catch (error) {
@@ -172,6 +176,7 @@ const transactionRoutes = (Transaction) => {
       _transaction.response = _response;
 
       Transaction.create({
+        ..._transaction,
         response: _response,
         accountNumber: req.body.accountNumber,
         amount: req.body.amountPaid,
@@ -190,12 +195,19 @@ const transactionRoutes = (Transaction) => {
   transactionsRouter.route("/validation").post(async (req, res) => {
     try {
       try {
+        console.log("some: ", req.body);
+        fs.writeFileSync(
+          __dirname + "/validation.txt",
+          JSON.stringify(req.body)
+        );
         if (getProvider(req.body.MSISDN || req.body.msisdn)) {
-          if (parseInt(req.body.TransAmount) > 5) {
+          if (parseInt(req.body.TransAmount || req.body.transAmount) >= 5) {
+            console.log;
             const _transaction = {
               details: req.body,
               ref: req.body.billRefNumber,
               statusComplete: false,
+              amount: req.body.TransAmount || req.body.transAmount,
             };
 
             Transaction.create({
@@ -221,12 +233,17 @@ const transactionRoutes = (Transaction) => {
         }
       } catch (_err) {
         // TODO: log error
+        console.log("error: ", _err);
         res.status(500).json({
           resultCode: 1,
           resultDesc: "Rejected",
         });
       }
     } catch (_err) {
+      fs.writeFileSync(
+        __dirname + "/validation-error.txt",
+        JSON.stringify(req.body)
+      );
       console.log("ss: ", _err);
       res.status(500).json({
         resultCode: "C2B00016",
@@ -237,6 +254,7 @@ const transactionRoutes = (Transaction) => {
 
   transactionsRouter.route("/confirmation").post(async (req, res) => {
     console.log("confirmation: ", req.body);
+    fs.writeFileSync(__dirname + "/confirmation.txt", JSON.stringify(req.body));
     if (req.body) {
       const _accountProvider = getProvider(req.body.MSISDN || req.body.msisdn);
 
@@ -249,7 +267,7 @@ const transactionRoutes = (Transaction) => {
       };
 
       console.log("purchase: ", _purchaseBody);
-      const _response = await purchaseTransaction(req.body);
+      const _response = await purchaseTransaction(_purchaseBody);
       if (_response.error) {
         console.log("error: ", _response.error);
         // TODO: record send email for transaction to be manually done
@@ -260,16 +278,20 @@ const transactionRoutes = (Transaction) => {
         });
       }
 
-      // Transaction.update(
-      //   { statusComplete: true, response: _response },
-      //   { where: { ref: req.body.billRefNumber } }
-      // )
-      //   .then((_res) => {
-      //     console.log("done: ", _res.toJSON());
-      //   })
-      //   .catch((_err) => {
-      //     console.log("error: ", _err);
-      //   });
+      Transaction.update(
+        { statusComplete: true, response: _response },
+        { where: { ref: req.body.billRefNumber } }
+      )
+        .then((_res) => {
+          console.log("done: ", _res);
+        })
+        .catch((_err) => {
+          fs.writeFileSync(
+            __dirname + "/confirmation-save-error.txt",
+            JSON.stringify(_err)
+          );
+          console.log("error: ", _err);
+        });
 
       console.log("successfully purchased");
       return res.json({
@@ -301,17 +323,15 @@ const transactionRoutes = (Transaction) => {
   transactionsRouter.route("/history").get((req, res) => {
     Transaction.findAll()
       .then((_res) => {
-        console.log("ss: ", _res);
-        // let _transactionsList = [];
-        // if (_res) {
-        //   _transactionsList = _res.map((_item) => {
-        //     const _newItem = _item.toJSON();
-
-        //     delete _newItem.__v;
-        //     return _newItem;
-        //   });
-        // }
-        // return res.status(200).json(_transactionsList);
+        let _transactionsList = [];
+        if (_res) {
+          _transactionsList = _res.map((_item) => {
+            const _newItem = _item.toJSON();
+            console.log("ss: ", _newItem);
+            return _newItem;
+          });
+        }
+        return res.status(200).json(_transactionsList);
       })
       .catch((_err) => {
         console.log(_err);
@@ -322,10 +342,7 @@ const transactionRoutes = (Transaction) => {
   });
 
   transactionsRouter.route("/float").get((req, res) => {
-    Transaction.findOne({})
-      .sort({
-        time: -1,
-      })
+    Transaction.findOne({ order: [["updatedAt", "DESC"]] })
       .then((_res) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");
         res.status(200).json({
