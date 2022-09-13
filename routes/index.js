@@ -14,6 +14,11 @@ const transactionRoutes = require("./api/transactionRoutes")(Transaction);
 router.use("/api/auth", authRoutes);
 router.use("/api/transaction", transactionRoutes);
 
+router.use("/test", (req, res) => {
+  console.log("req body: ", req.body);
+  res.status(200);
+});
+
 // frontend routes
 //to enable react routing
 router.use((req, res, next) => {

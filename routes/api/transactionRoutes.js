@@ -92,6 +92,35 @@ const getProvider = (_accNo) => {
     return;
   }
 };
+
+const testTransaction = (_payload) => {
+  const reqObject = JSON.stringify(_payload);
+
+  console.log("request: ", reqObject);
+  try {
+    return axios({
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": reqObject.length,
+      },
+      url: "http://localhost:5001/test",
+      data: reqObject,
+    }).then((_response) => {
+      const _data = _response.data;
+      if (_data.status === "200") return _data;
+      console.log(_data.message);
+    });
+  } catch (error) {
+    return {
+      error: new CustomError(
+        "Problem connecting to Payment System.",
+        "paymentError"
+      ),
+      _error: error,
+    };
+  }
+};
 // helper functions
 const purchaseTransaction = (_payload) => {
   console.log(_payload);
@@ -125,7 +154,7 @@ const purchaseTransaction = (_payload) => {
       const _data = _response.data;
       if (_data.status === "200") return _data;
       console.log(_data.message);
-      throw new CustomError(_data.message, "paymentError");
+      return { errorMessage: _data.message, error: "paymentError" };
     });
   } catch (error) {
     return {
@@ -193,6 +222,7 @@ const transactionRoutes = (Transaction) => {
   });
 
   transactionsRouter.route("/validation").post(async (req, res) => {
+    testTransaction(req.body);
     try {
       try {
         console.log("some: ", req.body);
@@ -227,6 +257,7 @@ const transactionRoutes = (Transaction) => {
           }
         } else {
           res.status(400).json({
+            ...req.body,
             resultCode: "C2B00012",
             resultDesc: "Rejected",
           });
@@ -254,7 +285,7 @@ const transactionRoutes = (Transaction) => {
 
   transactionsRouter.route("/confirmation").post(async (req, res) => {
     console.log("confirmation: ", req.body);
-    fs.writeFileSync(__dirname + "/confirmation.txt", JSON.stringify(req.body));
+    testTransaction(req.body);
     if (req.body) {
       const _accountProvider = getProvider(req.body.MSISDN || req.body.msisdn);
 
