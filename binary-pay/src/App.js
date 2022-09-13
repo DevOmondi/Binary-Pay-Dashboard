@@ -6,6 +6,7 @@ import SignUp from "./components/SignUp";
 import Settings from "./components/Settings";
 
 function App() {
+  console.log("update");
 
   return (
     <div className="App">
