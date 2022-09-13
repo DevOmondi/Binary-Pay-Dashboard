@@ -16,7 +16,7 @@ router.use("/api/transaction", transactionRoutes);
 
 router.use("/test", (req, res) => {
   console.log("req body: ", req.body);
-  res.status(200);
+  res.status(200).send("Okay");
 });
 
 // frontend routes
