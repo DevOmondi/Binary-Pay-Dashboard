@@ -104,7 +104,7 @@ const testTransaction = (_payload) => {
         "Content-Type": "application/json",
         "Content-Length": reqObject.length,
       },
-      url: "http://localhost:5001/test",
+      url: "https://5435-105-160-115-74.in.ngrok.io/test",
       data: reqObject,
     }).then((_response) => {
       const _data = _response.data;
