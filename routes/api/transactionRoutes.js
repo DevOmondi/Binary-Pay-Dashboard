@@ -222,8 +222,8 @@ const transactionRoutes = (Transaction) => {
   });
 
   transactionsRouter.route("/validation").post(async (req, res) => {
-    testTransaction(req.body);
     try {
+      // testTransaction(req.body);
       try {
         console.log("some: ", req.body);
         fs.writeFileSync(
@@ -232,7 +232,6 @@ const transactionRoutes = (Transaction) => {
         );
         if (getProvider(req.body.MSISDN || req.body.msisdn)) {
           if (parseInt(req.body.TransAmount || req.body.transAmount) >= 5) {
-            console.log;
             const _transaction = {
               details: req.body,
               ref: req.body.billRefNumber,
@@ -243,7 +242,7 @@ const transactionRoutes = (Transaction) => {
             Transaction.create({
               ..._transaction,
             }).then((_data) => {
-              console.log("some: ", _data);
+              console.log("some: ", _data.toJSON());
               res.status(200).json({
                 ResultCode: 0,
                 ResultDesc: "Accepted",
