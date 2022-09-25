@@ -4,8 +4,8 @@ const transactionSchema = (sequelize, Sequelize) => {
     {
       amount: { type: Sequelize.STRING },
       accountNumber: { type: Sequelize.STRING },
-      response: { type: Sequelize.JSON },
-      details: { type: Sequelize.JSON },
+      // response: { type: Sequelize.JSON },
+      // details: { type: Sequelize.JSON },
       statusComplete: { type: Sequelize.BOOLEAN },
       ref: { type: Sequelize.STRING },
     },

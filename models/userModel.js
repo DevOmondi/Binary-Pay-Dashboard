@@ -17,7 +17,6 @@ const userSchema = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      details: { type: Sequelize.JSON },
     },
     { timestamps: true }
   );

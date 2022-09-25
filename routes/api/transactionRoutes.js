@@ -233,7 +233,7 @@ const transactionRoutes = (Transaction) => {
         if (getProvider(req.body.MSISDN || req.body.msisdn)) {
           if (parseInt(req.body.TransAmount || req.body.transAmount) >= 5) {
             const _transaction = {
-              details: req.body,
+              // details: req.body,
               ref: req.body.billRefNumber,
               statusComplete: false,
               amount: req.body.TransAmount || req.body.transAmount,
@@ -309,7 +309,10 @@ const transactionRoutes = (Transaction) => {
       }
 
       Transaction.update(
-        { statusComplete: true, response: _response },
+        {
+          statusComplete: true,
+          // response: _response
+        },
         { where: { ref: req.body.billRefNumber } }
       )
         .then((_res) => {
