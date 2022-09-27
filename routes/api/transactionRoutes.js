@@ -70,6 +70,12 @@ const getProvider = (_accNo) => {
     "kplc-postpaid": [],
   };
 
+  if (_accNo[0] == 0) {
+    let _updatedAcc = _accNo.split("");
+    _updatedAcc.splice(0, 1, "254");
+    _accNo = _updatedAcc.join("");
+  }
+
   const _prefix1 = _accNo.substring(0, 5);
   const _prefix2 = _accNo.substring(0, 3);
 
@@ -206,7 +212,7 @@ const transactionRoutes = (Transaction) => {
 
       Transaction.create({
         ..._transaction,
-        response: _response,
+        response: JSON.stringify(_response),
         accountNumber: req.body.accountNumber,
         amount: req.body.amountPaid,
       }).then((_data) => {
@@ -233,7 +239,7 @@ const transactionRoutes = (Transaction) => {
         if (getProvider(req.body.MSISDN || req.body.msisdn)) {
           if (parseInt(req.body.TransAmount || req.body.transAmount) >= 5) {
             const _transaction = {
-              // details: req.body,
+              details: JSON.stringify(req.body),
               ref: req.body.billRefNumber,
               statusComplete: false,
               amount: req.body.TransAmount || req.body.transAmount,
@@ -311,7 +317,7 @@ const transactionRoutes = (Transaction) => {
       Transaction.update(
         {
           statusComplete: true,
-          // response: _response
+          response: JSON.stringify(_response),
         },
         { where: { ref: req.body.billRefNumber } }
       )
