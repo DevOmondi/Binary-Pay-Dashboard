@@ -55,7 +55,7 @@ initializePassport(passport);
 
 //connect to database and crate tables if they don't exist
 db.sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     console.log("Synced db.");
   })
