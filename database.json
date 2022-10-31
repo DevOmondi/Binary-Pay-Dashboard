@@ -2,7 +2,7 @@
   "dev": {
     "driver": "pg",
     "user": "postgres",
-    "password": "root",
+    "password": "binarypay-data",
     "host": "localhost",
     "database": "binary_pay"
   }
