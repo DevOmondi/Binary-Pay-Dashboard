@@ -32,7 +32,8 @@ const authRoutes = (User) => {
       // check if username already in use
       const userExists = await getUserByUsername(req.body.username);
       if (userExists) {
-        return res.status(400).json({ message: "Username already in use" });
+       // return res.status(400).json({ message: "Username already in use" });
+       throw new CustomError("Username already in use.","Unavailable username")
       }
 
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
