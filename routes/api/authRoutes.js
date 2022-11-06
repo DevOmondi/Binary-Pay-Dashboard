@@ -11,13 +11,7 @@ const authRoutes = (User) => {
       successRedirect: "/dashboard",
       failureRedirect: "/",
     }),
-   /* (req, res) => {
-      req.body.accountType === req.user.accountType
-        ? res.redirect("/dashboard")
-        : res.send(
-            "<h1>Sorry credentials are mismatched. Login with correct user level.</h1>"
-          );
-    }*/
+  
   );
 
   // registration endpoint for all account types
@@ -55,7 +49,7 @@ const authRoutes = (User) => {
       });
     } catch (error) {
       console.log(error);
-      res.json({ error: error.message, code: error.name });
+      res.json({ message: error.message, code: error.name });
     }
   });
 

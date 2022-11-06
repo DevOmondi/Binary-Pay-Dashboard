@@ -46,17 +46,9 @@ export default function SignIn() {
 
   const signInHandler = (e) => {
     e.preventDefault();
-    /* axios({
-      method : "post",
-      url: process.env.API_URL + "/api/auth/login",
-      data : {
-        username: userName,
-        password: passWord
-      },
-      withCredentials:true
-    })*/
+    
     axios
-      .post(`${config.API_URL}/auth/login`, {
+      .post(`${config.API_URL}/api/auth/login`, {
         username: userName,
         password: passWord,
       })
@@ -131,6 +123,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
+              onClick = {signInHandler}
             >
               Sign In
             </Button>
