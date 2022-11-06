@@ -64,6 +64,6 @@ mongoose.connect(
 //mongoose.connection;
 
 //start server
-app.listen(port, () => {
+app.listen(port,() => {
   console.log(`Server is running on port : ${port}`);
 });
