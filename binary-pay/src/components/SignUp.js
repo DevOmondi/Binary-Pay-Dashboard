@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -11,6 +12,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import axios from "axios";
 import config from "../config";
+import { storeToken } from "../utilities/utilityFunctions";
 
 function Copyright(props) {
   return (
@@ -36,20 +38,29 @@ export default function SignUp() {
   const [registerUsername, setRegisterUsername] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+  // console.log("loc: ", location);
+
   const signUpHandler = (e) => {
     e.preventDefault();
 
     axios
-      .post(`${config.API_URL}/api/auth/register`, {
+      .post(`${config.API_URL}/auth/register`, {
         username: registerUsername,
         password: registerPassword,
         cPassword: confirmPassword,
       })
       .then((response) => {
-        console.log(response);
+        if (response) {
+          console.log(response);
+          if (response.data) alert(response.data.message);
+          if (response.headers) storeToken(response.headers.authorization);
+          navigate("/dashboard", { replace: true });
+        }
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.data) alert(error.response.data.errorMessage);
       });
   };
 
