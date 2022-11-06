@@ -15,7 +15,7 @@ require("dotenv").config();
 const initializePassport = require("./passport-config");
 
 //Get environment variables and explicitly declare variables
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5000;
 const app = express();
 const pathToKey = path.join(__dirname, "./cryptography/id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
