@@ -3,3 +3,4 @@ backend/.env
 .env
 validation.txt
 confirmation.txt
+*.pem
