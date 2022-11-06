@@ -1,4 +1,8 @@
 node_modules
 backend/.env
 .env
+<<<<<<< HEAD
 build
+=======
+*.pem
+>>>>>>> c78d0356f509d5008b9449aa0748b8cc4c01bd5c
