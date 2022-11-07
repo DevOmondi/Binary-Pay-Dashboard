@@ -1,0 +1,1 @@
+{"TransAmount":"5","msisdn":"0714744393","billRefNumber":"2","transID":"string","firstName":"Oliver","lastName":"Mirimu","transTime":"","transactionType":"","businessShortCode":"","invoiceNumber":"","middleName":"","orgAccountBalance":"","thirdPartyTransID":""}

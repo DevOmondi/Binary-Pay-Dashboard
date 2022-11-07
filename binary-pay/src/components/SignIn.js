@@ -46,7 +46,7 @@ export default function SignIn() {
 
   const signInHandler = (e) => {
     e.preventDefault();
-    
+
     axios
       .post(`${config.API_URL}/api/auth/login`, {
         username: userName,
@@ -55,6 +55,9 @@ export default function SignIn() {
       .then((response) => {
         if (response) {
           console.log(response);
+          if (response.data && response.data.errorMessage) {
+            return alert(response.data.errorMessage);
+          }
           if (response.data) alert(response.data.message);
           if (response.headers) storeToken(response.headers.authorization);
           navigate("/dashboard", { replace: true });
@@ -69,7 +72,6 @@ export default function SignIn() {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        <span>no json</span>
         <CssBaseline />
         <Box
           sx={{
@@ -123,7 +125,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
-              onClick = {signInHandler}
+              onClick={signInHandler}
             >
               Sign In
             </Button>
