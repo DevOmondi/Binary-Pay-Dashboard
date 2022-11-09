@@ -3,7 +3,7 @@ backend/.env
 .env
 build
 *.pem
-
+*.log
 
 
 
