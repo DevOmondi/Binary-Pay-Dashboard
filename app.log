@@ -1,0 +1,76 @@
+{"level":"info","message":"confirmation request ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"confirmation request ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"Setting service provider.","service":"user-service"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service"}
+{"level":"info","message":"Service Provider details: [object Object]","service":"user-service"}
+{"level":"info","message":"Making Purchase for: {\"Credentials\":{\"merchantCode\":\"1010\",\"username\":\"binarypay_api\",\"password\":\"jgY9QuG5CEjv3Y9YrpFL\"},\"Request\":{\"transactionRef\":\"8ad47541-b5d8-4a97-87fe-65f3e3e630c7\"}}","service":"user-service"}
+{"level":"info","message":"confirmation request ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service"}
+{"level":"info","message":"Service Provider details: [object Object]","service":"user-service"}
+{"level":"info","message":"Making Purchase for: {\"Credentials\":{\"merchantCode\":\"1010\",\"username\":\"binarypay_api\",\"password\":\"jgY9QuG5CEjv3Y9YrpFL\"},\"Request\":{\"transactionRef\":\"a340a797-f50d-45d3-9ca4-95fd5d39744b\"}}","service":"user-service"}
+{"level":"info","message":"confirmation request ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service"}
+{"level":"info","message":"Service Provider details: [object Object]","service":"user-service"}
+{"level":"info","message":"Making Purchase for: {\"Credentials\":{\"merchantCode\":\"1010\",\"username\":\"binarypay_api\",\"password\":\"jgY9QuG5CEjv3Y9YrpFL\"},\"Request\":{\"transactionRef\":\"e5714ef4-c86e-4081-adc1-4f09a098cd15\"}}","service":"user-service"}
+{"level":"info","message":"confirmation request ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service"}
+{"level":"info","message":"Service Provider details: [object Object]","service":"user-service"}
+{"level":"info","message":"Making Purchase for: {\"Credentials\":{\"merchantCode\":\"1010\",\"username\":\"binarypay_api\",\"password\":\"jgY9QuG5CEjv3Y9YrpFL\"},\"Request\":{\"transactionRef\":\"79dc06e2-473c-422e-8f04-64f655152913\",\"serviceID\":101,\"serviceCode\":\"SAFCOM\",\"msisdn\":\"254714744393\",\"accountNumber\":\"254714744393\",\"amountPaid\":5}}","service":"user-service"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:09:08.430Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:10:23.265Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:12:51.446Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:13:49.425Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:15:03.197Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:15:15.121Z"}
+{"level":"error","message":"Validation failed: _accNo.substring is not a function","service":"user-service","timestamp":"2022-11-09T23:15:15.138Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:15:47.699Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:15:47.844Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:15:47.845Z"}
+{"level":"info","message":"Transaction failed: Value too low.","service":"user-service","timestamp":"2022-11-09T23:15:47.846Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:18:33.527Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:18:33.535Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:18:33.535Z"}
+{"level":"info","message":"Transaction failed: Value too low.","service":"user-service","timestamp":"2022-11-09T23:18:33.539Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:18:57.809Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:18:57.820Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:18:57.820Z"}
+{"level":"info","message":"Transaction failed: Value too low.","service":"user-service","timestamp":"2022-11-09T23:18:57.823Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:19:20.625Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:19:20.635Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:19:20.636Z"}
+{"level":"info","message":"Transaction failed: Value too low.","service":"user-service","timestamp":"2022-11-09T23:19:20.638Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:19:40.529Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:19:40.540Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:19:40.541Z"}
+{"level":"info","message":"Transaction succesfully saved","service":"user-service","timestamp":"2022-11-09T23:19:40.624Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:23:06.274Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:23:06.281Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:23:06.281Z"}
+{"level":"info","message":"Transaction succesfully saved","service":"user-service","timestamp":"2022-11-09T23:23:06.403Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:24:09.607Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:24:09.610Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:24:09.610Z"}
+{"level":"info","message":"Transaction succesfully saved","service":"user-service","timestamp":"2022-11-09T23:24:09.636Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:25:06.100Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:25:06.102Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:25:06.103Z"}
+{"level":"info","message":"Transaction succesfully saved","service":"user-service","timestamp":"2022-11-09T23:25:06.128Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:25:43.944Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:25:43.949Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:25:43.950Z"}
+{"level":"info","message":"Transaction succesfully saved","service":"user-service","timestamp":"2022-11-09T23:25:43.986Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:26:41.887Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:26:41.890Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:26:41.890Z"}
+{"level":"info","message":"Transaction succesfully saved","service":"user-service","timestamp":"2022-11-09T23:26:41.923Z"}
+{"level":"info","message":"validating ,mpesa payment: [object Object]","service":"user-service","timestamp":"2022-11-09T23:27:36.670Z"}
+{"level":"info","message":"Setting service provider for 254714744393","service":"user-service","timestamp":"2022-11-09T23:27:36.673Z"}
+{"level":"info","message":"Provider Set: Safaricom Airtime","service":"user-service","timestamp":"2022-11-09T23:27:36.673Z"}
+{"level":"info","message":"Transaction succesfully saved","service":"user-service","timestamp":"2022-11-09T23:27:36.695Z"}

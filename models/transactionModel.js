@@ -6,6 +6,7 @@ const transactionSchema = Schema({
   amount: { type: String },
   response: { type: Object },
   statusComplete: { type: Boolean },
+  details: { type: Object },
 });
 
 module.exports = model("Transaction", transactionSchema);

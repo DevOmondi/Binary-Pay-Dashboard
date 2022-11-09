@@ -3,6 +3,8 @@ const axios = require("axios");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const { CustomError } = require("../../utility");
+const logger = require("../../logger");
+
 require("dotenv").config({
   path: path.join(__dirname, "../../.env"),
 });
@@ -31,46 +33,54 @@ const services = {
 };
 
 const getProvider = (_accNo) => {
+  if (_accNo[0] === "0") {
+    let _temp = _accNo.split("");
+    _temp.splice(0, 1, "254");
+    _accNo = _temp.join("");
+  }
+
   const serviceProviders = {
     safaricom: [
-      "070",
-      "071",
-      "072",
-      "074",
-      "0757",
-      "0758",
-      "0759",
-      "0768",
-      "0769",
-      "079",
-      "011",
-      "011",
+      "25470",
+      "25471",
+      "25472",
+      "25474",
+      "254757",
+      "254758",
+      "254759",
+      "254768",
+      "254769",
+      "25479",
+      "25411",
+      "25411",
     ],
     airtel: [
-      "073",
-      "0750",
-      "0751",
-      "0752",
-      "0753",
-      "0754",
-      "0755",
-      "0756",
-      "0785",
-      "0786",
-      "0787",
-      "0788",
-      "0789",
-      "010",
-      "010",
-      "010",
+      "25473",
+      "254750",
+      "254751",
+      "254752",
+      "254753",
+      "254754",
+      "254755",
+      "254756",
+      "254785",
+      "254786",
+      "254787",
+      "254788",
+      "254789",
+      "25410",
+      "25410",
+      "25410",
     ],
-    telkom: ["077"],
+    telkom: ["25477"],
     "kplc-prepaid": [],
     "kplc-postpaid": [],
   };
 
-  const _prefix1 = _accNo.substring(0, 4);
+  const _prefix1 = _accNo.substring(0, 5);
   const _prefix2 = _accNo.substring(0, 3);
+
+  logger.log("info", "Setting service provider for " + _accNo);
 
   if (
     serviceProviders.safaricom.includes(_prefix1) ||
@@ -93,6 +103,14 @@ const getProvider = (_accNo) => {
 };
 // helper functions
 const purchaseTransaction = (_payload) => {
+  console.log("payload: ", _payload);
+  console.log("request: ", {
+    serviceID: _payload.serviceID,
+    serviceCode: _payload.serviceCode,
+    msisdn: _payload.accountNumber,
+    accountNumber: _payload.accountNumber,
+    amountPaid: _payload.amountPaid,
+  });
   const reqObject = JSON.stringify({
     Credentials: {
       merchantCode: process.env.MERCHANT_CODE,
@@ -109,6 +127,8 @@ const purchaseTransaction = (_payload) => {
     },
   });
 
+  logger.info(`Making Purchase for: ${reqObject}`);
+
   try {
     return axios({
       method: "post",
@@ -124,6 +144,7 @@ const purchaseTransaction = (_payload) => {
       throw new CustomError(_data.message, "paymentError");
     });
   } catch (error) {
+    logger.error("failed to make");
     return {
       error: new CustomError(
         "Problem connecting to Payment System.",
@@ -167,6 +188,7 @@ const transactionRoutes = (Transaction) => {
       const _response = await purchaseTransaction(req.body);
       if (_response.error) {
         console.log("problem: ", _response._error);
+        logger.info("Failed " + _response._error);
         throw _response.error;
       }
       _transaction.statusCompleted = true;
@@ -181,6 +203,7 @@ const transactionRoutes = (Transaction) => {
 
       _newTransaction.save().then((_data) => {
         console.log("some: ", _data);
+        logger.info("Succesful transaction " + _data);
         res.status(200).json(_response);
       });
     } catch (_err) {
@@ -194,8 +217,14 @@ const transactionRoutes = (Transaction) => {
   transactionsRouter.route("/validation").post(async (req, res) => {
     try {
       try {
-        if (getProvider(req.body.MSISDN || req.body.msisdn)) {
-          if (parseInt(req.body.TransAmount) > 5) {
+        logger.info("validating ,mpesa payment: " + req.body);
+        const _serviceProvider = getProvider(
+          req.body.MSISDN || req.body.msisdn
+        );
+
+        logger.info("Provider Set: " + _serviceProvider);
+        if (_serviceProvider) {
+          if (parseInt(req.body.TransAmount) >= 5) {
             const _transaction = {
               dateInit: new Date(),
               details: req.body,
@@ -208,19 +237,21 @@ const transactionRoutes = (Transaction) => {
             });
 
             _newTransaction.save().then((_data) => {
-              console.log("some: ", _data);
+              logger.info("Transaction succesfully saved " + _data._id);
               res.status(200).json({
                 ResultCode: 0,
                 ResultDesc: "Accepted",
               });
             });
           } else {
+            logger.info("Transaction failed: Value too low.");
             res.status(400).json({
               resultCode: "C2B00013",
               resultDesc: "Rejected",
             });
           }
         } else {
+          logger.info("Transaction failed! Invalid provider.");
           res.status(400).json({
             resultCode: "C2B00012",
             resultDesc: "Rejected",
@@ -228,6 +259,7 @@ const transactionRoutes = (Transaction) => {
         }
       } catch (_err) {
         // TODO: log error
+        logger.error("Validation failed: " + _err.message);
         res.status(500).json({
           resultCode: 1,
           resultDesc: "Rejected",
@@ -244,8 +276,15 @@ const transactionRoutes = (Transaction) => {
 
   transactionsRouter.route("/confirmation").post(async (req, res) => {
     console.log("confirmation: ", req.body);
+    logger.info("confirmation request ,mpesa payment: " + req.body);
+
     if (req.body) {
       const _accountProvider = getProvider(req.body.MSISDN || req.body.msisdn);
+      logger.info("Provider Set: " + _accountProvider);
+      logger.info("Service Provider details: " + services[_accountProvider]);
+
+      console.log("account Prov: ", _accountProvider);
+      console.log("account Prov: ", services[_accountProvider]);
 
       const _purchaseBody = {
         serviceID: services[_accountProvider].serviceID,
@@ -256,9 +295,10 @@ const transactionRoutes = (Transaction) => {
       };
 
       console.log("purchase: ", _purchaseBody);
-      const _response = await purchaseTransaction(req.body);
+      const _response = await purchaseTransaction(_purchaseBody);
       if (_response.error) {
         console.log("error: ", _response.error);
+        logger.info("Error completing transaction " + _response.error);
         // TODO: record send email for transaction to be manually done
         console.log("do manual transaction");
         return res.json({
@@ -286,6 +326,7 @@ const transactionRoutes = (Transaction) => {
       //   "orgAccountBalance": "string",
       //   "thirdPartyTransID": "string"
       // }
+      logger.info("Succesfully purchased");
       console.log("successfully purchased");
       return res.json({
         ResponseCode: 0,

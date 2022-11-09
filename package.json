@@ -57,6 +57,7 @@
     "recharts": "^2.1.9",
     "typescript": "^4.6.4",
     "uuid": "^8.3.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "winston": "^3.8.2"
   }
 }
