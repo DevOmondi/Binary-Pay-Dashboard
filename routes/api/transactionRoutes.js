@@ -219,9 +219,7 @@ const transactionRoutes = (Transaction) => {
     try {
       try {
         logger.info("validating ,mpesa payment: " + req.body);
-        const _serviceProvider = getProvider(
-          req.body.MSISDN || req.body.msisdn
-        );
+        const _serviceProvider = getProvider(req.body.BillRefNumber);
 
         logger.info("Provider Set: " + _serviceProvider);
         if (_serviceProvider) {
@@ -229,7 +227,7 @@ const transactionRoutes = (Transaction) => {
             const _transaction = {
               dateInit: new Date(),
               details: req.body,
-              ref: req.body.billRefNumber,
+              ref: req.body.TransID,
               statusCompleted: false,
             };
 
@@ -281,9 +279,7 @@ const transactionRoutes = (Transaction) => {
     logger.info("confirmation request ,mpesa payment: " + req.body);
     try {
       if (req.body) {
-        const _accountProvider = getProvider(
-          req.body.MSISDN || req.body.msisdn
-        );
+        const _accountProvider = getProvider(req.body.BillRefNumber);
 
         if (_accountProvider) {
           logger.info("Provider Set: " + _accountProvider);
@@ -297,50 +293,59 @@ const transactionRoutes = (Transaction) => {
           const _purchaseBody = {
             serviceID: services[_accountProvider].serviceID,
             serviceCode: services[_accountProvider].serviceCode,
-            msisdn: req.body.MSISDN || req.body.msisdn,
-            accountNumber: req.body.MSISDN || req.body.msisdn,
-            amountPaid: parseInt(req.body.TransAmount || req.body.transAmount),
+            msisdn: req.body.BillRefNumber,
+            accountNumber: req.body.BillRefNumber,
+            amountPaid: parseInt(req.body.TransAmount),
           };
 
           console.log("purchase: ", _purchaseBody);
 
-          const _response = await purchaseTransaction(_purchaseBody);
-          if (_response.error) {
-            console.log("error: ", _response.error);
-            logger.info("Error completing transaction " + _response.error);
-            // TODO: record send email for transaction to be manually done
-            console.log("do manual transaction");
-            return res.json({
-              ResponseCode: "1",
-              ResultDesc: "",
-            });
-          }
-
-          // let _transaction = await Transaction.findOneAndUpdate({}, {});
-          // console.log(_transaction)
-          // _transaction.statusCompleted = true;
-          // _transaction.response = _response;
-          //       {
-          //   "transAmount": "string",
-          //   "msisdn": "string",
-          //   "billRefNumber": "string",
-          //   "transID": "string",
-          //   "firstName": "string",
-          //   "lastName": "string",
-          //   "transTime": "string",
-          //   "transactionType": "string",
-          //   "businessShortCode": "string",
-          //   "invoiceNumber": "string",
-          //   "middleName": "string",
-          //   "orgAccountBalance": "string",
-          //   "thirdPartyTransID": "string"
+          // const _response = await purchaseTransaction(_purchaseBody);
+          // if (_response.error) {
+          //   console.log("error: ", _response.error);
+          //   logger.info("Error completing transaction " + _response.error);
+          //   // TODO: record send email for transaction to be manually done
+          //   console.log("do manual transaction");
+          //   return res.json({
+          //     ResponseCode: "1",
+          //     ResultDesc: "",
+          //   });
           // }
+
           logger.info("Succesfully purchased");
           console.log("successfully purchased");
-          return res.json({
-            ResponseCode: 0,
-            ResultDesc: "",
+
+          let _transaction = await Transaction.findOneAndUpdate(
+            { "details.TransID": req.body.TransID },
+            { $set: { response: req.body } },
+            { new: true, runValidators: true }
+          ).then((_res) => {
+            logger.info("succesfully saved to DB: " + _res);
+            console.log("succesfully saved to DB: " + _res);
+            return res.json({
+              ResponseCode: 0,
+              ResultDesc: "",
+            });
           });
+
+          console.log(_transaction);
+          // _transaction.statusCompleted = true;
+          // _transaction.response = _response;
+          // {
+          //   "TransAmount": "5",
+          //   "MSISDN": "254714744393",
+          //   "BillRefNumber": "254714744393",
+          //   "TransID": "string",
+          //   "FirstName": "Oliver",
+          //   "LastName": "Mirimu",
+          //   "TransTime": "",
+          //   "TransactionType": "Pay Bill",
+          //   "BusinessShortCode": "929295",
+          //   "InvoiceNumber": "",
+          //   "MiddleName": "",
+          //   "OrgAccountBalance": "",
+          //   "ThirdPartyTransID": ""
+          // }
         } else {
           logger.info("Confirmation failed: provider details false.");
           res.status(500).json({
