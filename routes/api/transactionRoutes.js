@@ -284,60 +284,70 @@ const transactionRoutes = (Transaction) => {
         const _accountProvider = getProvider(
           req.body.MSISDN || req.body.msisdn
         );
-        logger.info("Provider Set: " + _accountProvider);
-        logger.info("Service Provider details: " + services[_accountProvider]);
 
-        console.log("account Prov: ", _accountProvider);
-        console.log("account Prov: ", services[_accountProvider]);
+        if (_accountProvider) {
+          logger.info("Provider Set: " + _accountProvider);
+          logger.info(
+            "Service Provider details: " + services[_accountProvider]
+          );
 
-        const _purchaseBody = {
-          serviceID: services[_accountProvider].serviceID,
-          serviceCode: services[_accountProvider].serviceCode,
-          msisdn: req.body.MSISDN || req.body.msisdn,
-          accountNumber: req.body.MSISDN || req.body.msisdn,
-          amountPaid: parseInt(req.body.TransAmount || req.body.transAmount),
-        };
+          console.log("account Prov: ", _accountProvider);
+          console.log("account Prov: ", services[_accountProvider]);
 
-        console.log("purchase: ", _purchaseBody);
+          const _purchaseBody = {
+            serviceID: services[_accountProvider].serviceID,
+            serviceCode: services[_accountProvider].serviceCode,
+            msisdn: req.body.MSISDN || req.body.msisdn,
+            accountNumber: req.body.MSISDN || req.body.msisdn,
+            amountPaid: parseInt(req.body.TransAmount || req.body.transAmount),
+          };
 
-        throw new Error("testing the waters");
-        // const _response = await purchaseTransaction(_purchaseBody);
-        // if (_response.error) {
-        //   console.log("error: ", _response.error);
-        //   logger.info("Error completing transaction " + _response.error);
-        //   // TODO: record send email for transaction to be manually done
-        //   console.log("do manual transaction");
-        //   return res.json({
-        //     ResponseCode: "1",
-        //     ResultDesc: "",
-        //   });
-        // }
+          console.log("purchase: ", _purchaseBody);
 
-        // let _transaction = await Transaction.findOneAndUpdate({}, {});
-        // console.log(_transaction)
-        // _transaction.statusCompleted = true;
-        // _transaction.response = _response;
-        //       {
-        //   "transAmount": "string",
-        //   "msisdn": "string",
-        //   "billRefNumber": "string",
-        //   "transID": "string",
-        //   "firstName": "string",
-        //   "lastName": "string",
-        //   "transTime": "string",
-        //   "transactionType": "string",
-        //   "businessShortCode": "string",
-        //   "invoiceNumber": "string",
-        //   "middleName": "string",
-        //   "orgAccountBalance": "string",
-        //   "thirdPartyTransID": "string"
-        // }
-        logger.info("Succesfully purchased");
-        console.log("successfully purchased");
-        return res.json({
-          ResponseCode: 0,
-          ResultDesc: "",
-        });
+          // const _response = await purchaseTransaction(_purchaseBody);
+          // if (_response.error) {
+          //   console.log("error: ", _response.error);
+          //   logger.info("Error completing transaction " + _response.error);
+          //   // TODO: record send email for transaction to be manually done
+          //   console.log("do manual transaction");
+          //   return res.json({
+          //     ResponseCode: "1",
+          //     ResultDesc: "",
+          //   });
+          // }
+
+          // let _transaction = await Transaction.findOneAndUpdate({}, {});
+          // console.log(_transaction)
+          // _transaction.statusCompleted = true;
+          // _transaction.response = _response;
+          //       {
+          //   "transAmount": "string",
+          //   "msisdn": "string",
+          //   "billRefNumber": "string",
+          //   "transID": "string",
+          //   "firstName": "string",
+          //   "lastName": "string",
+          //   "transTime": "string",
+          //   "transactionType": "string",
+          //   "businessShortCode": "string",
+          //   "invoiceNumber": "string",
+          //   "middleName": "string",
+          //   "orgAccountBalance": "string",
+          //   "thirdPartyTransID": "string"
+          // }
+          logger.info("Succesfully purchased");
+          console.log("successfully purchased");
+          return res.json({
+            ResponseCode: 0,
+            ResultDesc: "",
+          });
+        } else {
+          logger.info("Confirmation failed: provider details false.");
+          res.status(500).json({
+            errorMessage: "Confirmation failed: provider details false.",
+            details: req.body,
+          });
+        }
       }
     } catch (_err) {
       console.log(_err);
