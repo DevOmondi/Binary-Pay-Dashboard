@@ -317,7 +317,7 @@ const transactionRoutes = (Transaction) => {
 
           let _transaction = await Transaction.findOneAndUpdate(
             { "details.TransID": req.body.TransID },
-            { $set: { response: req.body } },
+            { $set: { response: _response } },
             { new: true, runValidators: true }
           ).then((_res) => {
             logger.info("succesfully saved to DB: " + _res);
