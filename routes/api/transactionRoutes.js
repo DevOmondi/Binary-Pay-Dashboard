@@ -300,17 +300,17 @@ const transactionRoutes = (Transaction) => {
 
           console.log("purchase: ", _purchaseBody);
 
-          // const _response = await purchaseTransaction(_purchaseBody);
-          // if (_response.error) {
-          //   console.log("error: ", _response.error);
-          //   logger.info("Error completing transaction " + _response.error);
-          //   // TODO: record send email for transaction to be manually done
-          //   console.log("do manual transaction");
-          //   return res.json({
-          //     ResponseCode: "1",
-          //     ResultDesc: "",
-          //   });
-          // }
+          const _response = await purchaseTransaction(_purchaseBody);
+          if (_response.error) {
+            console.log("error: ", _response.error);
+            logger.info("Error completing transaction " + _response.error);
+            // TODO: record send email for transaction to be manually done
+            console.log("do manual transaction");
+            return res.json({
+              ResponseCode: "1",
+              ResultDesc: "",
+            });
+          }
 
           logger.info("Succesfully purchased");
           console.log("successfully purchased");
