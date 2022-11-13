@@ -103,7 +103,6 @@ const getProvider = (_accNo) => {
 };
 // helper functions
 const purchaseTransaction = (_payload) => {
-  console.log("payload: ", _payload);
   console.log("request: ", {
     serviceID: _payload.serviceID,
     serviceCode: _payload.serviceCode,
@@ -208,6 +207,8 @@ const transactionRoutes = (Transaction) => {
       });
     } catch (_err) {
       // TODO: log error
+      logger.error(_err);
+      console.log(_err);
       res.status(500).json({
         errorMessage: "Sorry an error occured. Please try again.",
       });
@@ -267,6 +268,7 @@ const transactionRoutes = (Transaction) => {
       }
     } catch (_err) {
       console.log("ss: ", _err);
+      logger.error(_err);
       res.status(500).json({
         resultCode: "C2B00016",
         resultDesc: "Rejected",
@@ -277,60 +279,71 @@ const transactionRoutes = (Transaction) => {
   transactionsRouter.route("/confirmation").post(async (req, res) => {
     console.log("confirmation: ", req.body);
     logger.info("confirmation request ,mpesa payment: " + req.body);
+    try {
+      if (req.body) {
+        const _accountProvider = getProvider(
+          req.body.MSISDN || req.body.msisdn
+        );
+        logger.info("Provider Set: " + _accountProvider);
+        logger.info("Service Provider details: " + services[_accountProvider]);
 
-    if (req.body) {
-      const _accountProvider = getProvider(req.body.MSISDN || req.body.msisdn);
-      logger.info("Provider Set: " + _accountProvider);
-      logger.info("Service Provider details: " + services[_accountProvider]);
+        console.log("account Prov: ", _accountProvider);
+        console.log("account Prov: ", services[_accountProvider]);
 
-      console.log("account Prov: ", _accountProvider);
-      console.log("account Prov: ", services[_accountProvider]);
+        const _purchaseBody = {
+          serviceID: services[_accountProvider].serviceID,
+          serviceCode: services[_accountProvider].serviceCode,
+          msisdn: req.body.MSISDN || req.body.msisdn,
+          accountNumber: req.body.MSISDN || req.body.msisdn,
+          amountPaid: parseInt(req.body.TransAmount || req.body.transAmount),
+        };
 
-      const _purchaseBody = {
-        serviceID: services[_accountProvider].serviceID,
-        serviceCode: services[_accountProvider].serviceCode,
-        msisdn: req.body.MSISDN || req.body.msisdn,
-        accountNumber: req.body.MSISDN || req.body.msisdn,
-        amountPaid: parseInt(req.body.TransAmount || req.body.transAmount),
-      };
+        console.log("purchase: ", _purchaseBody);
 
-      console.log("purchase: ", _purchaseBody);
-      const _response = await purchaseTransaction(_purchaseBody);
-      if (_response.error) {
-        console.log("error: ", _response.error);
-        logger.info("Error completing transaction " + _response.error);
-        // TODO: record send email for transaction to be manually done
-        console.log("do manual transaction");
+        throw new Error("testing the waters");
+        // const _response = await purchaseTransaction(_purchaseBody);
+        // if (_response.error) {
+        //   console.log("error: ", _response.error);
+        //   logger.info("Error completing transaction " + _response.error);
+        //   // TODO: record send email for transaction to be manually done
+        //   console.log("do manual transaction");
+        //   return res.json({
+        //     ResponseCode: "1",
+        //     ResultDesc: "",
+        //   });
+        // }
+
+        // let _transaction = await Transaction.findOneAndUpdate({}, {});
+        // console.log(_transaction)
+        // _transaction.statusCompleted = true;
+        // _transaction.response = _response;
+        //       {
+        //   "transAmount": "string",
+        //   "msisdn": "string",
+        //   "billRefNumber": "string",
+        //   "transID": "string",
+        //   "firstName": "string",
+        //   "lastName": "string",
+        //   "transTime": "string",
+        //   "transactionType": "string",
+        //   "businessShortCode": "string",
+        //   "invoiceNumber": "string",
+        //   "middleName": "string",
+        //   "orgAccountBalance": "string",
+        //   "thirdPartyTransID": "string"
+        // }
+        logger.info("Succesfully purchased");
+        console.log("successfully purchased");
         return res.json({
-          ResponseCode: "1",
+          ResponseCode: 0,
           ResultDesc: "",
         });
       }
-
-      // let _transaction = await Transaction.findOneAndUpdate({}, {});
-      // console.log(_transaction)
-      // _transaction.statusCompleted = true;
-      // _transaction.response = _response;
-      //       {
-      //   "transAmount": "string",
-      //   "msisdn": "string",
-      //   "billRefNumber": "string",
-      //   "transID": "string",
-      //   "firstName": "string",
-      //   "lastName": "string",
-      //   "transTime": "string",
-      //   "transactionType": "string",
-      //   "businessShortCode": "string",
-      //   "invoiceNumber": "string",
-      //   "middleName": "string",
-      //   "orgAccountBalance": "string",
-      //   "thirdPartyTransID": "string"
-      // }
-      logger.info("Succesfully purchased");
-      console.log("successfully purchased");
-      return res.json({
-        ResponseCode: 0,
-        ResultDesc: "",
+    } catch (_err) {
+      console.log(_err);
+      logger.error("Failed to fetch history: " + _err);
+      res.status(500).json({
+        errorMessage: "Sorry an error occured. Please try again.",
       });
     }
   });
@@ -350,6 +363,7 @@ const transactionRoutes = (Transaction) => {
       })
       .catch((_err) => {
         console.log(_err);
+        logger.error("Failed to fetch history: " + _err);
         res.status(500).json({
           errorMessage: "Sorry an error occured. Please try again.",
         });
@@ -368,13 +382,12 @@ const transactionRoutes = (Transaction) => {
         });
       })
       .catch((_err) => {
+        logger.error("Failed to fetch float: " + _err);
         res.status(500).json({
           errorMessage: "Sorry an error occured. Please try again.",
         });
       });
   });
-
-  transactionsRouter.route("/float").get((req, res) => {});
 
   return transactionsRouter;
 };
