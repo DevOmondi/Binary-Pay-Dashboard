@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -53,10 +54,13 @@ export default function SignUp() {
       .then((response) => {
         if (response) {
           console.log(response);
+          if (response.data && response.data.errorMessage) {
+            return alert(response.data.errorMessage);
+          }
           if (response.data) alert(response.data.message);
           if (response.headers) storeToken(response.headers.authorization);
           navigate("/dashboard", { replace: true });
-       }
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -126,10 +130,17 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
-              onClick = {signUpHandler}
+              onClick={signUpHandler}
             >
               Sign Up
             </Button>
+            <Grid container>
+              <Grid item>
+                <Link href="/" variant="body2">
+                  {"Already have an account? Log In"}
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

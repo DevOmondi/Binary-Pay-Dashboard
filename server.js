@@ -8,6 +8,7 @@ const session = require("express-session");
 const cors = require("cors");
 const passport = require("passport");
 const path = require("path");
+const logger = require("./logger");
 require("dotenv").config();
 
 // local imports
@@ -64,6 +65,7 @@ mongoose.connect(
 //mongoose.connection;
 
 //start server
-app.listen(port,() => {
+app.listen(port, () => {
   console.log(`Server is running on port : ${port}`);
+  logger.info("App started.");
 });

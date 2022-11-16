@@ -8,9 +8,11 @@
     "api": "cd backend && npm start",
     "client": "cd binary-pay && npm start",
     "api:dev": "nodemon server.js",
-    "start": "node server.js",
+    "start": "pm2 start server.js",
+    "restart": "pm2 restart server.js",
     "preinstall": "npm run gen:keypair",
     "postinstall": "cd binary-pay && npm run build",
+    "build": "cd binary-pay && npm run build",
     "gen:keypair": "node ./cryptography/generateKeypair.js"
   },
   "repository": {
@@ -27,8 +29,16 @@
     "version": "16.x"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.7.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "ajv": "^6.9.1",
     "axios": "^0.27.2",
-    "bcrypt": "^5.0.1",
+    "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
@@ -41,21 +51,15 @@
     "nodemon": "^2.0.16",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "uuid": "^8.3.2",
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
-    "@mui/icons-material": "^5.8.4",
-    "@mui/material": "^5.7.0",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "ajv": "^6.9.1",
+    "pm2": "^5.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "recharts": "^2.1.9",
     "typescript": "^4.6.4",
-    "web-vitals": "^2.1.4"
+    "uuid": "^8.3.2",
+    "web-vitals": "^2.1.4",
+    "winston": "^3.8.2"
   }
 }
