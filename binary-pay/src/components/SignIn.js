@@ -1,4 +1,5 @@
 import * as React from "react";
+import RequireAuth from "./RequireAuth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -42,6 +43,7 @@ const theme = createTheme();
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
+  const [loginResponse, setLoginResponse] = useState([]);
   const navigate = useNavigate();
 
   const signInHandler = (e) => {
@@ -55,6 +57,7 @@ export default function SignIn() {
       .then((response) => {
         if (response) {
           console.log(response);
+          setLoginResponse(response.data);
           if (response.data) alert(response.data.message);
           if (response.headers) storeToken(response.headers.authorization);
           navigate("/dashboard", { replace: true });
@@ -69,7 +72,7 @@ export default function SignIn() {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        <span>no json</span>
+       {/*<span>no json</span>*/} 
         <CssBaseline />
         <Box
           sx={{
@@ -138,6 +141,8 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
+      <RequireAuth loginResponse={loginResponse}/>
     </ThemeProvider>
+    
   );
 }
