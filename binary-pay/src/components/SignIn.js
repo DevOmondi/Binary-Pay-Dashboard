@@ -1,5 +1,5 @@
 import * as React from "react";
-import RequireAuth from "./RequireAuth";
+import RequireAuth from "./ProtectedRoutes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -43,8 +43,11 @@ const theme = createTheme();
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
-  const [loginResponse, setLoginResponse] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
+   const handleRouteGuard = ()=> {
+    setLoggedIn(!loggedIn)
+   }
 
   const signInHandler = (e) => {
     e.preventDefault();
@@ -57,7 +60,6 @@ export default function SignIn() {
       .then((response) => {
         if (response) {
           console.log(response);
-          setLoginResponse(response.data)
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
@@ -130,6 +132,8 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
               onClick={signInHandler}
+              onSubmit={handleRouteGuard}
+              
             >
               Sign In
             </Button>
@@ -144,7 +148,7 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
-      <RequireAuth loginResponse={loginResponse}/>
+      <RequireAuth loggedIn={loggedIn}/>
     </ThemeProvider>
     
   );
