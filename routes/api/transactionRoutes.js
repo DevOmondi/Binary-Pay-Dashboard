@@ -219,9 +219,11 @@ const transactionRoutes = (Transaction) => {
     try {
       try {
         logger.info("validating ,mpesa payment: " + req.body);
+        console.log("validating ,mpesa payment: " + req.body);
         const _serviceProvider = getProvider(req.body.BillRefNumber);
 
         logger.info("Provider Set: " + _serviceProvider);
+        console.log("Provider Set: " + _serviceProvider);
         if (_serviceProvider) {
           if (parseInt(req.body.TransAmount) >= 5) {
             const _transaction = {
@@ -237,6 +239,7 @@ const transactionRoutes = (Transaction) => {
 
             _newTransaction.save().then((_data) => {
               logger.info("Transaction succesfully saved " + _data._id);
+              console.log("Transaction succesfully saved " + _data._id);
               res.status(200).json({
                 ResultCode: 0,
                 ResultDesc: "Accepted",
@@ -244,6 +247,7 @@ const transactionRoutes = (Transaction) => {
             });
           } else {
             logger.info("Transaction failed: Value too low.");
+            console.log("Transaction failed: Value too low.");
             res.status(400).json({
               resultCode: "C2B00013",
               resultDesc: "Rejected",
@@ -251,6 +255,7 @@ const transactionRoutes = (Transaction) => {
           }
         } else {
           logger.info("Transaction failed! Invalid provider.");
+          console.log("Transaction failed! Invalid provider.");
           res.status(400).json({
             resultCode: "C2B00012",
             resultDesc: "Rejected",
@@ -259,6 +264,7 @@ const transactionRoutes = (Transaction) => {
       } catch (_err) {
         // TODO: log error
         logger.error("Validation failed: " + _err.message);
+        console.log("Validation failed: " + _err.message);
         res.status(500).json({
           resultCode: 1,
           resultDesc: "Rejected",
