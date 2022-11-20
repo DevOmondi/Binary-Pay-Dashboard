@@ -4,17 +4,20 @@ import Dashboard from "./components/Dashboard";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Settings from "./components/Settings";
+import ProtectedRoutes from "./components/ProtectedRoutes";
 
 function App() {
 
   return (
     <div className="App">
-      <Routes>
-        <Route path="/" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
+       <Routes>
+          <Route element={<ProtectedRoutes/>}>
+            <Route path="/dashboard" element={<Dashboard />}/>
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+          <Route path="/" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+       </Routes>
     </div>
   );
 }

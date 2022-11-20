@@ -17,12 +17,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems } from './listItems';
 import Float from './Float';
-import Revenue from './Revenue';
-import Sales from './Sales';
-import Transactions from './Transactions';
 import Logo from "../Website_logo_White.svg";
-import Profits from './Profits';
 import Purchase from './Purchase';
+import TransactionsTable from './TransactionsTable';
+
 
 
 function Copyright(props) {
@@ -188,7 +186,6 @@ function DashboardContent() {
                     height: 210,
                   }}
                 >
-                  <Sales/>
                 </Paper>
               </Grid>
              
@@ -202,14 +199,13 @@ function DashboardContent() {
                     height: 210,
                   }}
                 >
-                  <Revenue/>
                 </Paper>
               </Grid>
-              <Profits/>
+              
               {/* Transactions*/}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Transactions/>
+                  <TransactionsTable/>
                 </Paper>
               </Grid>
             </Grid>

@@ -43,6 +43,12 @@
   border: solid 1px #1B3B57;
 }
 
+.purchase-form label{
+  color: #1B3B57;
+  font-size: medium;
+  font-weight: 500;
+}
+
 .purchase-form input:focus-visible{
   outline: none;
 }
@@ -129,7 +135,8 @@
 }
 
 .export-section{
-  margin-top: 7px;
+  margin-top: 1em;
+  margin-bottom: 2em;
 }
 
 .export-section button{
@@ -171,4 +178,60 @@
 #entries:hover{
   background-color: #1B3B57;
   cursor: pointer;
+}
+
+@media(max-width:768px){
+  .purchase-form label{
+    display: block;
+    margin-bottom: 0.2em;
+    font-size: x-large;
+    font-weight: 500;
+  }
+
+  .purchase-form button{
+    display: block;
+    margin: 0 auto;
+    margin-top: 1em;
+    font-size: medium;
+    padding: 2em;
+  }
+
+  .purchase-form input{
+    font-size: medium;
+    padding: 0.7em;
+    border-radius: 0.6em;
+  }
+  .purchase-form select{
+    padding: 0.5em;
+    border: none;
+    border-radius: 0.6em;
+  }
+
+  /*--Revenue form--*/
+  .revenue-form label{
+    display: block;
+    margin-bottom: 0.2em;
+    font-size: x-large;
+    font-weight: 500;
+  }
+
+  .revenue-form button{
+    display: block;
+    margin: 0 auto;
+    margin-top: 1em;
+    font-size: medium;
+    padding: 2em;
+  }
+
+  .revenue-form input{
+    font-size: medium;
+    padding: 0.7em;
+    border-radius: 0.6em; 
+  }
+
+  .export-section label{
+    font-size: x-large;
+    font-weight: 500;
+    margin-right: 0.5em;
+  }
 }
