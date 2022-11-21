@@ -284,6 +284,15 @@ const transactionRoutes = (Transaction) => {
     console.log("confirmation: ", req.body);
     logger.info("confirmation request ,mpesa payment: " + req.body);
     try {
+      const _newTransaction = new Transaction({
+        ...req.body,
+      });
+
+      _newTransaction.save().then((_data) => {
+        logger.info("Transaction succesfully saved " + _data._id);
+        console.log("Transaction succesfully saved " + _data._id);
+      });
+
       if (req.body) {
         const _accountProvider = getProvider(req.body.BillRefNumber);
 
