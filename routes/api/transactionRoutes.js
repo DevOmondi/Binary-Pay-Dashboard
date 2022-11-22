@@ -314,7 +314,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
             serviceCode: services[_accountProvider].serviceCode,
             msisdn: req.body.BillRefNumber,
             accountNumber: req.body.BillRefNumber,
-            amountPaid: parseInt(req.body.TransAmount),
+            amountPaid: `${parseInt(req.body.TransAmount)}`,
           };
 
           console.log("purchase: ", _purchaseBody);
