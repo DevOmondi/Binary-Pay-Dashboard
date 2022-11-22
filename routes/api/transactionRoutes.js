@@ -110,8 +110,8 @@ const purchaseTransaction = (_payload) => {
   console.log("request: ", {
     serviceID: _payload.serviceID,
     serviceCode: _payload.serviceCode,
-    msisdn: _payload.accountNumber,
-    accountNumber: _payload.accountNumber,
+    msisdn: formatAccNumber(_payload.accountNumber),
+    accountNumber: formatAccNumber(_payload.accountNumber),
     amountPaid: _payload.amountPaid,
   });
   const reqObject = JSON.stringify({
@@ -187,7 +187,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
     try {
       const _transaction = {
         date: new Date(),
-        accountNumber: formatAccNumber(req.body.accountNumber),
+        accountNumber: req.body.accountNumber,
         amount: req.body.amountPaid,
         statusCompleted: false,
       };
@@ -306,7 +306,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
             serviceID: services[_accountProvider].serviceID,
             serviceCode: services[_accountProvider].serviceCode,
             msisdn: req.body.BillRefNumber,
-            accountNumber: formatAccNumber(req.body.BillRefNumber),
+            accountNumber: req.body.BillRefNumber,
             amountPaid: `${parseInt(req.body.TransAmount)}`,
           };
 
