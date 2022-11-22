@@ -139,7 +139,11 @@ const purchaseTransaction = (_payload) => {
       data: reqObject,
     }).then((_response) => {
       const _data = _response.data;
-      if (_data.status === "200") return _data;
+      if (_data.status === "200") {
+        logger.info("Succesfully purchased from favoured");
+        return _data;
+      }
+      console.log(_data);
       throw new CustomError(_data.message, "paymentError");
     });
   } catch (error) {
@@ -264,7 +268,7 @@ const transactionRoutes = (Transaction) => {
       } catch (_err) {
         // TODO: log error
         logger.error("Validation failed: " + _err.message);
-        console.log("Validation failed: " + _err.message);
+        console.log("Validation failed: " + _err);
         res.status(500).json({
           resultCode: 1,
           resultDesc: "Rejected",
@@ -343,7 +347,7 @@ const transactionRoutes = (Transaction) => {
             });
           });
 
-          console.log(_transaction);
+          console.log(_transaction.json());
           // _transaction.statusCompleted = true;
           // _transaction.response = _response;
           // {
