@@ -176,7 +176,7 @@ const getToken = () => {
     });
 };
 
-const transactionRoutes = (Transaction) => {
+const transactionRoutes = (Transaction, Confirmation) => {
   const transactionsRouter = express.Router();
 
   transactionsRouter.route("/purchase").post(async (req, res) => {
@@ -288,7 +288,7 @@ const transactionRoutes = (Transaction) => {
     console.log("confirmation: ", req.body);
     logger.info("confirmation request ,mpesa payment: " + req.body);
     try {
-      const _newTransaction = new Transaction({
+      const _newTransaction = new Confirmation({
         ...req.body,
       });
 

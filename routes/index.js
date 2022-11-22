@@ -2,8 +2,12 @@ const router = require("express").Router();
 const path = require("path");
 const User = require("../models/userModel");
 const Transaction = require("../models/transactionModel");
+const Confirmation = require("../models/confirmationRequestModel");
 const authRoutes = require("./api/authRoutes")(User);
-const transactionRoutes = require("./api/transactionRoutes")(Transaction);
+const transactionRoutes = require("./api/transactionRoutes")(
+  Transaction,
+  Confirmation
+);
 
 // api routing
 router.use("/api/auth", authRoutes);
