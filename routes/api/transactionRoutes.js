@@ -84,10 +84,11 @@ const getProvider = (_accNo) => {
     "kplc-postpaid": [],
   };
 
-  const _prefix1 = _accNo.substring(0, 5);
-  const _prefix2 = _accNo.substring(0, 3);
+  const _prefix1 = _accNo.substring(0, 6);
+  const _prefix2 = _accNo.substring(0, 5);
 
   logger.log("info", "Setting service provider for " + _accNo);
+  logger.info("prefix1 " + _prefix1 + ", prefix2: " + _prefix2);
 
   if (
     serviceProviders.safaricom.includes(_prefix1) ||
