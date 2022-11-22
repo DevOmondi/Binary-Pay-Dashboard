@@ -16,7 +16,7 @@ const services = {
     serviceID: 101,
     serviceCode: "SAFCOM",
   },
-  "Airtel Airtime ": {
+  "Airtel Airtime": {
     serviceID: 102,
     serviceCode: "AIRTEL",
   },
@@ -167,6 +167,7 @@ const purchaseTransaction = (_payload) => {
     });
   } catch (error) {
     logger.error("failed to make");
+    console.log(error);
     return {
       error: new CustomError(
         "Problem connecting to Payment System.",
