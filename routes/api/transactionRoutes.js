@@ -70,18 +70,16 @@ const getProvider = (_accNo) => {
       "254754",
       "254755",
       "254756",
-      "254785",
-      "254786",
-      "254787",
-      "254788",
-      "254789",
-      "25410",
-      "25410",
+      "254762",
+      "25478",
       "25410",
     ],
     telkom: ["25477"],
     "kplc-prepaid": [],
     "kplc-postpaid": [],
+    homelands: ["254744"],
+    faiba: ["254747"],
+    equitel: [""],
   };
 
   const _prefix1 = _accNo.substring(0, 6);
