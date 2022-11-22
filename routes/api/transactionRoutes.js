@@ -289,7 +289,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
     logger.info("confirmation request ,mpesa payment: " + req.body);
     try {
       const _newTransaction = new Confirmation({
-        ...req.body,
+        confirmationDetails: req.body,
       });
 
       _newTransaction.save().then((_data) => {
