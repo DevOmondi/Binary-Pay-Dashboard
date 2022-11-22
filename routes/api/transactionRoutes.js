@@ -147,15 +147,15 @@ const purchaseTransaction = (_payload) => {
       data: reqObject,
     }).then((_response) => {
       // store response and request body
-      const _newPurchase = new PurchaseRequest({
-        purchaseBody: JSON.parse(reqObject),
-        response: _response,
-      });
+      // const _newPurchase = new PurchaseRequest({
+      //   purchaseBody: reqObject,
+      //   response: _response,
+      // });
 
-      _newPurchase.save().then((_res) => {
-        console.log("succesfully saved purchase");
-        logger.info("succesfully saved purchase");
-      });
+      // _newPurchase.save().then((_res) => {
+      //   console.log("succesfully saved purchase");
+      //   logger.info("succesfully saved purchase");
+      // });
 
       const _data = _response.data;
       if (_data.status === "200") {
@@ -167,7 +167,7 @@ const purchaseTransaction = (_payload) => {
       throw new CustomError(_data.message, "paymentError");
     });
   } catch (error) {
-    logger.error("failed to make");
+    logger.error("failed to make: " + error.message);
     console.log(error);
     return {
       error: new CustomError(
@@ -357,8 +357,8 @@ const transactionRoutes = (Transaction, Confirmation) => {
             { $set: { response: _response } },
             { new: true, runValidators: true }
           ).then((_res) => {
-            logger.info("succesfully saved to DB: " + _res);
-            console.log("succesfully saved to DB: " + _res);
+            logger.info("succesfully saved to DB: " + _res.json());
+            console.log("succesfully saved to DB: " + _res.json());
             return res.json({
               ResponseCode: 0,
               ResultDesc: "",
