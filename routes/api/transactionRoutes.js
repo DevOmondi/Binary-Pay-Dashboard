@@ -32,12 +32,16 @@ const services = {
   },
 };
 
-const getProvider = (_accNo) => {
-  if (_accNo[0] === "0") {
-    let _temp = _accNo.split("");
+const formatAccNumber = (_accNumber) => {
+  if (_accNumber[0] === "0") {
+    let _temp = _accNumber.split("");
     _temp.splice(0, 1, "254");
-    _accNo = _temp.join("");
+    return _temp.join("");
   }
+  return _accNumber;
+};
+const getProvider = (_accNo) => {
+  _accNo = formatAccNumber(_accNo);
 
   const serviceProviders = {
     safaricom: [
@@ -183,7 +187,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
     try {
       const _transaction = {
         date: new Date(),
-        accountNumber: req.body.accountNumber,
+        accountNumber: formatAccNumber(req.body.accountNumber),
         amount: req.body.amountPaid,
         statusCompleted: false,
       };
@@ -198,10 +202,8 @@ const transactionRoutes = (Transaction, Confirmation) => {
       _transaction.response = _response;
 
       const _newTransaction = new Transaction({
-        date: new Date(),
+        ..._transaction,
         response: _response,
-        accountNumber: req.body.accountNumber,
-        amount: req.body.amountPaid,
       });
 
       _newTransaction.save().then((_data) => {
@@ -304,7 +306,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
             serviceID: services[_accountProvider].serviceID,
             serviceCode: services[_accountProvider].serviceCode,
             msisdn: req.body.BillRefNumber,
-            accountNumber: req.body.BillRefNumber,
+            accountNumber: formatAccNumber(req.body.BillRefNumber),
             amountPaid: `${parseInt(req.body.TransAmount)}`,
           };
 
