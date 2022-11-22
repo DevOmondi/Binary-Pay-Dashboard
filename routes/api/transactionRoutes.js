@@ -2,8 +2,10 @@ const express = require("express");
 const axios = require("axios");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+
 const { CustomError } = require("../../utility");
 const logger = require("../../logger");
+const PurchaseRequest = require("../../models/purchaseRequests");
 
 require("dotenv").config({
   path: path.join(__dirname, "../../.env"),
@@ -40,6 +42,7 @@ const formatAccNumber = (_accNumber) => {
   }
   return _accNumber;
 };
+
 const getProvider = (_accNo) => {
   _accNo = formatAccNumber(_accNo);
 
@@ -142,11 +145,23 @@ const purchaseTransaction = (_payload) => {
       url: process.env.PAYMENT_API,
       data: reqObject,
     }).then((_response) => {
+      // store response and request body
+      const _newPurchase = new PurchaseRequest({
+        purchaseBody: JSON.parse(reqObject),
+        response: _response,
+      });
+
+      _newPurchase.save().then((_res) => {
+        console.log("succesfully saved purchase");
+        logger.info("succesfully saved purchase");
+      });
+
       const _data = _response.data;
       if (_data.status === "200") {
         logger.info("Succesfully purchased from favoured");
         return _data;
       }
+
       console.log(_data);
       throw new CustomError(_data.message, "paymentError");
     });
@@ -305,8 +320,8 @@ const transactionRoutes = (Transaction, Confirmation) => {
           const _purchaseBody = {
             serviceID: services[_accountProvider].serviceID,
             serviceCode: services[_accountProvider].serviceCode,
-            msisdn: req.body.BillRefNumber,
-            accountNumber: req.body.BillRefNumber,
+            msisdn: formatAccNumber(req.body.BillRefNumber),
+            accountNumber: formatAccNumber(req.body.BillRefNumber),
             amountPaid: `${parseInt(req.body.TransAmount)}`,
           };
 
