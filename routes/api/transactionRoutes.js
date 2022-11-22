@@ -288,15 +288,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
     console.log("confirmation: ", req.body);
     logger.info("confirmation request ,mpesa payment: " + req.body);
     try {
-      const _newTransaction = new Confirmation({
-        confirmationDetails: req.body,
-      });
-
-      _newTransaction.save().then((_data) => {
-        logger.info("Transaction succesfully saved " + _data._id);
-        console.log("Transaction succesfully saved " + _data._id);
-      });
-
       if (req.body) {
         const _accountProvider = getProvider(req.body.BillRefNumber);
 
@@ -317,7 +308,15 @@ const transactionRoutes = (Transaction, Confirmation) => {
             amountPaid: `${parseInt(req.body.TransAmount)}`,
           };
 
-          console.log("purchase: ", _purchaseBody);
+          const _newTransaction = new Confirmation({
+            confirmationDetails: req.body,
+            purchaseBody: _purchaseBody,
+          });
+
+          _newTransaction.save().then((_data) => {
+            logger.info("Transaction succesfully saved " + _data._id);
+            console.log("Transaction succesfully saved " + _data._id);
+          });
 
           const _response = await purchaseTransaction(_purchaseBody);
           if (_response.error) {
