@@ -5,7 +5,13 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
 
-const { CustomError, getUserByUsername } = require("../../utility");
+const {
+  CustomError,
+  getUserByUsername,
+  getUserByEmail,
+} = require("../../utility");
+const logger = require("../../logger");
+const emailNotifications = require("../../emailing/emailNotifications");
 const pathToKey = path.join(__dirname, "../../cryptography/id_rsa_priv.pem");
 const PRIV_KEY = fs.readFileSync(pathToKey, "utf-8");
 
@@ -20,6 +26,18 @@ const issueJwt = (id) => {
     algorithm: "RS256",
   });
   return { token: `Bearer ${signedToken}`, expires: expiresIn };
+};
+
+const issueVerificationJwt = (id, expiresIn = "1h") => {
+  const payload = {
+    sub: id,
+    iat: Math.floor(Date.now() / 1000) - 30,
+  };
+  const signedToken = jwt.sign(payload, PRIV_KEY, {
+    expiresIn,
+    algorithm: "RS256",
+  });
+  return signedToken;
 };
 
 const authRoutes = (User) => {
@@ -53,6 +71,79 @@ const authRoutes = (User) => {
     }
   });
 
+  // admin registration for users
+  authRouter.route("/admin-register").post(async (req, res) => {
+    try {
+      const _host = req.protocol + "://" + req.get("host") + "/";
+
+      if (!req.body.email) {
+        return res.status(400).json({ errorMessage: "Email is required." });
+      }
+
+      // check if email already in use
+      const userExists = await getUserByEmail(req.body.email);
+      console.log(userExists);
+      if (userExists) {
+        return res.status(400).json({ errorMessage: "Email already in use." });
+      }
+
+      const user = new User({
+        ...req.body,
+      });
+
+      user.save().then((_user) => {
+        console.log(_user);
+        // send email
+        return emailNotifications(
+          "newRegisteredUser",
+          {
+            redirectUrl:
+              _host +
+              `self-register?validation=${issueVerificationJwt(_user._id)}`,
+          },
+          req.body.email
+        ).then(() => {
+          res
+            .status(200)
+            .json({ message: "Successfull. Kindly check your email." });
+        });
+      });
+    } catch (_err) {
+      console.log(_err);
+      logger.error("Failed to register user: " + req.body.email);
+      res.status(500).json({ errorMessage: _err.message });
+    }
+  });
+
+  // forgot password
+  authRouter.route("/forgot-password").post(async (req, res) => {
+    try {
+      await User.findOne({ email: req.body.email }).then(async (_user) => {
+        const _host = req.protocol + "://" + req.get("host") + "/";
+        if (_user) {
+          return emailNotifications(
+            "passwordReset",
+            {
+              redirectUrl:
+                _host +
+                `reset-password?validation=${issueVerificationJwt(_user._id)}`,
+            },
+            req.body.email
+          ).then(() => {
+            res
+              .status(200)
+              .json({ message: "Successfull. Kindly check your email." });
+          });
+        }
+        return res
+          .status(400)
+          .json({ errorMessage: "User with email does not exist!" });
+      });
+    } catch (_err) {
+      res.json({ errorMessage: _err.message });
+    }
+  });
+
   // registration endpoint for all account types
   authRouter.route("/register").post(async (req, res) => {
     // request body must contain a password and a  username
@@ -61,6 +152,7 @@ const authRoutes = (User) => {
       if (req.body.password !== req.body.cPassword) {
         throw new CustomError("Password Mismatch.", "Password Mismatch");
       }
+
       if (!req.body.password || !req.body.username) {
         throw new CustomError(
           "Password and username required.",

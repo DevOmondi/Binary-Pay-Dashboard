@@ -45,9 +45,9 @@ export default function SignIn() {
   const [passWord, setPassWord] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
-   const handleRouteGuard = ()=> {
-    setLoggedIn(!loggedIn)
-   }
+  const handleRouteGuard = () => {
+    setLoggedIn(!loggedIn);
+  };
 
   const signInHandler = (e) => {
     e.preventDefault();
@@ -77,7 +77,6 @@ export default function SignIn() {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        <span>no json</span>
         <CssBaseline />
         <Box
           sx={{
@@ -133,7 +132,6 @@ export default function SignIn() {
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
               onClick={signInHandler}
               onSubmit={handleRouteGuard}
-              
             >
               Sign In
             </Button>
@@ -148,8 +146,7 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
-      <RequireAuth loggedIn={loggedIn}/>
+      <RequireAuth loggedIn={loggedIn} />
     </ThemeProvider>
-    
   );
 }
