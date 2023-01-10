@@ -4,14 +4,14 @@ import Dashboard from "./components/Dashboard";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Settings from "./components/Settings";
-import ProtectedRoutes from "./components/ProtectedRoutes";
+//import ProtectedRoutes from "./components/ProtectedRoutes";
 
 function App() {
 
   return (
     <div className="App">
        <Routes>
-          <Route element={<ProtectedRoutes/>}>
+          <Route>
             <Route path="/dashboard" element={<Dashboard />}/>
             <Route path="/settings" element={<Settings />} />
           </Route>

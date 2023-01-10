@@ -1,8 +1,6 @@
 //require installed packages
 const express = require("express");
 const mongoose = require("mongoose");
-//const bodyparser = require("body-parser");
-//const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const session = require("express-session");
 const cors = require("cors");
