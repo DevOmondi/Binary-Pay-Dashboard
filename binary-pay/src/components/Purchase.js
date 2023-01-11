@@ -42,7 +42,7 @@ const Purchase = () => {
          console.log(response)
        })
        .catch(error => {
-         console.log(error)
+         return alert("Ooops!!! looks like something went wrong")
        })
    };
 

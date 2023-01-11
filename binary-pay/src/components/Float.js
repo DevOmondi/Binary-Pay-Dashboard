@@ -40,7 +40,8 @@ export default function Float() {
          const _response = response.data;
          setFloat(_response);
          return alert("Fetched float successfully!!")
-       })
+       }
+      )
     }
     catch(error){
       return alert("Ooops!!! couldn't fetch float")
