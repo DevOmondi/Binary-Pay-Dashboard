@@ -19,21 +19,32 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Title from './Title';
 import axios from "axios";
+import config from '../config';
 import { useState,useEffect } from 'react';
 
 
+
 export default function Float() {
+  //float state management
    const [float,setFloat] = useState(null)
+
   //fetch float from db
   const getFloat = async ()=>{
     try{
-      const response = await axios.get(`http://localhost:5001/api/transaction/float`)
-      const _data = response.data;
-       console.log(_data);
-       setFloat(_data)
+       await axios({
+        method: "get",
+        url: `${config.API_URL}/api/transaction/float`
+       }
+      )
+       .then(response =>{
+         const _response = response.data;
+         setFloat(_response);
+         return alert("Fetched float successfully!!")
+       }
+      )
     }
     catch(error){
-      console.log(error)
+      return alert("Ooops!!! couldn't fetch float")
     }
   }
   useEffect(()=>{
@@ -43,9 +54,8 @@ export default function Float() {
     <React.Fragment>
       <Title>Current Total Float</Title>
       <Typography component="p" variant="h4" sx={{color: "#1B3B57"}}>
-        {float}
+        {float}       
       </Typography>
-     
     </React.Fragment>
   );
 }

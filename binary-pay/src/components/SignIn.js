@@ -1,5 +1,4 @@
 import * as React from "react";
-import RequireAuth from "./ProtectedRoutes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -43,7 +42,6 @@ const theme = createTheme();
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
   const handleRouteGuard = () => {
     setLoggedIn(!loggedIn);
