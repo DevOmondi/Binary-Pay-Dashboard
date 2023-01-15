@@ -8,9 +8,11 @@ function sendEmail({
   subject,
   text,
   templatePath,
-  sender = "tests@themillennialmumstory.com",
+  sender = "tests@binarypay.co.ke",
+  // sender = "tests@themillennialmumstory.com",
   substitute = {},
 }) {
+  console.log("sender: ", sender);
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const filePath = templatePath ? path.join(__dirname, templatePath) : "";
   const content = filePath
@@ -37,12 +39,13 @@ function sendEmail({
   // console.log(receipient, substitute);
   return sgMail
     .send(msg)
-    .then(() => {
-      console.log("Email sent: ");
+    .then((_res) => {
+      console.log("Email sent: ", _res);
+      // console.log("errors ss: ", _res?.body);
     })
     .catch((error) => {
       // TODO: log this error
-      console.log("an error occured: ", error);
+      console.log("an error occured: ", error.response);
       // console.log(error.response.body);
       // console.error(JSON.stringify(error));
     });

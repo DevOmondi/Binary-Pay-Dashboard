@@ -5,7 +5,11 @@ const jwt = require("jsonwebtoken");
 const sendEmail = require("./sendGrid");
 const { CustomError } = require("../utility");
 
-const emailNotifications = async (_type, _details, _receipient) => {
+const emailNotifications = async (
+  _type,
+  _details,
+  _receipient = "support@binarypay.co.ke"
+) => {
   try {
     switch (_type) {
       case "failedTransaction":
@@ -80,7 +84,7 @@ const emailNotifications = async (_type, _details, _receipient) => {
           receipient: _receipient,
           subject: "Password Reset.",
           text: "Reset your password",
-          templatePath: "./templates/reset-password.html",
+          templatePath: "./templates/password-reset.html",
           substitute: { _REDIRECT_LINK_: _details.redirectUrl },
         });
       case "error":

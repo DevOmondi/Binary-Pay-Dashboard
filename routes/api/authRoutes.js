@@ -9,11 +9,14 @@ const {
   CustomError,
   getUserByUsername,
   getUserByEmail,
+  getUserByDBId,
 } = require("../../utility");
 const logger = require("../../logger");
 const emailNotifications = require("../../emailing/emailNotifications");
 const pathToKey = path.join(__dirname, "../../cryptography/id_rsa_priv.pem");
 const PRIV_KEY = fs.readFileSync(pathToKey, "utf-8");
+const pubKeyPath = path.join(__dirname, "../../cryptography/id_rsa_pub.pem");
+const PUB_KEY = fs.readFileSync(pubKeyPath, "utf-8");
 
 const issueJwt = (id) => {
   const expiresIn = "2d";
@@ -76,23 +79,7 @@ const authRoutes = (User) => {
     try {
       const _host = req.protocol + "://" + req.get("host") + "/";
 
-      if (!req.body.email) {
-        return res.status(400).json({ errorMessage: "Email is required." });
-      }
-
-      // check if email already in use
-      const userExists = await getUserByEmail(req.body.email);
-      console.log(userExists);
-      if (userExists) {
-        return res.status(400).json({ errorMessage: "Email already in use." });
-      }
-
-      const user = new User({
-        ...req.body,
-      });
-
-      user.save().then((_user) => {
-        console.log(_user);
+      const sendRegistrationEmail = (_user) => {
         // send email
         return emailNotifications(
           "newRegisteredUser",
@@ -103,10 +90,40 @@ const authRoutes = (User) => {
           },
           req.body.email
         ).then(() => {
-          res
-            .status(200)
-            .json({ message: "Successfull. Kindly check your email." });
+          // TODO: remove
+          console.log({
+            redirectUrl:
+              _host +
+              `self-register?validation=${issueVerificationJwt(_user._id)}`,
+          });
+          res.status(200).json({
+            message: userExists
+              ? "Email already in use. Resent email link."
+              : "Successfull. Kindly alert user to check email.",
+          });
         });
+      };
+
+      if (!req.body.email) {
+        return res.status(400).json({ errorMessage: "Email is required." });
+      }
+
+      // check if email already in use
+      const userExists = await getUserByEmail(req.body.email);
+      console.log("sss: ", userExists);
+
+      if (userExists) {
+        return sendRegistrationEmail(userExists);
+      }
+
+      const user = new User({
+        ...req.body,
+        username: req.body.email,
+      });
+
+      user.save().then((_user) => {
+        console.log(_user);
+        return sendRegistrationEmail(_user);
       });
     } catch (_err) {
       console.log(_err);
@@ -130,6 +147,11 @@ const authRoutes = (User) => {
             },
             req.body.email
           ).then(() => {
+            console.log({
+              redirectUrl:
+                _host +
+                `reset-password?validation=${issueVerificationJwt(_user._id)}`,
+            });
             res
               .status(200)
               .json({ message: "Successfull. Kindly check your email." });
@@ -140,60 +162,164 @@ const authRoutes = (User) => {
           .json({ errorMessage: "User with email does not exist!" });
       });
     } catch (_err) {
+      console.log(_err);
       res.json({ errorMessage: _err.message });
     }
   });
 
-  // registration endpoint for all account types
-  authRouter.route("/register").post(async (req, res) => {
-    // request body must contain a password and a  username
+  // password reset
+  authRouter.route("/password-reset").post(async (req, res) => {
     try {
-      const salt = await bcrypt.genSalt();
-      if (req.body.password !== req.body.cPassword) {
-        throw new CustomError("Password Mismatch.", "Password Mismatch");
-      }
+      const _host = req.protocol + "://" + req.get("host") + "/";
 
-      if (!req.body.password || !req.body.username) {
-        throw new CustomError(
-          "Password and username required.",
-          "Missing Field"
-        );
-      }
-
-      // check if username already in use
-      const userExists = await getUserByUsername(req.body.username);
-      if (userExists) {
-        // return res.status(400).json({ message: "Username already in use" });
-        throw new CustomError(
-          "Username already in use.",
-          "Unavailable username"
-        );
-      }
-
-      const hashedPassword = await bcrypt.hash(req.body.password, salt);
-      const user = new User({
-        ...req.body,
-        password: hashedPassword,
-      });
-      user.save((err) => {
-        if (err) throw err;
-      });
-      const jwtToken = issueJwt(user._id);
-      delete user.password;
-
-      // return res.header("Authorization", jwtToken.token).json(user);
-      return res
-        .header("Authorization", jwtToken.token)
-        .status(201)
-        .json({
-          message: user.username + " account successfully created.",
-          success: true,
+      if (!req.headers?.tkn) {
+        return res.status(400).json({
+          errorMessage: "Sorry, invalid token.",
+          type: "invalidToken",
         });
-    } catch (error) {
-      console.log(error);
-      res.json({ errorMessage: error.message, code: error.name });
+      }
+      
+      const decodedPayload = jwt.verify(
+        req.headers.tkn,
+        PUB_KEY,
+        (_err, _decoded) => {
+          if (_err) {
+            if (_err.name === "TokenExpiredError") {
+              throw new CustomError(
+                "Sorry, your session has expired. Get another email ?",
+                "Invalid Token"
+              );
+            }
+            throw new CustomError(
+              "Sorry, link is invalid. Get another email ?",
+              "Invalid Token"
+            );
+          }
+          return _decoded;
+        }
+      );
+
+      const _user = await User.findOne({ _id: decodedPayload.sub }).then(
+        async (_res) => {
+          if (_res) {
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(req.body.password, salt);
+            _res.password = hashedPassword;
+            return _res;
+          }
+        }
+      );
+      _user.save().then((_res) => {
+        res.status(200).json({
+          redirectUrl: _host,
+          message: "Password successfully updated.",
+        });
+      });
+    } catch (_err) {
+      return res.json({
+        errorMessage: _err.message,
+      });
     }
   });
+
+  // registration endpoint for all account types
+  authRouter
+    .route("/self-register")
+    .get(async (req, res) => {
+      try {
+        if (req.headers?.tkn) {
+          const decodedPayload = jwt.verify(
+            req.headers.tkn,
+            PUB_KEY,
+            (_err, _decoded) => {
+              if (_err) {
+                if (_err.name === "TokenExpiredError") {
+                  throw new CustomError(
+                    "Sorry, your session has expired. Get another email.",
+                    "Invalid Token"
+                  );
+                }
+                throw new CustomError(
+                  "Sorry, link is invalid. Get another email.",
+                  "Invalid Token"
+                );
+              }
+              return _decoded;
+            }
+          );
+          const _user = await getUserByDBId(decodedPayload.sub);
+
+          if (_user) {
+            const user = _user.toJSON();
+            delete user.password;
+            delete user._id;
+
+            console.log(_user);
+            return res.status(200).json(_user);
+          }
+        }
+        return res.status(400).json({
+          errorMessage: "Sorry, invalid token.",
+          type: "invalidToken",
+        });
+      } catch (_err) {
+        console.log(_err);
+        res.status(_err.status || 500).json({ errorMessage: _err.message });
+      }
+    })
+    .post(async (req, res) => {
+      // request body must contain a password and a  username
+      try {
+        const salt = await bcrypt.genSalt();
+        if (req.body.password !== req.body.cPassword) {
+          throw new CustomError("Password Mismatch.", "Password Mismatch");
+        }
+
+        if (!req.body.password || !req.body.username) {
+          throw new CustomError(
+            "Password and username required.",
+            "Missing Field"
+          );
+        }
+
+        // check if username already in use
+        const userExists = await getUserByUsername(req.body.username);
+        if (userExists && userExists.email !== req.body.email) {
+          // return res.status(400).json({ message: "Username already in use" });
+          throw new CustomError(
+            "Username already in use.",
+            "Unavailable username"
+          );
+        }
+
+        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+        await User.findOneAndUpdate(
+          { email: req.body.email },
+          {
+            $set: {
+              username: req.body.username,
+              password: hashedPassword,
+            },
+          },
+          { new: true, runValidators: true }
+        ).then((user) => {
+          const jwtToken = issueJwt(user._id);
+          delete user.password;
+
+          return res
+            .header("Authorization", jwtToken.token)
+            .status(201)
+            .json({
+              message: user.username + " account successfully created.",
+              success: true,
+            });
+        });
+      } catch (error) {
+        console.log(error);
+        res.json({ errorMessage: error.message, code: error.name });
+      }
+    });
 
   authRouter.route("/logout").delete((req, res) => {
     req.logOut();

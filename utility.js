@@ -2,10 +2,11 @@ const User = require("./models/userModel");
 
 class CustomError extends Error {
   // generate customized error messages and codes
-  constructor(message, name, ...params) {
+  constructor(message, name, status = 400, ...params) {
     super(...params);
     this.name = name;
     this.message = message;
+    this.status = status;
   }
 }
 
