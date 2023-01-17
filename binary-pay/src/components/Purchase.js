@@ -27,6 +27,14 @@ const Purchase = () => {
 
   const purchaseHandler = (e) => {
     e.preventDefault();
+    if (
+      !accountNumber ||
+      !amountPaid ||
+      !payload?.serviceCode ||
+      !payload?.serviceID
+    ) {
+      return alert("Sorry! Some deails are missing.");
+    }
     axios
       .post(`${config.API_URL}/api/transaction/purchase`, {
         accountNumber: accountNumber,
