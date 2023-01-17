@@ -35,12 +35,12 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function AdminRegister() {
+export default function ForgotPassword() {
   const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
   // console.log("loc: ", location);
 
-  const signUpHandler = (e) => {
+  const passwordResetHandler = (e) => {
     e.preventDefault();
 
     axios
@@ -78,15 +78,15 @@ export default function AdminRegister() {
         >
           <img src={Logo} alt="binary-pay-logo"></img>
           <Typography component="h1" variant="h5">
-            Register new user
+            Password Reset
           </Typography>
           <Typography component="p">
-            Enter users email address, they will receive an email with
+            Enter email address, you will receive an email with reset
             instructions.
           </Typography>
           <Box
             component="form"
-            onSubmit={signUpHandler}
+            onSubmit={passwordResetHandler}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -107,9 +107,9 @@ export default function AdminRegister() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
-              onClick={signUpHandler}
+              onClick={passwordResetHandler}
             >
-              Register User
+              Reset Password
             </Button>
           </Box>
         </Box>

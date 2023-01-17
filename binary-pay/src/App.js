@@ -5,6 +5,7 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import SelfRegister from "./components/SelfRegister";
 import AdminRegister from "./components/AdminRegister";
+import ForgotPassword from "./components/ForgotPassword";
 import Settings from "./components/Settings";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/self-register" element={<SelfRegister />} />
         <Route path="/admin-register" element={<AdminRegister />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </div>
   );

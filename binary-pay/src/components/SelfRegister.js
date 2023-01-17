@@ -42,55 +42,56 @@ export default function SignUp() {
   const [userEmail, setUserEmail] = useState("");
   const [validToken, setValidToken] = useState(false);
   const navigate = useNavigate();
-  // console.log("loc: ", location);
 
   const signUpHandler = (e) => {
     e.preventDefault();
-    console.log(e.target);
     // check if token verified to an email
-    if (userEmail){
-
-    axios
-      .post(`${config.API_URL}/api/auth/self-register`, {
-        email: userEmail,
-        username: registerUsername,
-        password: registerPassword,
-        cPassword: confirmPassword,
-      })
-      .then((response) => {
-        if (response) {
-          console.log(response);
-          if (response.data && response.data.errorMessage) {
-            return alert(response.data.errorMessage);
+    if (userEmail) {
+      axios
+        .post(`${config.API_URL}/api/auth/self-register`, {
+          email: userEmail,
+          username: registerUsername,
+          password: registerPassword,
+          cPassword: confirmPassword,
+        })
+        .then((response) => {
+          if (response) {
+            if (response.data && response.data.errorMessage) {
+              return alert(response.data.errorMessage);
+            }
+            if (response.data) alert(response.data.message);
+            if (response.headers) storeToken(response.headers.authorization);
+            navigate("/dashboard", { replace: true });
           }
-          if (response.data) alert(response.data.message);
-          if (response.headers) storeToken(response.headers.authorization);
-          navigate("/dashboard", { replace: true });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        if (error.response.data) alert(error.response.data.errorMessage);
-      });}
+        })
+        .catch((error) => {
+          // console.log(error);
+          if (error.response.data) alert(error.response.data.errorMessage);
+        });
+    }
   };
 
   React.useEffect(() => {
+    // get token from url params
+    const queryString = window.location.search;
+    const tkn = new URLSearchParams(queryString).get("validation");
+
     // confirm token validity
     axios
       .get(`${config.API_URL}/api/auth/self-register/`, {
-        headers: { tkn: "" },
+        headers: { tkn },
       })
       .then((response) => {
         if (response) {
-          console.log(response);
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
+          setUserEmail(response.data.email);
           return setValidToken(true);
         }
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
       });
   }, []);

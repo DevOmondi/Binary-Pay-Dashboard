@@ -77,8 +77,8 @@ const authRoutes = (User) => {
   // admin registration for users
   authRouter.route("/admin-register").post(async (req, res) => {
     try {
-      console.log(req)
-      const _host = req.protocol + "://" + req.get("host") + "/";
+      // const _host = req.protocol + "://" + req.get("host") + "/";
+      const _host = "http://localhost:3000/";
 
       const sendRegistrationEmail = (_user) => {
         // send email
@@ -179,7 +179,7 @@ const authRoutes = (User) => {
           type: "invalidToken",
         });
       }
-      
+
       const decodedPayload = jwt.verify(
         req.headers.tkn,
         PUB_KEY,
