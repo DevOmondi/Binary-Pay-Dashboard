@@ -46,8 +46,9 @@ export default function SignUp() {
 
   const signUpHandler = (e) => {
     e.preventDefault();
+    console.log(e.target);
     // check if token verified to an email
-    if (!userEmail) return setValidToken(false);
+    if (userEmail){
 
     axios
       .post(`${config.API_URL}/api/auth/self-register`, {
@@ -70,7 +71,7 @@ export default function SignUp() {
       .catch((error) => {
         console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
-      });
+      });}
   };
 
   React.useEffect(() => {
@@ -108,7 +109,7 @@ export default function SignUp() {
         >
           <img src={Logo} alt="binary-pay-logo"></img>
           <Typography component="h1" variant="h5">
-            Sign up
+            Complete Registration
           </Typography>
           <Typography component="p">
             Fill in details to complete registration

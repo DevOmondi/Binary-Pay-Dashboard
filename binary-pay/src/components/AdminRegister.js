@@ -1,21 +1,17 @@
 import * as React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import Avatar from "@mui/material/Avatar";
+import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
+import axios from "axios";
 import config from "../config";
 import { storeToken } from "../utilities/utilityFunctions";
 
@@ -39,21 +35,17 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignIn() {
-  const [userName, setUserName] = useState("");
-  const [passWord, setPassWord] = useState("");
+export default function SignUp() {
+  const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
-  // const handleRouteGuard = () => {
-  //   setLoggedIn(!loggedIn);
-  // };
+  // console.log("loc: ", location);
 
-  const signInHandler = (e) => {
+  const signUpHandler = (e) => {
     e.preventDefault();
 
     axios
-      .post(`${config.API_URL}/api/auth/login`, {
-        username: userName,
-        password: passWord,
+      .post(`${config.API_URL}/api/auth/admin-register`, {
+        email: userEmail,
       })
       .then((response) => {
         if (response) {
@@ -67,7 +59,7 @@ export default function SignIn() {
         }
       })
       .catch((error) => {
-        console.log("error: ", error);
+        console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
       });
   };
@@ -85,15 +77,16 @@ export default function SignIn() {
           }}
         >
           <img src={Logo} alt="binary-pay-logo"></img>
-          <Avatar sx={{ m: 1, bgcolor: "#F3B500", color: "#1B3B57" }}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Register new user
+          </Typography>
+          <Typography component="p">
+            Enter users email address, they will receive an email with
+            instructions.
           </Typography>
           <Box
             component="form"
-            onSubmit={signInHandler}
+            onSubmit={signUpHandler}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -101,50 +94,27 @@ export default function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
               autoFocus
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => setUserEmail(e.target.value)}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              onChange={(e) => setPassWord(e.target.value)}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
-              onClick={signInHandler}
-              // onSubmit={handleRouteGuard}
+              onClick={signUpHandler}
             >
-              Sign In
+              Register User
             </Button>
-            <Grid container>
-              <Grid item>
-                {/* <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link> */}
-              </Grid>
-            </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
-      {/* <RequireAuth loggedIn={loggedIn} /> */}
     </ThemeProvider>
   );
 }

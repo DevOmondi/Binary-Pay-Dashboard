@@ -77,6 +77,7 @@ const authRoutes = (User) => {
   // admin registration for users
   authRouter.route("/admin-register").post(async (req, res) => {
     try {
+      console.log(req)
       const _host = req.protocol + "://" + req.get("host") + "/";
 
       const sendRegistrationEmail = (_user) => {
