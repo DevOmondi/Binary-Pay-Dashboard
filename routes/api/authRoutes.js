@@ -222,6 +222,63 @@ const authRoutes = (User) => {
       });
     }
   });
+  // password reset
+  authRouter.route("/password-update").post(async (req, res) => {
+    try {
+      const _host = req.protocol + "://" + req.get("host") + "/";
+
+      if (!req.headers?.tkn) {
+        return res.status(400).json({
+          errorMessage: "Sorry, invalid token.",
+          type: "invalidToken",
+        });
+      }
+
+      const decodedPayload = jwt.verify(
+        req.headers.tkn,
+        PUB_KEY,
+        (_err, _decoded) => {
+          if (_err) {
+            if (_err.name === "TokenExpiredError") {
+              throw new CustomError(
+                "Sorry, your session has expired. Get another email ?",
+                "Invalid Token"
+              );
+            }
+            throw new CustomError(
+              "Sorry, link is invalid. Get another email ?",
+              "Invalid Token"
+            );
+          }
+          return _decoded;
+        }
+      );
+
+      const _user = await User.findOne({ _id: decodedPayload.sub }).then(
+        async (_res) => {
+          if (await bcrypt.compare(req.body.currentPassword, _res.password)) {
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(req.body.password, salt);
+            _res.password = hashedPassword;
+            return _res;
+          }
+          return res.json({
+            errorMessage: "Credentials provided are incorect",
+          });
+        }
+      );
+      _user.save().then((_res) => {
+        res.status(200).json({
+          redirectUrl: _host,
+          message: "Password successfully updated.",
+        });
+      });
+    } catch (_err) {
+      return res.json({
+        errorMessage: _err.message,
+      });
+    }
+  });
 
   // registration endpoint for all account types
   authRouter

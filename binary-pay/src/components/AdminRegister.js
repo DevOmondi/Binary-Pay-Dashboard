@@ -54,7 +54,6 @@ export default function AdminRegister() {
             return alert(response.data.errorMessage);
           }
           if (response.data) alert(response.data.message);
-          if (response.headers) storeToken(response.headers.authorization);
           navigate("/dashboard", { replace: true });
         }
       })

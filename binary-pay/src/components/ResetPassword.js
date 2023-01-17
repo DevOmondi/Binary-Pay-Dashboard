@@ -35,31 +35,74 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function ForgotPassword() {
+export default function SignUp() {
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  // console.log("loc: ", location);
+  const [validToken, setValidToken] = useState(false);
+  const navigate = useNavigate();
 
   const passwordResetHandler = (e) => {
     e.preventDefault();
+    // get token value
+    const queryString = window.location.search;
+    const tkn = new URLSearchParams(queryString).get("validation");
 
+    // check if token verified to an email
+    if (userEmail) {
+      axios
+        .post(
+          `${config.API_URL}/api/auth/password-reset`,
+
+          {
+            email: userEmail,
+            password: registerPassword,
+            cPassword: confirmPassword,
+          },
+          { headers: { tkn } }
+        )
+        .then((response) => {
+          if (response) {
+            if (response.data && response.data.errorMessage) {
+              return alert(response.data.errorMessage);
+            }
+            if (response.data) alert(response.data.message);
+            if (response.headers) storeToken(response.headers.authorization);
+            navigate("/dashboard", { replace: true });
+          }
+        })
+        .catch((error) => {
+          // console.log(error);
+          if (error.response.data) alert(error.response.data.errorMessage);
+        });
+    }
+  };
+
+  React.useEffect(() => {
+    // get token from url params
+    const queryString = window.location.search;
+    const tkn = new URLSearchParams(queryString).get("validation");
+
+    // confirm token validity
     axios
-      .post(`${config.API_URL}/api/auth/forgot-password`, {
-        email: userEmail,
+      .get(`${config.API_URL}/api/auth/self-register/`, {
+        headers: { tkn },
       })
       .then((response) => {
         if (response) {
-          console.log(response);
+          console.log("ss: ", response);
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
-          if (response.data) alert(response.data.message);
+          setUserEmail(response.data.email);
+          return setValidToken(true);
         }
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
       });
-  };
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -74,13 +117,8 @@ export default function ForgotPassword() {
           }}
         >
           <img src={Logo} alt="binary-pay-logo"></img>
-          <Typography component="h1" variant="h5">
-            Password Reset
-          </Typography>
-          <Typography component="p">
-            Enter email address, you will receive an email with reset
-            instructions.
-          </Typography>
+          <Typography component="h1" variant="h5"></Typography>
+          <Typography component="p">Enter your new password</Typography>
           <Box
             component="form"
             onSubmit={passwordResetHandler}
@@ -91,12 +129,24 @@ export default function ForgotPassword() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              onChange={(e) => setUserEmail(e.target.value)}
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              onChange={(e) => setRegisterPassword(e.target.value)}
+            />
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="cPassword"
+              label="Confirm Password"
+              type="password"
+              id="cPassword"
+              autoComplete="current-password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
             <Button
