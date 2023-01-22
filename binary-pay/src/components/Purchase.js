@@ -56,7 +56,7 @@ const Purchase = () => {
                        <div>
                           <form className='purchase-form' onSubmit={purchaseHandler} >
                              <label>Phone number :</label>
-                             <input typeof="number" onChange={(e) => setAccountNumber(e.target.value)} placeholder="254xxxxxxxxx" ></input> 
+                             <input typeof="number" onChange={(e) => setAccountNumber(e.target.value)} placeholder="254xxxxxxxxx" required></input> 
 
                              <label htmlFor='services'>Type of Service:</label>
                                <select id="services" onChange={changeServiceFunc}>
@@ -69,12 +69,12 @@ const Purchase = () => {
                                </select>
 
                              <label id="amount-txt">Amount :</label>
-                             <input typeof="number" onChange={(e) => setAmountPaid(e.target.value)}></input>
+                             <input typeof="number" onChange={(e) => setAmountPaid(e.target.value)} required></input>
                              <button 
                              id='purchase-btn'
                              type='submit'
                              >
-                              Purchase
+                              SEND
                              </button>
                           </form>
                         </div>
