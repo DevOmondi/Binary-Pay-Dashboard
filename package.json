@@ -11,7 +11,7 @@
     "start": "pm2 start server.js",
     "restart": "pm2 restart server.js",
     "preinstall": "npm run gen:keypair",
-    "postinstall": "cd binary-pay && npm run build",
+    "postinstall": "cd binary-pay && npm i && npm run build",
     "build": "cd binary-pay && npm run build",
     "gen:keypair": "node ./cryptography/generateKeypair.js"
   },
