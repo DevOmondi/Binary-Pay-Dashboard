@@ -193,6 +193,13 @@ const transactionRoutes = (Transaction, Confirmation) => {
 
   transactionsRouter.route("/purchase").post(async (req, res) => {
     try {
+      if (!req.body.accountNumber || !req.body.amountPaid) {
+        logger.info("Purchase request failed, Missing info: " + req.body);
+        res.status(400).json({
+          errorMessage:
+            "Missing info from purchase request. Amount and account number are required.",
+        });
+      }
       const _transaction = {
         date: new Date(),
         accountNumber: req.body.accountNumber,
@@ -200,25 +207,49 @@ const transactionRoutes = (Transaction, Confirmation) => {
         statusCompleted: false,
       };
 
-      const _response = await purchaseTransaction(req.body);
-      if (_response.error) {
-        console.log("problem: ", _response._error);
-        logger.info("Failed " + _response._error);
-        throw _response.error;
+      const _accountProvider = getProvider(req.body.accountNumber);
+
+      if (_accountProvider) {
+        logger.info("Provider Set: " + _accountProvider);
+        logger.info("Service Provider details: " + services[_accountProvider]);
+
+        const _purchaseBody = {
+          serviceID: services[_accountProvider].serviceID,
+          serviceCode: services[_accountProvider].serviceCode,
+          msisdn: formatAccNumber(req.body.accountNumber),
+          accountNumber: formatAccNumber(req.body.accountNumber),
+          amountPaid: `${parseInt(req.body.amountPaid)}`,
+        };
+
+        logger.info("Initiating purchase for: " + _purchaseBody);
+
+        const _response = await purchaseTransaction(_purchaseBody);
+
+        if (_response.error) {
+          console.log("problem: ", _response._error);
+          logger.info("Failed " + _response._error);
+          throw _response.error;
+        }
+        _transaction.statusCompleted = true;
+        _transaction.response = _response;
+
+        const _newTransaction = new Transaction({
+          ..._transaction,
+          response: _response,
+        });
+
+        _newTransaction.save().then((_data) => {
+          console.log("some: ", _data);
+          logger.info("Succesful transaction " + _data);
+          res.status(200).json(_response);
+        });
+      } else {
+        logger.info("Confirmation failed: provider details false.");
+        res.status(500).json({
+          errorMessage: "Confirmation failed: provider details false.",
+          details: req.body,
+        });
       }
-      _transaction.statusCompleted = true;
-      _transaction.response = _response;
-
-      const _newTransaction = new Transaction({
-        ..._transaction,
-        response: _response,
-      });
-
-      _newTransaction.save().then((_data) => {
-        console.log("some: ", _data);
-        logger.info("Succesful transaction " + _data);
-        res.status(200).json(_response);
-      });
     } catch (_err) {
       // TODO: log error
       logger.error(_err);
