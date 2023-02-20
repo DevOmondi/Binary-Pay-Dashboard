@@ -457,6 +457,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
       })
       .then((_res) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");
+        logger.info("Float balance fetched: ", _float.join("."));
         res.status(200).json({
           message: _float.join("."),
         });
