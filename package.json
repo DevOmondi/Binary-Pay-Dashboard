@@ -8,7 +8,7 @@
     "api": "cd backend && npm start",
     "client": "cd binary-pay && npm start",
     "api:dev": "nodemon server.js",
-    "start": "node start server.js",
+    "start": "node server.js",
     "restart": "pm2 restart server.js",
     "preinstall": "npm run gen:keypair",
     "postinstall": "cd binary-pay && npm i && npm run build:rollup",
