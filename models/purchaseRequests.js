@@ -1,13 +1,15 @@
-const { Schema, model } = require("mongoose");
+const purchaseRequestSchema = (sequelize, Sequelize) => {
+  const Purchase = sequelize.define(
+    "Purchase",
+    {
+      response: { type: Sequelize.JSON },
+      purchaseBody: { type: Sequelize.JSON },
+    },
+    { timestamps: true }
+  );
 
-const purchaseRequestSchema = Schema(
-  {
-    response: { type: Object },
-    purchaseBody: { type: Object },
-  },
-  {
-    timestamps: true,
-  }
-);
+  return Purchase;
+};
 
-module.exports = model("Purchase", purchaseRequestSchema);
+module.exports = purchaseRequestSchema;
+

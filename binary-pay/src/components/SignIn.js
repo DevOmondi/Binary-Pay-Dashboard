@@ -43,24 +43,30 @@ export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
   const navigate = useNavigate();
+<<<<<<< HEAD
   // const handleRouteGuard = () => {
   //   setLoggedIn(!loggedIn);
   // };
+=======
+>>>>>>> 181c67c513b514adff74185552969a78d2c2e07a
 
   const signInHandler = (e) => {
     e.preventDefault();
 
     axios
-      .post(`${config.API_URL}/api/auth/login`, {
+      .post(`${config.API_URL}/auth/login`, {
         username: userName,
         password: passWord,
       })
       .then((response) => {
         if (response) {
           console.log(response);
+<<<<<<< HEAD
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
+=======
+>>>>>>> 181c67c513b514adff74185552969a78d2c2e07a
           if (response.data) alert(response.data.message);
           if (response.headers) storeToken(response.headers.authorization);
           navigate("/dashboard", { replace: true });

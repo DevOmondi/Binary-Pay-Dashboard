@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
 const { CustomError } = require("../../utility");
@@ -108,8 +109,38 @@ const getProvider = (_accNo) => {
     return;
   }
 };
+
+const testTransaction = (_payload) => {
+  const reqObject = JSON.stringify(_payload);
+
+  console.log("request: ", reqObject);
+  try {
+    return axios({
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": reqObject.length,
+      },
+      url: "https://5435-105-160-115-74.in.ngrok.io/test",
+      data: reqObject,
+    }).then((_response) => {
+      const _data = _response.data;
+      if (_data.status === "200") return _data;
+      console.log(_data.message);
+    });
+  } catch (error) {
+    return {
+      error: new CustomError(
+        "Problem connecting to Payment System.",
+        "paymentError"
+      ),
+      _error: error,
+    };
+  }
+};
 // helper functions
 const purchaseTransaction = (_payload) => {
+  console.log(_payload);
   const reqObject = JSON.stringify({
     Credentials: {
       merchantCode: process.env.MERCHANT_CODE,
@@ -201,10 +232,9 @@ const transactionRoutes = (Transaction, Confirmation) => {
         });
       }
       const _transaction = {
-        date: new Date(),
         accountNumber: req.body.accountNumber,
         amount: req.body.amountPaid,
-        statusCompleted: false,
+        statusComplete: false,
       };
 
       const _accountProvider = getProvider(req.body.accountNumber);
@@ -262,6 +292,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
 
   transactionsRouter.route("/validation").post(async (req, res) => {
     try {
+      // testTransaction(req.body);
       try {
         logger.info("validating ,mpesa payment: " + req.body);
         console.log("validating ,mpesa payment: " + req.body);
@@ -272,13 +303,12 @@ const transactionRoutes = (Transaction, Confirmation) => {
         if (_serviceProvider) {
           if (parseInt(req.body.TransAmount) >= 5) {
             const _transaction = {
-              dateInit: new Date(),
               details: req.body,
               ref: req.body.TransID,
               statusCompleted: false,
             };
 
-            const _newTransaction = new Transaction({
+            Transaction.create({
               ..._transaction,
             });
 
@@ -302,6 +332,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
           logger.info("Transaction failed! Invalid provider.");
           console.log("Transaction failed! Invalid provider.");
           res.status(400).json({
+            ...req.body,
             resultCode: "C2B00012",
             resultDesc: "Rejected",
           });
@@ -316,6 +347,10 @@ const transactionRoutes = (Transaction, Confirmation) => {
         });
       }
     } catch (_err) {
+      fs.writeFileSync(
+        __dirname + "/validation-error.txt",
+        JSON.stringify(req.body)
+      );
       console.log("ss: ", _err);
       logger.error(_err);
       res.status(500).json({
@@ -427,15 +462,15 @@ const transactionRoutes = (Transaction, Confirmation) => {
       });
     }
   });
+
   transactionsRouter.route("/history").get((req, res) => {
-    Transaction.find({})
+    Transaction.findAll()
       .then((_res) => {
         let _transactionsList = [];
         if (_res) {
           _transactionsList = _res.map((_item) => {
             const _newItem = _item.toJSON();
-
-            delete _newItem.__v;
+            console.log("ss: ", _newItem);
             return _newItem;
           });
         }
@@ -451,10 +486,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
   });
 
   transactionsRouter.route("/float").get((req, res) => {
-    Transaction.findOne({})
-      .sort({
-        time: -1,
-      })
+    Transaction.findOne({ order: [["updatedAt", "DESC"]] })
       .then((_res) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");
         logger.info("Float balance fetched: ", _float.join("."));

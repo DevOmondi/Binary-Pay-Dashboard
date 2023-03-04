@@ -1,9 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
+const passport = require("passport");
 
 const {
   CustomError,
@@ -11,6 +11,7 @@ const {
   getUserByEmail,
   getUserByDBId,
 } = require("../../utility");
+
 const logger = require("../../logger");
 const emailNotifications = require("../../emailing/emailNotifications");
 const pathToKey = path.join(__dirname, "../../cryptography/id_rsa_priv.pem");
@@ -19,7 +20,8 @@ const pubKeyPath = path.join(__dirname, "../../cryptography/id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pubKeyPath, "utf-8");
 
 const issueJwt = (id) => {
-  const expiresIn = "2d";
+  const expiresIn = "1h";
+
   const payload = {
     sub: id,
     iat: Date.now(),
@@ -53,7 +55,6 @@ const authRoutes = (User) => {
         .status(400)
         .json({ errorMessage: "Credentials provided are incorect" });
     }
-
     try {
       if (await bcrypt.compare(req.body.password, user.password)) {
         // issue jwt return user with jwt header
@@ -117,12 +118,9 @@ const authRoutes = (User) => {
         return sendRegistrationEmail(userExists);
       }
 
-      const user = new User({
-        ...req.body,
-        username: req.body.email,
-      });
+      User.create({ ...req.body, username: req.body.email }).then((_res) => {
+        const _user = _res.toJSON();
 
-      user.save().then((_user) => {
         console.log(_user);
         return sendRegistrationEmail(_user);
       });
@@ -386,9 +384,12 @@ const authRoutes = (User) => {
       .json({ message: "user succesfully logged out", success: true });
   });
 
-  authRouter.route("/currentUser").get((req, res) => {
-    return res.status(200).json(req.user);
-  });
+  authRouter
+    .route("/currentUser")
+    .get(passport.authenticate("jwt", { session: false }), (req, res) => {
+      console.log("ss: ", req.user);
+      return res.status(200).json(req.user);
+    });
 
   return authRouter;
 };

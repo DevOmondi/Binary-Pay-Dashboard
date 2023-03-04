@@ -1,8 +1,17 @@
 const router = require("express").Router();
 const path = require("path");
-const User = require("../models/userModel");
-const Transaction = require("../models/transactionModel");
-const Confirmation = require("../models/confirmationRequestModel");
+const db = require("../models");
+const User = require("../models/userModel")(db.sequelize, db.Sequelize);
+const Transaction = require("../models/transactionModel")(
+  db.sequelize,
+  db.Sequelize
+);
+const Confirmation = require("../models/confirmationModel")(
+  db.sequelize,
+  db.Sequelize
+);
+
+
 const authRoutes = require("./api/authRoutes")(User);
 const transactionRoutes = require("./api/transactionRoutes")(
   Transaction,
@@ -12,6 +21,11 @@ const transactionRoutes = require("./api/transactionRoutes")(
 // api routing
 router.use("/api/auth", authRoutes);
 router.use("/api/transaction", transactionRoutes);
+
+router.use("/test", (req, res) => {
+  console.log("req body: ", req.body);
+  res.status(200).send("Okay");
+});
 
 // frontend routes
 //to enable react routing
