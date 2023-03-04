@@ -6,11 +6,10 @@ const Transaction = require("../models/transactionModel")(
   db.sequelize,
   db.Sequelize
 );
-const Confirmation = require("../models/confirmationModel")(
+const Confirmation = require("../models/confirmationRequestModel")(
   db.sequelize,
   db.Sequelize
 );
-
 
 const authRoutes = require("./api/authRoutes")(User);
 const transactionRoutes = require("./api/transactionRoutes")(
