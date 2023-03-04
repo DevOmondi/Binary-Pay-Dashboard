@@ -15,7 +15,8 @@
     "build": "cd binary-pay && npm run build",
     "gen:keypair": "node ./cryptography/generateKeypair.js",
     "postinstall": "cd binary-pay && npm run build",
-    "run:migrations": "db-migrate create initialize --sql-file"
+    "run:migrations": "db-migrate create initialize --sql-file",
+    "migrate": "sequelize db:migrate"
   },
   "repository": {
     "type": "git",
@@ -54,16 +55,16 @@
     "mongoose": "^6.3.3",
     "nodemon": "^2.0.16",
     "passport": "^0.6.0",
-    "pm2": "^5.2.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^8.8.0",
+    "pm2": "^5.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "recharts": "^2.1.9",
-    "sequelize": "^6.21.4",
+    "sequelize": "^6.29.0",
     "typescript": "^4.6.4",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
