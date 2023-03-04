@@ -15,7 +15,6 @@
     "build": "cd binary-pay && npm run build",
     "gen:keypair": "node ./cryptography/generateKeypair.js",
     "postinstall": "cd binary-pay && npm run build",
-    "gen:keypair": "node ./cryptography/generateKeypair.js",
     "run:migrations": "db-migrate create initialize --sql-file"
   },
   "repository": {

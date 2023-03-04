@@ -11,11 +11,6 @@ import Settings from "./components/Settings";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
 function App() {
-<<<<<<< HEAD
-=======
-  console.log("update");
-
->>>>>>> 181c67c513b514adff74185552969a78d2c2e07a
   return (
     <div className="App">
       <Routes>
