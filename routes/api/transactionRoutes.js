@@ -449,7 +449,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
         if (_res) {
           _transactionsList = _res.map((_item) => {
             const _newItem = _item.toJSON();
-            console.log("ss: ", _newItem);
             return _newItem;
           });
         }

@@ -2,11 +2,16 @@ const userSchema = (sequelize, Sequelize) => {
   const User = sequelize.define(
     "User",
     {
-      _id: {
+      id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         primaryKey: true,
+      },
+      email: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
       },
       username: {
         type: Sequelize.STRING,
@@ -15,7 +20,7 @@ const userSchema = (sequelize, Sequelize) => {
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       details: { type: Sequelize.JSON },
     },
