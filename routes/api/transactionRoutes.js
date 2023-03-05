@@ -384,7 +384,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
           const _response = await purchaseTransaction(_purchaseBody);
 
           if (_response.error) {
-            console.log("error: ", _response.error);
             logger.info("Error completing purchase " + _response.error);
             // TODO: record send email for transaction to be manually done
             emailNotifications("failedTransaction", {
@@ -402,37 +401,31 @@ const transactionRoutes = (Transaction, Confirmation) => {
 
           logger.info("Succesfully purchased");
 
-          await Transaction.findOneAndUpdate(
-            { "details.TransID": req.body.TransID },
-            { $set: { response: _response, statusComplete: true } },
-            { new: true, runValidators: true }
-          ).then((_res) => {
-            logger.info("succesfully saved to DB: " + _res);
-            console.log("succesfully saved to DB: " + _res);
-            return res.json({
-              ResponseCode: 0,
-              ResultDesc: "",
-            });
+          await Transaction.findOne({
+            where: { "details.TransID": req.body.TransID },
+          }).then((_updateTransaction) => {
+            if (_updateTransaction) {
+              _updateTransaction
+                .update({
+                  response: _response,
+                  statusComplete: true,
+                })
+                .then((_res) => {
+                  logger.info(
+                    "succesfully saved to DB: " + JSON.stringify(_res)
+                  );
+                  return res.json({
+                    ResponseCode: 0,
+                    ResultDesc: "",
+                  });
+                });
+            } else {
+              logger.info(
+                "Could not find initial transaction for: " +
+                  JSON.stringify(req.body)
+              );
+            }
           });
-
-          // console.log(_transaction.json());
-          // _transaction.statusCompleted = true;
-          // _transaction.response = _response;
-          // {
-          //   "TransAmount": "5",
-          //   "MSISDN": "254714744393",
-          //   "BillRefNumber": "254714744393",
-          //   "TransID": "string",
-          //   "FirstName": "Oliver",
-          //   "LastName": "Mirimu",
-          //   "TransTime": "",
-          //   "TransactionType": "Pay Bill",
-          //   "BusinessShortCode": "929295",
-          //   "InvoiceNumber": "",
-          //   "MiddleName": "",
-          //   "OrgAccountBalance": "",
-          //   "ThirdPartyTransID": ""
-          // }
         } else {
           logger.info("Confirmation failed: provider details false.");
           res.status(500).json({
@@ -442,7 +435,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
         }
       }
     } catch (_err) {
-      console.log(_err);
       logger.error("Failed to fetch history: " + _err);
       res.status(500).json({
         errorMessage: "Sorry an error occured. Please try again.",
