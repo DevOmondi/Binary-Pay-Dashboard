@@ -25,5 +25,10 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.Transactions = require("./transactionModel")(sequelize, Sequelize);
 db.Users = require("./userModel")(sequelize, Sequelize);
+db.Confirmation = require("../models/confirmationRequestModel")(
+  sequelize,
+  Sequelize
+);
+db.PurchaseRequest = require("./purchaseRequests")(sequelize, Sequelize);
 
 module.exports = db;

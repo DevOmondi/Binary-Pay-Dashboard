@@ -6,7 +6,11 @@ const { v4: uuidv4 } = require("uuid");
 
 const { CustomError } = require("../../utility");
 const logger = require("../../logger");
-const PurchaseRequest = require("../../models/purchaseRequests");
+const db = require("../../models");
+const PurchaseRequest = require("../../models/purchaseRequests")(
+  db.sequelize,
+  db.Sequelize
+);
 const emailNotifications = require("../../emailing/emailNotifications");
 
 require("dotenv").config({
@@ -140,7 +144,7 @@ const testTransaction = (_payload) => {
 };
 // helper functions
 const purchaseTransaction = (_payload) => {
-  console.log(_payload);
+  logger.info("initiating favoured api call.");
   const reqObject = JSON.stringify({
     Credentials: {
       merchantCode: process.env.MERCHANT_CODE,
@@ -170,12 +174,11 @@ const purchaseTransaction = (_payload) => {
       data: reqObject,
     }).then(async (_response) => {
       // store response and request body
-      const _newPurchase = new PurchaseRequest({
+
+      return await PurchaseRequest.create({
         purchaseBody: JSON.parse(reqObject),
         response: _response.data,
-      });
-
-      return await _newPurchase.save().then((_res) => {
+      }).then((_res) => {
         console.log("succesfully saved purchase");
         logger.info("succesfully saved purchase");
 
@@ -231,6 +234,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
             "Missing info from purchase request. Amount and account number are required.",
         });
       }
+
       const _transaction = {
         accountNumber: req.body.accountNumber,
         amount: req.body.amountPaid,
@@ -251,26 +255,27 @@ const transactionRoutes = (Transaction, Confirmation) => {
           amountPaid: `${parseInt(req.body.amountPaid)}`,
         };
 
-        logger.info("Initiating purchase for: " + _purchaseBody);
+        logger.info(
+          "Initiating purchase for: " + JSON.stringify(_purchaseBody)
+        );
 
         const _response = await purchaseTransaction(_purchaseBody);
 
         if (_response.error) {
-          console.log("problem: ", _response._error);
           logger.info("Failed " + _response._error);
           throw _response.error;
         }
-        _transaction.statusCompleted = true;
-        _transaction.response = _response;
 
-        const _newTransaction = new Transaction({
+        _transaction.statusComplete = true;
+        Transaction.create({
           ..._transaction,
+          details: req.body,
           response: _response,
-        });
-
-        _newTransaction.save().then((_data) => {
-          console.log("some: ", _data);
-          logger.info("Succesful transaction " + _data);
+          ref: _response.ref_no,
+        }).then((_data) => {
+          logger.info(
+            "Succesful transaction " + JSON.stringify(_data.toJSON())
+          );
           res.status(200).json(_response);
         });
       } else {
@@ -281,7 +286,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
         });
       }
     } catch (_err) {
-      // TODO: log error
       logger.error(_err);
       console.log(_err);
       res.status(500).json({
@@ -292,29 +296,26 @@ const transactionRoutes = (Transaction, Confirmation) => {
 
   transactionsRouter.route("/validation").post(async (req, res) => {
     try {
-      // testTransaction(req.body);
       try {
-        logger.info("validating ,mpesa payment: " + req.body);
+        logger.info("validating ,mpesa payment: " + JSON.stringify(req.body));
         console.log("validating ,mpesa payment: " + req.body);
         const _serviceProvider = getProvider(req.body.BillRefNumber);
 
         logger.info("Provider Set: " + _serviceProvider);
-        console.log("Provider Set: " + _serviceProvider);
         if (_serviceProvider) {
           if (parseInt(req.body.TransAmount) >= 5) {
             const _transaction = {
               details: req.body,
               ref: req.body.TransID,
-              statusCompleted: false,
+              statusComplete: false,
+              accountNumber: req.body.BillRefNumber,
+              amount: req.body.TransAmount,
             };
 
             Transaction.create({
               ..._transaction,
-            });
-
-            _newTransaction.save().then((_data) => {
-              logger.info("Transaction succesfully saved " + _data._id);
-              console.log("Transaction succesfully saved " + _data._id);
+            }).then((_data) => {
+              logger.info("Transaction succesfully saved ID: " + _data.id);
               res.status(200).json({
                 ResultCode: 0,
                 ResultDesc: "Accepted",
@@ -322,7 +323,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
             });
           } else {
             logger.info("Transaction failed: Value too low.");
-            console.log("Transaction failed: Value too low.");
             res.status(400).json({
               resultCode: "C2B00013",
               resultDesc: "Rejected",
@@ -330,7 +330,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
           }
         } else {
           logger.info("Transaction failed! Invalid provider.");
-          console.log("Transaction failed! Invalid provider.");
           res.status(400).json({
             ...req.body,
             resultCode: "C2B00012",
@@ -338,20 +337,13 @@ const transactionRoutes = (Transaction, Confirmation) => {
           });
         }
       } catch (_err) {
-        // TODO: log error
         logger.error("Validation failed: " + _err.message);
-        console.log("Validation failed: " + _err);
         res.status(500).json({
           resultCode: 1,
           resultDesc: "Rejected",
         });
       }
     } catch (_err) {
-      fs.writeFileSync(
-        __dirname + "/validation-error.txt",
-        JSON.stringify(req.body)
-      );
-      console.log("ss: ", _err);
       logger.error(_err);
       res.status(500).json({
         resultCode: "C2B00016",
@@ -370,11 +362,9 @@ const transactionRoutes = (Transaction, Confirmation) => {
         if (_accountProvider) {
           logger.info("Provider Set: " + _accountProvider);
           logger.info(
-            "Service Provider details: " + services[_accountProvider]
+            "Service Provider details: " +
+              JSON.stringify(services[_accountProvider])
           );
-
-          console.log("account Prov: ", _accountProvider);
-          console.log("account Prov: ", services[_accountProvider]);
 
           const _purchaseBody = {
             serviceID: services[_accountProvider].serviceID,
@@ -384,17 +374,15 @@ const transactionRoutes = (Transaction, Confirmation) => {
             amountPaid: `${parseInt(req.body.TransAmount)}`,
           };
 
-          const _newTransaction = new Confirmation({
+          Confirmation.create({
             confirmationDetails: req.body,
             purchaseBody: _purchaseBody,
-          });
-
-          _newTransaction.save().then((_data) => {
-            logger.info("Transaction succesfully saved " + _data._id);
-            console.log("Transaction succesfully saved " + _data._id);
+          }).then((_data) => {
+            logger.info("Transaction succesfully saved ID: " + _data.id);
           });
 
           const _response = await purchaseTransaction(_purchaseBody);
+
           if (_response.error) {
             console.log("error: ", _response.error);
             logger.info("Error completing purchase " + _response.error);
@@ -413,11 +401,10 @@ const transactionRoutes = (Transaction, Confirmation) => {
           }
 
           logger.info("Succesfully purchased");
-          console.log("successfully purchased");
 
-          let _transaction = await Transaction.findOneAndUpdate(
+          await Transaction.findOneAndUpdate(
             { "details.TransID": req.body.TransID },
-            { $set: { response: _response, statusCompleted: true } },
+            { $set: { response: _response, statusComplete: true } },
             { new: true, runValidators: true }
           ).then((_res) => {
             logger.info("succesfully saved to DB: " + _res);
