@@ -1,143 +1,85 @@
-.App {
-  text-align: center;
+.App {text-align:center;}
+
+#white-logo {margin-left:2.5rem;}
+
+.icon {color:white;}
+
+#Dashboard-link {text-decoration:none; color:white;}
+
+#Transactions-link {text-decoration:none; color:white;}
+
+#Settings-link {text-decoration:none; color:white;}
+
+.purchase-section { display:block;}
+
+#purchase-title {align-items:center; color:#1B3B57;}
+
+.purchase-form { display:inline;}
+
+.purchase-form input,select {
+  margin-right:7px; 
+  border:solid 1px #1B3B57;
+  padding: 7px;
+  border-radius: 5px;
+  font-size: large;
 }
 
-#white-logo{
-  margin-left: 2.5rem;
-}
 
-.icon{
-  color: white;
-}
-
-#Dashboard-link{
-  text-decoration: none;
-  color: white;
-}
-
-#Transactions-link{
-  text-decoration: none;
-  color: white;
-}
-
-#Settings-link{
-  text-decoration: none;
-  color: white;
-}
-
-.purchase-section{
-  display: block;
-}
-
-#purchase-title{
-  align-items: center;
-  color: #1B3B57;
-}
-
-.purchase-form{
-  display: inline;
-}
-
-.purchase-form input {
-  margin-right: 7px;
-  border: solid 1px #1B3B57;
-}
-
-.purchase-form label{
+.purchase-form label {
   color: #1B3B57;
   font-size: medium;
   font-weight: 500;
+  margin-right: 3px;
 }
 
-.purchase-form input:focus-visible{
-  outline: none;
+.purchase-form input:focus-visible {outline:none;}
+
+.purchase-form input:focus {border:solid 1px #F3B500;}
+
+#amount-txt {margin-left:5px;}
+
+#purchase-btn {
+  background-color: #F3B500;
+  border: none;
+  padding: 9px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-.purchase-form input:focus{
-  border: solid 1px #F3B500;
-}
+#purchase-btn:hover {color: white;}
 
-#amount-txt{
-  margin-left:5px;
-}
+.services-form { margin-bottom:7px;}
 
-#purchase-btn{
+#services-title {align-items: center; color: #1B3B57;}
+
+#services {background-color: #F3B500;color: white;}
+
+#services:hover {background-color: #1B3B57;cursor: pointer;}
+
+#services:hover {background-color: #1B3B57;cursor: pointer;}
+
+.revenue-section {display: block;}
+
+#revenue-title {align-items: center;color: #1B3B57;}
+
+.revenue-form {display: inline;}
+
+.revenue-form input {margin-right: 7px;border: solid 1px #1B3B57;}
+
+.revenue-form input:focus-visible {outline: none;}
+
+.revenue-form input:focus {border: solid 1px #F3B500;}
+
+#reload-btn {
   background-color: #F3B500;
   border: none;
   padding: 3px;
   cursor: pointer;
 }
 
-#purchase-btn:hover{
-  color: white;
-}
+#reload-btn:hover {color: white;}
 
-.services-form{
-  margin-bottom: 7px;
-}
-
-
-
-#services-title{
-  align-items: center;
-  color: #1B3B57;
-}
-#services{
-  background-color: #F3B500;
-  color: white;
-}
-
-#services:hover{
-  background-color: #1B3B57;
-  cursor: pointer;
-}
-
-#services:hover{
-  background-color: #1B3B57;
-  cursor: pointer;
-}
-
-.revenue-section{
-  display: block;
-}
-
-#revenue-title{
-  align-items: center;
-  color: #1B3B57;
-}
-
-.revenue-form{
-  display: inline;
-}
-
-.revenue-form input {
-  margin-right: 7px;
-  border: solid 1px #1B3B57;
-}
-
-.revenue-form input:focus-visible{
-  outline: none;
-}
-
-.revenue-form input:focus{
-  border: solid 1px #F3B500;
-}
-
-#reload-btn{
-  background-color: #F3B500;
-  border: none;
-  padding: 3px;
-  cursor: pointer;
-}
-
-#reload-btn:hover{
-  color: white;
-}
-
-.export-section{
-  margin-top: 1em;
-  margin-bottom: 2em;
-}
+.export-section {margin-top: 1em; margin-bottom: 2em;}
 
 .export-section button{
   margin-right: 10px;
@@ -148,47 +90,29 @@
   color: white;
 }
 
-.export-section button:hover{
-  filter: brightness(1.5);
-}
+.export-section button:hover {filter: brightness(1.5);}
 
-.transactions-form{
-  margin-bottom: 7px;
-}
+.transactions-form {margin-bottom: 7px;}
 
-#entries{
-  background-color: #F3B500;
-  color: white;
-}
+#entries {background-color: #F3B500; color: white;}
 
-#transactions-title{
-  align-items: center;
-  color: #1B3B57;
-}
-#transactions{
-  background-color: #F3B500;
-  color: white;
-}
+#transactions-title {align-items: center; color: #1B3B57;}
 
-#transactions:hover{
-  background-color: #1B3B57;
-  cursor: pointer;
-}
+#transactions { background-color: #F3B500; color: white;}
 
-#entries:hover{
-  background-color: #1B3B57;
-  cursor: pointer;
-}
+#transactions:hover {background-color: #1B3B57; cursor: pointer;}
 
-@media(max-width:768px){
-  .purchase-form label{
+#entries:hover {background-color: #1B3B57; cursor: pointer;}
+
+@media(max-width:768px) {
+  .purchase-form label {
     display: block;
     margin-bottom: 0.2em;
     font-size: x-large;
     font-weight: 500;
   }
 
-  .purchase-form button{
+  .purchase-form button {
     display: block;
     margin: 0 auto;
     margin-top: 1em;
@@ -196,26 +120,26 @@
     padding: 2em;
   }
 
-  .purchase-form input{
+  .purchase-form input {
     font-size: medium;
     padding: 0.7em;
     border-radius: 0.6em;
   }
-  .purchase-form select{
+  .purchase-form select {
     padding: 0.5em;
     border: none;
     border-radius: 0.6em;
   }
 
   /*--Revenue form--*/
-  .revenue-form label{
+  .revenue-form label {
     display: block;
     margin-bottom: 0.2em;
     font-size: x-large;
     font-weight: 500;
   }
 
-  .revenue-form button{
+  .revenue-form button {
     display: block;
     margin: 0 auto;
     margin-top: 1em;
@@ -223,7 +147,7 @@
     padding: 2em;
   }
 
-  .revenue-form input{
+  .revenue-form input {
     font-size: medium;
     padding: 0.7em;
     border-radius: 0.6em; 
