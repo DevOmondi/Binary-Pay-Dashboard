@@ -1,5 +1,6 @@
 import * as React from "react";
-import { useState,createContext} from "react";
+import {TokenContext} from "../App";
+import { useState,useContext} from "react";
 import {useNavigate } from "react-router-dom";
 import axios from "axios";
 import Avatar from "@mui/material/Avatar";
@@ -18,7 +19,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import config from "../config";
 import { storeToken } from "../utilities/utilityFunctions";
-import ProtectedRoutes from "./ProtectedRoutes";
+
 
 function Copyright(props) {
   return (
@@ -39,55 +40,58 @@ function Copyright(props) {
 }
 
 const theme = createTheme();
-//create context (TokenContext)
-export const TokenContext=createContext(null);
 
 //Sign in component
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
-  const [token, setToken]=useState(null);
   const navigate = useNavigate();
- 
+  
+  //context logic
+  const tokenContext=useContext(TokenContext)
+  console.log("some :", tokenContext);
+
   const signInHandler = (e) => {
     e.preventDefault();
-    axios
-      .post(`${config.API_URL}/api/auth/login`, {
-        username: userName,
-        password: passWord,
-      })
+    fetch
+      (`${config.API_URL}/api/auth/login`,
+       {
+        method: "post",
+        body:JSON.stringify( 
+          {
+            username: userName,
+            password: passWord,
+          }
+        ),
+        headers: {"Content-Type":"application/json"}
+       })
       .then((response) => {
         if (response) {
-          console.log(response);
-          if (response.data && response.data.errorMessage) {
-            return alert(response.data.errorMessage);
+          console.log("token :",response?.headers.get("authorization"));
+          if (response.data && response?.data?.errorMessage) {
+            return alert(response?.data?.errorMessage);
           }
           if (response.data) alert(response.data.message);
-          if (response.headers) storeToken(response.headers.authorization);
-          /* //storing token in local storage
-          const jwtToken=response.headers.authorization;
+          //storing token in local storage
+          const jwtToken=response?.headers?.get("authorization");
           console.log(jwtToken)
           localStorage.setItem("token",jwtToken);
            //retrieve stored token
            const storedToken=localStorage.getItem("token");
            if(storedToken){
-            setToken(storedToken);
-           } */
+            tokenContext.setToken(storedToken);
+           }
            navigate("/dashboard", { replace: true });
         }
       })
       .catch((error) => {
         console.log("error: ", error);
-        if (error.response.data) alert(error.response.data.errorMessage);
+        if (error?.response?.data) alert(error?.response?.data?.errorMessage);
       });
   };
  
   return (
     <>
-    {/* wrap calling component in context provider */}
-    <TokenContext.Provider value={token}>
-      <ProtectedRoutes/>
-    </TokenContext.Provider>
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -144,17 +148,15 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
               onClick={signInHandler}
+              // onSubmit={handleRouteGuard}
             >
               Sign In
             </Button>
             <Grid container>
               <Grid item>
-                 <Link href="/forgot-password" variant="body2">
-                  {"Forgot password? Worry less and tap here already"}
-                </Link> <br/>
-                <Link href="/signup" variant="body2">
-                  {"Don't have an account? sign up!!"}
-                </Link> 
+                {/* <Link href="/signup" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link> */}
               </Grid>
             </Grid>
           </Box>
@@ -162,8 +164,8 @@ export default function SignIn() {
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
-   </>
-  );
-}
+  </>
+  )};
+
 
 

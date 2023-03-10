@@ -76,11 +76,11 @@ export default function AdminRegister() {
           }}
         >
           <img src={Logo} alt="binary-pay-logo"></img>
-          <Typography component="h1" variant="h5" className="reset-new">
+          <Typography component="h1" variant="h5">
             Register new user
           </Typography>
           <Typography component="p">
-            Enter user's email address, they will receive an email with
+            Enter users email address, they will receive an email with
             instructions.
           </Typography>
           <Box

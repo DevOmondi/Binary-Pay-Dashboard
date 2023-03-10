@@ -91,24 +91,21 @@ const Purchase = () => {
                   ))}
                 </select>
 
-                 <label id="amount-txt">Amount :</label>
-                 <input typeof="number" 
-                 onChange={(e) => setAmountPaid(e.target.value)}
-                ></input>
-                <button 
-                id='purchase-btn'
-                type='submit'
-                disabled={isLoading ? "disabled" : false}
-                >
-                SEND
-                </button>
-            </form>
-          </div>
-          {isLoading ? <PurchaseLoader/> : null} 
-       </div>  
-      </Paper>
-    </Grid>     
-  </>
- )
-}
+                             <label id="amount-txt">Amount :</label>
+                             <input typeof="number" onChange={(e) => setAmountPaid(e.target.value)} required></input>
+                             <button 
+                             id='purchase-btn'
+                             type='submit'
+                             >
+                              SEND
+                             </button>
+                          </form>
+                        </div>
+                 </div>
+            </Paper>
+        </Grid>     
+     </>
+    )
+
+};
 export default Purchase;

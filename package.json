@@ -8,10 +8,11 @@
     "api": "cd backend && npm start",
     "client": "cd binary-pay && npm start",
     "api:dev": "nodemon server.js",
-    "start": "pm2 start server.js",
+    "start": "node server.js",
     "restart": "pm2 restart server.js",
     "preinstall": "npm run gen:keypair",
-    "postinstall": "cd binary-pay && npm run build",
+    "postinstall": "cd binary-pay && npm i && npm run build:rollup",
+    "server-build": "cd binary-pay && build:rollup",
     "build": "cd binary-pay && npm run build",
     "gen:keypair": "node ./cryptography/generateKeypair.js"
   },
@@ -62,5 +63,16 @@
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
     "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "rollup": "^2.79.1",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-filesize": "^10.0.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-progress": "^1.1.2",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-visualizer": "^5.9.0"
   }
 }

@@ -1,12 +1,13 @@
 import { Navigate,Outlet} from "react-router-dom";
 import { useContext } from "react";
-import {TokenContext} from "./SignIn";
+import {TokenContext} from "../App";
 
 
 const ProtectedRoutes = ()=>{
-   const token=useContext(TokenContext)
+   const tokenContext=useContext(TokenContext)
+   console.log("some :", tokenContext);
     return(
-        token ? <Outlet/> : <Navigate  to="/"/>
+        tokenContext.token ? <Outlet/> : <Navigate  to="/"/>
     )   
 }
 
