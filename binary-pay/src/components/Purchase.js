@@ -1,51 +1,54 @@
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import { useState } from 'react';
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import { useState } from "react";
 import axios from "axios";
 import config from "../config";
 
 const Purchase = () => {
+  const services = {
+    "Safaricom Airtime": { serviceID: 101, serviceCode: "SAFCOM" },
+    "Airtel Airtime": { serviceID: 102, serviceCode: "AIRTEL" },
+    "Telkom Airtime": { serviceID: 103, serviceCode: "TELKOM" },
+    "KPLC Postpaid": { serviceID: 104, serviceCode: "KPLCPOSTPAID" },
+    "KPLC Prepaid": { serviceID: 105, serviceCode: " KPLCPREPAID" },
+  };
+  const [accountNumber, setAccountNumber] = useState("");
+  const [amountPaid, setAmountPaid] = useState("");
+  const [payload, setPayload] = useState({});
 
-   const services = {
-      "Safaricom Airtime": { serviceID: 101, serviceCode: "SAFCOM" },
-      "Airtel Airtime": { serviceID: 102, serviceCode: "AIRTEL" },
-      "Telkom Airtime": { serviceID: 103, serviceCode: "TELKOM" },
-      "KPLC Postpaid": { serviceID: 104, serviceCode: "KPLCPOSTPAID" },
-      "KPLC Prepaid": { serviceID: 105, serviceCode: " KPLCPREPAID" },
-    };
-    const [accountNumber,setAccountNumber] = useState("");
-    const [amountPaid, setAmountPaid] = useState("");
-    const [payload, setPayload] = useState({});
-    
-    const changeServiceFunc = (event) => {
-      const _service = event.target.value;
+  const changeServiceFunc = (event) => {
+    const _service = event.target.value;
 
-      setPayload({
-        serviceCode: services[_service].serviceCode,
-        serviceID: services[_service].serviceID.toString(),
+    setPayload({
+      serviceCode: services[_service].serviceCode,
+      serviceID: services[_service].serviceID.toString(),
+    });
+  };
+
+  const purchaseHandler = (e) => {
+    e.preventDefault();
+    if (
+      !accountNumber ||
+      !amountPaid ||
+      !payload?.serviceCode ||
+      !payload?.serviceID
+    ) {
+      return alert("Sorry! Some deails are missing.");
+    }
+    axios
+      .post(`${config.API_URL}/api/transaction/purchase`, {
+        accountNumber: accountNumber,
+        amountPaid: amountPaid,
+        serviceCode: payload.serviceCode,
+        serviceID: payload.serviceID,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        return alert("Ooops!!! looks like something went wrong");
       });
-    };
-    
-   
-   const purchaseHandler = (e) => {
-      e.preventDefault();
-      axios.post(
-         `${config.API_URL}/api/transaction/purchase`,
-         {
-            accountNumber:accountNumber,
-            amountPaid:amountPaid,
-            serviceCode:payload.serviceCode,
-            serviceID: payload.serviceID
-         }
-      )
-      .then(response => {
-         console.log(response)
-       })
-       .catch(error => {
-         return alert("Ooops!!! looks like something went wrong")
-       })
-   };
-
+  };
 
     return(
      <>
@@ -58,15 +61,22 @@ const Purchase = () => {
                              <label>Phone number :</label>
                              <input typeof="number" onChange={(e) => setAccountNumber(e.target.value)} placeholder="254xxxxxxxxx" required></input> 
 
-                             <label htmlFor='services'>Type of Service:</label>
-                               <select id="services" onChange={changeServiceFunc}>
-                                <option selected value="" hidden disabled>--select service--</option> 
-                                 {Object.keys(services).map((_service) => (
-                                    <option key={_service} value={_service}>
-                                    {_service}
-                                    </option>
-                                 ))}
-                               </select>
+
+                <label htmlFor="services">Type of Service:</label>
+                <select
+                  id="services"
+                  onChange={changeServiceFunc}
+                  defaultValue=""
+                >
+                  <option value="" hidden disabled>
+                    --select service--
+                  </option>
+                  {Object.keys(services).map((_service) => (
+                    <option key={_service} value={_service}>
+                      {_service}
+                    </option>
+                  ))}
+                </select>
 
                              <label id="amount-txt">Amount :</label>
                              <input typeof="number" onChange={(e) => setAmountPaid(e.target.value)} required></input>
@@ -83,5 +93,6 @@ const Purchase = () => {
         </Grid>     
      </>
     )
+
 };
-  export default Purchase;
+export default Purchase;

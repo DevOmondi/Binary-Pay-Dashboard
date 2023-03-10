@@ -43,7 +43,9 @@ export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
   const navigate = useNavigate();
-  
+  // const handleRouteGuard = () => {
+  //   setLoggedIn(!loggedIn);
+  // };
 
   const signInHandler = (e) => {
     e.preventDefault();
@@ -127,23 +129,22 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
               onClick={signInHandler}
-              
-              
+              // onSubmit={handleRouteGuard}
             >
               Sign In
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="/signup" variant="body2">
+                {/* <Link href="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
-                </Link>
+                </Link> */}
               </Grid>
             </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
+      {/* <RequireAuth loggedIn={loggedIn} /> */}
     </ThemeProvider>
-    
   );
 }

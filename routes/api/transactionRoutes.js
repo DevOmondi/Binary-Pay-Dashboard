@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { CustomError } = require("../../utility");
 const logger = require("../../logger");
 const PurchaseRequest = require("../../models/purchaseRequests");
+const emailNotifications = require("../../emailing/emailNotifications");
 
 require("dotenv").config({
   path: path.join(__dirname, "../../.env"),
@@ -109,13 +110,6 @@ const getProvider = (_accNo) => {
 };
 // helper functions
 const purchaseTransaction = (_payload) => {
-  console.log("request: ", {
-    serviceID: _payload.serviceID,
-    serviceCode: _payload.serviceCode,
-    msisdn: formatAccNumber(_payload.accountNumber),
-    accountNumber: formatAccNumber(_payload.accountNumber),
-    amountPaid: _payload.amountPaid,
-  });
   const reqObject = JSON.stringify({
     Credentials: {
       merchantCode: process.env.MERCHANT_CODE,
@@ -143,26 +137,25 @@ const purchaseTransaction = (_payload) => {
       },
       url: process.env.PAYMENT_API,
       data: reqObject,
-    }).then((_response) => {
+    }).then(async (_response) => {
       // store response and request body
-      // const _newPurchase = new PurchaseRequest({
-      //   purchaseBody: reqObject,
-      //   response: _response,
-      // });
+      const _newPurchase = new PurchaseRequest({
+        purchaseBody: JSON.parse(reqObject),
+        response: _response.data,
+      });
 
-      // _newPurchase.save().then((_res) => {
-      //   console.log("succesfully saved purchase");
-      //   logger.info("succesfully saved purchase");
-      // });
+      return await _newPurchase.save().then((_res) => {
+        console.log("succesfully saved purchase");
+        logger.info("succesfully saved purchase");
 
-      const _data = _response.data;
-      if (_data.status === "200") {
-        logger.info("Succesfully purchased from favoured");
-        return _data;
-      }
-
-      console.log(_data);
-      throw new CustomError(_data.message, "paymentError");
+        const _data = _response.data;
+        if (_data.status === "200") {
+          logger.info("Succesfully purchased from favoured");
+          return _data;
+        }
+        console.log(_data);
+        return { error: _data };
+      });
     });
   } catch (error) {
     logger.error("failed to make: " + error.message);
@@ -200,6 +193,13 @@ const transactionRoutes = (Transaction, Confirmation) => {
 
   transactionsRouter.route("/purchase").post(async (req, res) => {
     try {
+      if (!req.body.accountNumber || !req.body.amountPaid) {
+        logger.info("Purchase request failed, Missing info: " + req.body);
+        res.status(400).json({
+          errorMessage:
+            "Missing info from purchase request. Amount and account number are required.",
+        });
+      }
       const _transaction = {
         date: new Date(),
         accountNumber: req.body.accountNumber,
@@ -207,25 +207,49 @@ const transactionRoutes = (Transaction, Confirmation) => {
         statusCompleted: false,
       };
 
-      const _response = await purchaseTransaction(req.body);
-      if (_response.error) {
-        console.log("problem: ", _response._error);
-        logger.info("Failed " + _response._error);
-        throw _response.error;
+      const _accountProvider = getProvider(req.body.accountNumber);
+
+      if (_accountProvider) {
+        logger.info("Provider Set: " + _accountProvider);
+        logger.info("Service Provider details: " + services[_accountProvider]);
+
+        const _purchaseBody = {
+          serviceID: services[_accountProvider].serviceID,
+          serviceCode: services[_accountProvider].serviceCode,
+          msisdn: formatAccNumber(req.body.accountNumber),
+          accountNumber: formatAccNumber(req.body.accountNumber),
+          amountPaid: `${parseInt(req.body.amountPaid)}`,
+        };
+
+        logger.info("Initiating purchase for: " + _purchaseBody);
+
+        const _response = await purchaseTransaction(_purchaseBody);
+
+        if (_response.error) {
+          console.log("problem: ", _response._error);
+          logger.info("Failed " + _response._error);
+          throw _response.error;
+        }
+        _transaction.statusCompleted = true;
+        _transaction.response = _response;
+
+        const _newTransaction = new Transaction({
+          ..._transaction,
+          response: _response,
+        });
+
+        _newTransaction.save().then((_data) => {
+          console.log("some: ", _data);
+          logger.info("Succesful transaction " + _data);
+          res.status(200).json(_response);
+        });
+      } else {
+        logger.info("Confirmation failed: provider details false.");
+        res.status(500).json({
+          errorMessage: "Confirmation failed: provider details false.",
+          details: req.body,
+        });
       }
-      _transaction.statusCompleted = true;
-      _transaction.response = _response;
-
-      const _newTransaction = new Transaction({
-        ..._transaction,
-        response: _response,
-      });
-
-      _newTransaction.save().then((_data) => {
-        console.log("some: ", _data);
-        logger.info("Succesful transaction " + _data);
-        res.status(200).json(_response);
-      });
     } catch (_err) {
       // TODO: log error
       logger.error(_err);
@@ -302,8 +326,8 @@ const transactionRoutes = (Transaction, Confirmation) => {
   });
 
   transactionsRouter.route("/confirmation").post(async (req, res) => {
-    console.log("confirmation: ", req.body);
-    logger.info("confirmation request ,mpesa payment: " + req.body);
+    const _host = req.protocol + "://" + req.get("host") + "/";
+    logger.info("confirmation request, mpesa payment: " + req.body);
     try {
       if (req.body) {
         const _accountProvider = getProvider(req.body.BillRefNumber);
@@ -338,8 +362,14 @@ const transactionRoutes = (Transaction, Confirmation) => {
           const _response = await purchaseTransaction(_purchaseBody);
           if (_response.error) {
             console.log("error: ", _response.error);
-            logger.info("Error completing transaction " + _response.error);
+            logger.info("Error completing purchase " + _response.error);
             // TODO: record send email for transaction to be manually done
+            emailNotifications("failedTransaction", {
+              redirectUrl: _host + "",
+              transactionNumber: req.body.TransID,
+              transactionDate: new Date(),
+              amount: req.body.TransAmount,
+            });
             console.log("do manual transaction");
             return res.json({
               ResponseCode: "1",
@@ -352,18 +382,18 @@ const transactionRoutes = (Transaction, Confirmation) => {
 
           let _transaction = await Transaction.findOneAndUpdate(
             { "details.TransID": req.body.TransID },
-            { $set: { response: _response } },
+            { $set: { response: _response, statusCompleted: true } },
             { new: true, runValidators: true }
           ).then((_res) => {
-            logger.info("succesfully saved to DB: " + _res.json());
-            console.log("succesfully saved to DB: " + _res.json());
+            logger.info("succesfully saved to DB: " + _res);
+            console.log("succesfully saved to DB: " + _res);
             return res.json({
               ResponseCode: 0,
               ResultDesc: "",
             });
           });
 
-          console.log(_transaction.json());
+          // console.log(_transaction.json());
           // _transaction.statusCompleted = true;
           // _transaction.response = _response;
           // {
@@ -427,6 +457,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
       })
       .then((_res) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");
+        logger.info("Float balance fetched: ", _float.join("."));
         res.status(200).json({
           message: _float.join("."),
         });

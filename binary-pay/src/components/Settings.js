@@ -1,22 +1,27 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import * as React from "react";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
       <Link color="inherit" href="#">
         Binary Pay
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 }
@@ -28,8 +33,37 @@ export default function SignIn() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      password: data.get('password')
+      password: data.get("password"),
     });
+
+    // axios
+    //   .post(
+    //     // import config
+    //     `${config.API_URL}/api/auth/password-update`,
+
+    //     {
+    //       // implement state and bind
+    //       currentPassword: currentPassword,
+    //       password: registerPassword,
+    //       cPassword: confirmPassword,
+    //     },
+    //     // TODO: fetch token from where it is stored and assign to tkn value
+    //     { headers: { tkn } }
+    //   )
+    //   .then((response) => {
+    //     if (response) {
+    //       if (response.data && response.data.errorMessage) {
+    //         return alert(response.data.errorMessage);
+    //       }
+    //       if (response.data) alert(response.data.message);
+    //       // declare navigate
+    //       navigate("/dashboard", { replace: true });
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     // console.log(error);
+    //     if (error.response.data) alert(error.response.data.errorMessage);
+    //   });
   };
 
   return (
@@ -39,17 +73,21 @@ export default function SignIn() {
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-         
           <Typography component="h1" variant="h5">
             Change Password
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -60,7 +98,7 @@ export default function SignIn() {
               autoComplete="current-password"
             />
 
-          <TextField
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -68,10 +106,9 @@ export default function SignIn() {
               label="New Password"
               type="password"
               id="new-password"
-              
             />
 
-           <TextField
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -81,7 +118,7 @@ export default function SignIn() {
               id="new-password"
               autoComplete="current-password"
             />
-           
+
             <Button
               type="submit"
               fullWidth
