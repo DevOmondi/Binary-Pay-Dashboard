@@ -1,24 +1,19 @@
 import * as React from "react";
-import { useState,createContext} from "react";
-import {useNavigate } from "react-router-dom";
-import axios from "axios";
-import Avatar from "@mui/material/Avatar";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
+import axios from "axios";
 import config from "../config";
 import { storeToken } from "../utilities/utilityFunctions";
-import ProtectedRoutes from "./ProtectedRoutes";
 
 function Copyright(props) {
   return (
@@ -39,55 +34,69 @@ function Copyright(props) {
 }
 
 const theme = createTheme();
-//create context (TokenContext)
-export const TokenContext=createContext(null);
 
-//Sign in component
-export default function SignIn() {
-  const [userName, setUserName] = useState("");
-  const [passWord, setPassWord] = useState("");
-  const [token, setToken]=useState(null);
+export default function SignUp() {
+  const [registerUsername, setRegisterUsername] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [validToken, setValidToken] = useState(false);
   const navigate = useNavigate();
- 
-  const signInHandler = (e) => {
+
+  const signUpHandler = (e) => {
     e.preventDefault();
+    // check if token verified to an email
+    if (userEmail) {
+      axios
+        .post(`${config.API_URL}/api/auth/self-register`, {
+          email: userEmail,
+          username: registerUsername,
+          password: registerPassword,
+          cPassword: confirmPassword,
+        })
+        .then((response) => {
+          if (response) {
+            if (response.data && response.data.errorMessage) {
+              return alert(response.data.errorMessage);
+            }
+            if (response.data) alert(response.data.message);
+            if (response.headers) storeToken(response.headers.authorization);
+            navigate("/dashboard", { replace: true });
+          }
+        })
+        .catch((error) => {
+          // console.log(error);
+          if (error.response.data) alert(error.response.data.errorMessage);
+        });
+    }
+  };
+
+  React.useEffect(() => {
+    // get token from url params
+    const queryString = window.location.search;
+    const tkn = new URLSearchParams(queryString).get("validation");
+
+    // confirm token validity
     axios
-      .post(`${config.API_URL}/api/auth/login`, {
-        username: userName,
-        password: passWord,
+      .get(`${config.API_URL}/api/auth/self-register/`, {
+        headers: { tkn },
       })
       .then((response) => {
         if (response) {
-          console.log(response);
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
-          if (response.data) alert(response.data.message);
-          if (response.headers) storeToken(response.headers.authorization);
-          /* //storing token in local storage
-          const jwtToken=response.headers.authorization;
-          console.log(jwtToken)
-          localStorage.setItem("token",jwtToken);
-           //retrieve stored token
-           const storedToken=localStorage.getItem("token");
-           if(storedToken){
-            setToken(storedToken);
-           } */
-           navigate("/dashboard", { replace: true });
+          setUserEmail(response.data.email);
+          return setValidToken(true);
         }
       })
       .catch((error) => {
-        console.log("error: ", error);
+        // console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
       });
-  };
- 
+  }, []);
+
   return (
-    <>
-    {/* wrap calling component in context provider */}
-    <TokenContext.Provider value={token}>
-      <ProtectedRoutes/>
-    </TokenContext.Provider>
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -100,15 +109,15 @@ export default function SignIn() {
           }}
         >
           <img src={Logo} alt="binary-pay-logo"></img>
-          <Avatar sx={{ m: 1, bgcolor: "#F3B500", color: "#1B3B57" }}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Complete Registration
+          </Typography>
+          <Typography component="p">
+            Fill in details to complete registration
           </Typography>
           <Box
             component="form"
-            onSubmit={signInHandler}
+            onSubmit={signUpHandler}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -121,7 +130,7 @@ export default function SignIn() {
               name="username"
               autoComplete="username"
               autoFocus
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => setRegisterUsername(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -132,38 +141,34 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
-              onChange={(e) => setPassWord(e.target.value)}
+              onChange={(e) => setRegisterPassword(e.target.value)}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="cPassword"
+              label="Confirm Password"
+              type="password"
+              id="cPassword"
+              autoComplete="current-password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
-              onClick={signInHandler}
+              onClick={signUpHandler}
             >
-              Sign In
+              Sign Up
             </Button>
-            <Grid container>
-              <Grid item>
-                 <Link href="/forgot-password" variant="body2">
-                  {"Forgot password? Worry less and tap here already"}
-                </Link> <br/>
-                <Link href="/signup" variant="body2">
-                  {"Don't have an account? sign up!!"}
-                </Link> 
-              </Grid>
-            </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
-   </>
   );
 }
-
-

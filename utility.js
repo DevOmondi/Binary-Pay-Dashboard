@@ -2,10 +2,11 @@ const User = require("./models/userModel");
 
 class CustomError extends Error {
   // generate customized error messages and codes
-  constructor(message, name, ...params) {
+  constructor(message, name, status = 400, ...params) {
     super(...params);
     this.name = name;
     this.message = message;
+    this.status = status;
   }
 }
 
@@ -13,6 +14,19 @@ const getUserByUsername = async (username) => {
   // check across the three account collections to find user with given username
   const handleError = (err) => (err ? err : null);
   return await User.findOne({ username })
+    .then((user) => {
+      if (user && user !== undefined) {
+        return user;
+      }
+      return;
+    })
+    .catch((err) => handleError(err));
+};
+
+const getUserByEmail = async (email) => {
+  // check across the three account collections to find user with given username
+  const handleError = (err) => (err ? err : null);
+  return await User.findOne({ email })
     .then((user) => {
       if (user && user !== undefined) {
         return user;
@@ -50,5 +64,6 @@ module.exports = {
   CustomError,
   getUserByDBId,
   getUserByUsername,
+  getUserByEmail,
   verifyAuth,
 };

@@ -1,5 +1,11 @@
 .App {text-align:center;}
 
+.reset-user {
+          margin-top: 20px;
+          margin-bottom: 10px; 
+          font-size: x-large;
+        }
+      
 #white-logo {margin-left:2.5rem;}
 
 .icon {color:white;}
@@ -9,6 +15,10 @@
 #Transactions-link {text-decoration:none; color:white;}
 
 #Settings-link {text-decoration:none; color:white;}
+
+#RegisterUser-link {text-decoration: none; color: white;}
+
+#Logout-link {text-decoration: none; color: white;}
 
 .purchase-section { display:block;}
 
