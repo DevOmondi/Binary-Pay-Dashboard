@@ -57,7 +57,7 @@ export default function SignIn() {
       })
       .then((response) => {
         if (response) {
-          console.log(response);
+          console.log(response.headers);
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
