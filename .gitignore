@@ -4,6 +4,5 @@ backend/.env
 # build
 *.pem
 *.log
-
-
-
+validation.txt
+confirmation.txt

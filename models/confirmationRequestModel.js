@@ -1,13 +1,14 @@
-const { Schema, model } = require("mongoose");
+const confirmationRequestSchema = (sequelize, Sequelize) => {
+  const Confirmation = sequelize.define(
+    "Confirmation",
+    {
+      confirmationDetails: { type: Sequelize.JSON },
+      purchaseBody: { type: Sequelize.JSON },
+    },
+    { timestamps: true }
+  );
 
-const ConfirmationRequestSchema = Schema(
-  {
-    confirmationDetails: { type: Object },
-    purchaseBody: { type: Object },
-  },
-  {
-    timestamps: true,
-  }
-);
+  return Confirmation;
+};
 
-module.exports = model("Confirmation", ConfirmationRequestSchema);
+module.exports = confirmationRequestSchema;

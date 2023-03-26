@@ -1,9 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
+const passport = require("passport");
 
 const {
   CustomError,
@@ -11,6 +11,7 @@ const {
   getUserByEmail,
   getUserByDBId,
 } = require("../../utility");
+
 const logger = require("../../logger");
 const emailNotifications = require("../../emailing/emailNotifications");
 const pathToKey = path.join(__dirname, "../../cryptography/id_rsa_priv.pem");
@@ -19,7 +20,8 @@ const pubKeyPath = path.join(__dirname, "../../cryptography/id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pubKeyPath, "utf-8");
 
 const issueJwt = (id) => {
-  const expiresIn = "2d";
+  const expiresIn = "1h";
+
   const payload = {
     sub: id,
     iat: Date.now(),
@@ -53,11 +55,10 @@ const authRoutes = (User) => {
         .status(400)
         .json({ errorMessage: "Credentials provided are incorect" });
     }
-
     try {
       if (await bcrypt.compare(req.body.password, user.password)) {
         // issue jwt return user with jwt header
-        const jwtToken = issueJwt(user._id);
+        const jwtToken = issueJwt(user.id);
         delete user.password;
         return res
           .header("Authorization", jwtToken.token)
@@ -76,30 +77,28 @@ const authRoutes = (User) => {
   // admin registration for users
   authRouter.route("/admin-register").post(async (req, res) => {
     try {
-      // const _host = req.protocol + "://" + req.get("host") + "/";
-      const _host = "http://localhost:3000/";
+      const _host = req.protocol + "://" + req.get("host") + "/";
 
       const sendRegistrationEmail = (_user) => {
+        const _redirectLink =
+          _host + `self-register?validation=${issueVerificationJwt(_user.id)}`;
+
         // send email
         return emailNotifications(
           "newRegisteredUser",
           {
-            redirectUrl:
-              _host +
-              `self-register?validation=${issueVerificationJwt(_user._id)}`,
+            redirectUrl: _redirectLink,
           },
           req.body.email
         ).then(() => {
-          // TODO: remove
-          console.log({
-            redirectUrl:
-              _host +
-              `self-register?validation=${issueVerificationJwt(_user._id)}`,
-          });
+          logger.info(
+            `Sent registration email to ${req.body.email}, URL: ${_redirectLink}`
+          );
           res.status(200).json({
             message: userExists
               ? "Email already in use. Resent email link."
               : "Successfull. Kindly alert user to check email.",
+            redirect: _redirectLink,
           });
         });
       };
@@ -116,13 +115,10 @@ const authRoutes = (User) => {
         return sendRegistrationEmail(userExists);
       }
 
-      const user = new User({
-        ...req.body,
-        username: req.body.email,
-      });
+      User.create({ ...req.body, username: req.body.email }).then((_res) => {
+        const _user = _res.toJSON();
 
-      user.save().then((_user) => {
-        console.log(_user);
+        logger.info("Saved new user: " + JSON.stringify(_user));
         return sendRegistrationEmail(_user);
       });
     } catch (_err) {
@@ -138,23 +134,24 @@ const authRoutes = (User) => {
       await User.findOne({ email: req.body.email }).then(async (_user) => {
         const _host = req.protocol + "://" + req.get("host") + "/";
         if (_user) {
+          const _redirectLink =
+            _host +
+            `self-register?validation=${issueVerificationJwt(_user.id)}`;
+
           return emailNotifications(
             "passwordReset",
             {
-              redirectUrl:
-                _host +
-                `reset-password?validation=${issueVerificationJwt(_user._id)}`,
+              redirectUrl: _redirectLink,
             },
             req.body.email
           ).then(() => {
-            console.log({
-              redirectUrl:
-                _host +
-                `reset-password?validation=${issueVerificationJwt(_user._id)}`,
+            logger.info(
+              `Sent password reset email to ${req.body.email}, URL: ${_redirectLink}`
+            );
+            res.status(200).json({
+              message: "Successfull. Kindly check your email.",
+              redirect: _redirectLink,
             });
-            res
-              .status(200)
-              .json({ message: "Successfull. Kindly check your email." });
           });
         }
         return res
@@ -463,20 +460,23 @@ const authRoutes = (User) => {
           const _user = await getUserByDBId(decodedPayload.sub);
 
           if (_user) {
-            const user = _user.toJSON();
-            delete user.password;
-            delete user._id;
+            delete _user.password;
+            delete _user.id;
+            delete _user.updatedAt;
+            delete _user.createdAt;
 
-            console.log(_user);
+            logger.info("Self registration for: " + _user.email);
             return res.status(200).json(_user);
           }
         }
+        logger.error("Self registration failed: Invalid Token");
         return res.status(400).json({
           errorMessage: "Sorry, invalid token.",
           type: "invalidToken",
         });
       } catch (_err) {
         console.log(_err);
+        logger.error("Self registration failed: " + JSON.stringify(_err));
         res.status(_err.status || 500).json({ errorMessage: _err.message });
       }
     })
@@ -507,29 +507,37 @@ const authRoutes = (User) => {
 
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-        await User.findOneAndUpdate(
-          { email: req.body.email },
-          {
-            $set: {
-              username: req.body.username,
-              password: hashedPassword,
-            },
-          },
-          { new: true, runValidators: true }
-        ).then((user) => {
-          const jwtToken = issueJwt(user._id);
-          delete user.password;
+        await User.findOne({ where: { email: req.body.email } }).then(
+          (_user) => {
+            if (_user) {
+              console.log(_user);
+              _user
+                .update({
+                  username: req.body.username,
+                  password: hashedPassword,
+                })
+                .then((user) => {
+                  const jwtToken = issueJwt(user.id);
+                  delete user.password;
 
-          return res
-            .header("Authorization", jwtToken.token)
-            .status(201)
-            .json({
-              message: user.username + " account successfully created.",
-              success: true,
-            });
-        });
+                  logger.info(
+                    "User " + user.email + " password updated successfully."
+                  );
+
+                  return res
+                    .header("Authorization", jwtToken.token)
+                    .status(201)
+                    .json({
+                      message: user.username + " account successfully created.",
+                      success: true,
+                    });
+                });
+            }
+          }
+        );
       } catch (error) {
         console.log(error);
+        logger.error(JSON.stringify(error));
         res.json({ errorMessage: error.message, code: error.name });
       }
     });
@@ -538,12 +546,15 @@ const authRoutes = (User) => {
     req.logOut();
     res
       .status(200)
-      .json({ message: "user succesfully logged out", success: true });
+      .json({ message: "User succesfully logged out", success: true });
   });
 
-  authRouter.route("/currentUser").get((req, res) => {
-    return res.status(200).json(req.user);
-  });
+  authRouter
+    .route("/currentUser")
+    .get(passport.authenticate("jwt", { session: false }), (req, res) => {
+      console.log("ss: ", req.user);
+      return res.status(200).json(req.user);
+    });
 
   return authRouter;
 };

@@ -46,7 +46,7 @@ export default function SignUp() {
     e.preventDefault();
 
     axios
-      .post(`${config.API_URL}/api/auth/register`, {
+      .post(`${config.API_URL}/auth/register`, {
         username: registerUsername,
         password: registerPassword,
         cPassword: confirmPassword,
@@ -57,7 +57,6 @@ export default function SignUp() {
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
-          if (response.data) alert(response.data.message);
           if (response.headers) storeToken(response.headers.authorization);
           navigate("/dashboard", { replace: true });
         }
