@@ -68,13 +68,15 @@ const Purchase = () => {
             <h1 id="purchase-title">Manual purchase</h1>
             <div>
               <form className="purchase-form" onSubmit={purchaseHandler}>
+                {/* phone number */}
                 <label>Phone number :</label>
                 <input
                   typeof="number"
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder="254xxxxxxxxx"
-                ></input>
-
+                >
+                </input>
+                 {/* service */}
                 <label htmlFor="services">Type of Service:</label>
                 <select
                   id="services"
@@ -90,22 +92,28 @@ const Purchase = () => {
                     </option>
                   ))}
                 </select>
-
-                             <label id="amount-txt">Amount :</label>
-                             <input typeof="number" onChange={(e) => setAmountPaid(e.target.value)} required></input>
-                             <button 
-                             id='purchase-btn'
-                             type='submit'
-                             >
-                              SEND
-                             </button>
-                          </form>
-                        </div>
-                 </div>
-            </Paper>
-        </Grid>     
-     </>
-    )
-
+                 {/* amount */}
+                <label id="amount-txt">Amount :</label>
+                <input 
+                 typeof="number"
+                 onChange={(e) => setAmountPaid(e.target.value)}
+                 required
+                >
+                </input>
+                <button 
+                id='purchase-btn'
+                type='submit'
+                >
+                SEND
+                </button>
+                </form> 
+              </div>
+               {/* loader implementation */}
+               {isLoading ? <PurchaseLoader/> : null} 
+        </div>
+      </Paper>   
+  </Grid>     
+</>
+)
 };
 export default Purchase;

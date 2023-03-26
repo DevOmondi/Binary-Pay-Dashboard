@@ -8,19 +8,23 @@ import AddBoxIcon from  '@mui/icons-material/AddBox';
 import LogoutIcon from "@mui/icons-material/Logout"
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from '@mui/material';
-import axios from 'axios';
 import config from "../config";
-
 
 /* TODO: Logout function */
 const logOutHandler=()=>{
-   axios
-       .get(`${config.API_URL}/api/auth/logout`)
-       .then(res => {
-        console.log(res.data);
-        /* return alert(res.data) */
-       })
+        fetch(`${config.API_URL}/api/auth/logout`,
+          {
+            method:"delete"
+          }
+        )
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error)
+         })
       }
+
 export const mainListItems = (
   <React.Fragment>
    <Link id='Dashboard-link' href='#'>

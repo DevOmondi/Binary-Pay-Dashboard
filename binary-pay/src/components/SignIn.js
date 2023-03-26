@@ -2,7 +2,6 @@ import * as React from "react";
 import {TokenContext} from "../App";
 import { useState,useContext} from "react";
 import {useNavigate } from "react-router-dom";
-import axios from "axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,7 +17,6 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import config from "../config";
-import { storeToken } from "../utilities/utilityFunctions";
 
 
 function Copyright(props) {
@@ -64,14 +62,17 @@ export default function SignIn() {
           }
         ),
         headers: {"Content-Type":"application/json"}
-       })
+       }
+      )
       .then((response) => {
         if (response) {
           console.log("token :",response?.headers.get("authorization"));
           if (response.data && response?.data?.errorMessage) {
             return alert(response?.data?.errorMessage);
           }
-          if (response.data) alert(response.data.message);
+         /*  if (response.data){
+            console.log(response.data.);
+          } */
           //storing token in local storage
           const jwtToken=response?.headers?.get("authorization");
           console.log(jwtToken)
@@ -79,6 +80,7 @@ export default function SignIn() {
            //retrieve stored token
            const storedToken=localStorage.getItem("token");
            if(storedToken){
+            console.log(storedToken);
             tokenContext.setToken(storedToken);
            }
            navigate("/dashboard", { replace: true });
@@ -103,7 +105,10 @@ export default function SignIn() {
             alignItems: "center",
           }}
         >
-          <img src={Logo} alt="binary-pay-logo"></img>
+          <img 
+           src={Logo} 
+           alt="binary-pay-logo"
+           ></img>
           <Avatar sx={{ m: 1, bgcolor: "#F3B500", color: "#1B3B57" }}>
             <LockOutlinedIcon />
           </Avatar>

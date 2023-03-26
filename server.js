@@ -14,7 +14,7 @@ const initializePassport = require("./passport-config");
 
 //Get environment variables and explicitly declare variables
 const port = process.env.PORT || 5001;
-const DB_URL = process.env.MONGODB_URI || "mongodb://localhost/binarypay";
+const DB_URL = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/binarypay";
 const app = express();
 const pathToKey = path.join(__dirname, "./cryptography/id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");

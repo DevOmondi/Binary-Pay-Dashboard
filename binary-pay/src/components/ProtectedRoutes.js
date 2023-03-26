@@ -5,10 +5,9 @@ import {TokenContext} from "../App";
 
 const ProtectedRoutes = ()=>{
    const tokenContext=useContext(TokenContext)
-   console.log("some :", tokenContext);
+   console.log("some :", tokenContext.token);
     return(
         tokenContext.token ? <Outlet/> : <Navigate  to="/"/>
     )   
 }
-
 export default ProtectedRoutes;
