@@ -39,8 +39,17 @@ const services = {
     serviceCode: " KPLCPREPAID",
   },
 };
+const recursiveRemoveSpace = (_accNumber) => {
+  if (_accNumber.split(" ").length > 1) {
+    _accNumber = _accNumber.split(" ").join("");
+    recursiveRemoveSpace(_accNumber);
+  }
+  return _accNumber;
+};
 
 const formatAccNumber = (_accNumber) => {
+  _accNumber = recursiveRemoveSpace(_accNumber);
+
   if (_accNumber[0] === "0") {
     let _temp = _accNumber.split("");
     _temp.splice(0, 1, "254");
