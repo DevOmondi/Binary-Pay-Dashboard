@@ -303,6 +303,99 @@ const transactionRoutes = (Transaction, Confirmation) => {
     }
   });
 
+  transactionsRouter.route("/bulk-purchase").post(async (req, res) => {
+    try {
+      if (req.body) {
+        const result = {
+          success: { total: 0, succeeded: [] },
+          fail: { total: 0, failed: [] },
+        };
+
+        for (const _transactionId in req.body.transactions) {
+          await Transaction.findOne({
+            where: { id: _transactionId },
+          }).then(async (_updateTransaction) => {
+            if (_updateTransaction) {
+              console.log("found: ", _updateTransaction);
+              const _accountProvider = getProvider(
+                _updateTransaction.accountNumber
+              );
+
+              if (_accountProvider) {
+                logger.info("Provider Set: " + _accountProvider);
+                logger.info(
+                  "Service Provider details: " + services[_accountProvider]
+                );
+
+                const _purchaseBody = {
+                  serviceID: services[_accountProvider].serviceID,
+                  serviceCode: services[_accountProvider].serviceCode,
+                  msisdn: formatAccNumber(_updateTransaction.accountNumber),
+                  accountNumber: formatAccNumber(
+                    _updateTransaction.accountNumber
+                  ),
+                  amountPaid: `${parseInt(_updateTransaction.amount)}`,
+                };
+
+                logger.info(
+                  "Initiating purchase for: " + JSON.stringify(_purchaseBody)
+                );
+
+                const _response = await purchaseTransaction(_purchaseBody);
+
+                if (!_response.error) {
+                  _updateTransaction
+                    .update({
+                      response: _response,
+                      ref: _response.ref_no,
+                      statusComplete: true,
+                    })
+                    .then((_res) => {
+                      logger.info(
+                        "succesfully saved to DB: " + JSON.stringify(_res)
+                      );
+                      logger.info(
+                        "Succesful transaction " +
+                          JSON.stringify(_data.toJSON())
+                      );
+
+                      result.success.total += 1;
+                      result.fail.success = [
+                        ...result.fail.success,
+                        _transactionId,
+                      ];
+                    });
+                }
+                result.fail.total += 1;
+                result.fail.failed = [...result.fail.failed, _transactionId];
+
+                logger.info("Failed " + _response._error);
+              } else {
+                logger.info("Confirmation failed: provider details false.");
+                res.status(500).json({
+                  errorMessage: "Confirmation failed: provider details false.",
+                  details: req.body,
+                });
+              }
+            } else {
+              logger.info(
+                "Could not find initial transaction for: " +
+                  JSON.stringify(req.body)
+              );
+            }
+          });
+        }
+        res.status(200).json(result);
+      }
+    } catch (_err) {
+      logger.error(_err);
+      console.log(_err);
+      res.status(500).json({
+        errorMessage: "Sorry an error occured. Please try again.",
+      });
+    }
+  });
+
   transactionsRouter.route("/validation").post(async (req, res) => {
     try {
       try {
