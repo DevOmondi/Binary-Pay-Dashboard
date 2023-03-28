@@ -1,9 +1,9 @@
-import { Navigate} from "react-router-dom";
+import { Navigate,Outlet} from "react-router-dom";
 import { useContext } from "react";
 import {TokenContext} from "../App";
 
 
-const ProtectedRoutes = ({children})=>{
+const ProtectedRoutes = ()=>{
    const tokenContext=useContext(TokenContext)
    console.log("some :", tokenContext.token);
     // if (tokenContext.token===null){
@@ -11,7 +11,7 @@ const ProtectedRoutes = ({children})=>{
     // }
     // return children;
     return (
-        tokenContext.token ? children : <Navigate to="/"/>
+        tokenContext.token ? <Outlet/> : <Navigate to="/"/>
     )
 }
 export default ProtectedRoutes;
