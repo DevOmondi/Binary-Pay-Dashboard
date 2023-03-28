@@ -55,7 +55,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 initializePassport(passport);
 
-//connect to database and crate tables if they don't exist
+//connect to database and create tables if they don't exist
 db.sequelize
   .sync()
   .then(() => {

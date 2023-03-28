@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { useState,createContext } from "react";
+import { useState,createContext} from "react";
 import Dashboard from "./components/Dashboard";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
@@ -23,14 +23,27 @@ const [token, setToken]=useState(null);
       {/* wrap calling components in provider  */}
      <TokenContext.Provider value={{token,setToken}}>
      <Routes>
-        <Route element={<ProtectedRoutes/>}> 
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
+        {/* <Route element={<ProtectedRoutes/>}>  */}
+           <Route path="/dashboard" element={<Dashboard />} />
+           {/* <Route 
+            path="/settings"
+            element={
+                      <ProtectedRoutes>
+                          <Settings/>
+                      </ProtectedRoutes>
+                    } 
+            />  */}
         <Route path="/" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/self-register" element={<SelfRegister />} />
-        <Route path="/admin-register" element={<AdminRegister />} />
+        <Route 
+         path="/admin-register"
+         element={
+             <ProtectedRoutes>
+               <AdminRegister />
+             </ProtectedRoutes>
+           } 
+         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>

@@ -1,3 +1,4 @@
+
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -60,6 +61,7 @@ const authRoutes = (User) => {
         // issue jwt return user with jwt header
         const jwtToken = issueJwt(user.id);
         delete user.password;
+
         return res
           .header("Authorization", jwtToken.token)
           .json({ message: `${user.username} successfully logged in.` });
@@ -275,162 +277,6 @@ const authRoutes = (User) => {
       });
     }
   });
-  // password reset
-  authRouter.route("/password-update").post(async (req, res) => {
-    try {
-      const _host = req.protocol + "://" + req.get("host") + "/";
-
-      if (!req.headers?.tkn) {
-        return res.status(400).json({
-          errorMessage: "Sorry, invalid token.",
-          type: "invalidToken",
-        });
-      }
-
-      const decodedPayload = jwt.verify(
-        req.headers.tkn,
-        PUB_KEY,
-        (_err, _decoded) => {
-          if (_err) {
-            if (_err.name === "TokenExpiredError") {
-              throw new CustomError(
-                "Sorry, your session has expired. Get another email ?",
-                "Invalid Token"
-              );
-            }
-            throw new CustomError(
-              "Sorry, link is invalid. Get another email ?",
-              "Invalid Token"
-            );
-          }
-          return _decoded;
-        }
-      );
-
-      const _user = await User.findOne({ _id: decodedPayload.sub }).then(
-        async (_res) => {
-          if (await bcrypt.compare(req.body.currentPassword, _res.password)) {
-            const salt = await bcrypt.genSalt();
-            const hashedPassword = await bcrypt.hash(req.body.password, salt);
-            _res.password = hashedPassword;
-            return _res;
-          }
-          return res.json({
-            errorMessage: "Credentials provided are incorect",
-          });
-        }
-      );
-      _user.save().then((_res) => {
-        res.status(200).json({
-          redirectUrl: _host,
-          message: "Password successfully updated.",
-        });
-      });
-    } catch (_err) {
-      return res.json({
-        errorMessage: _err.message,
-      });
-    }
-  });
-
-  // registration endpoint for all account types
-  authRouter
-    .route("/self-register")
-    .get(async (req, res) => {
-      try {
-        if (req.headers?.tkn) {
-          const decodedPayload = jwt.verify(
-            req.headers.tkn,
-            PUB_KEY,
-            (_err, _decoded) => {
-              if (_err) {
-                if (_err.name === "TokenExpiredError") {
-                  throw new CustomError(
-                    "Sorry, your session has expired. Get another email.",
-                    "Invalid Token"
-                  );
-                }
-                throw new CustomError(
-                  "Sorry, link is invalid. Get another email.",
-                  "Invalid Token"
-                );
-              }
-              return _decoded;
-            }
-          );
-          const _user = await getUserByDBId(decodedPayload.sub);
-
-          if (_user) {
-            const user = _user.toJSON();
-            delete user.password;
-            delete user._id;
-
-            console.log(_user);
-            return res.status(200).json(_user);
-          }
-        }
-        return res.status(400).json({
-          errorMessage: "Sorry, invalid token.",
-          type: "invalidToken",
-        });
-      } catch (_err) {
-        console.log(_err);
-        res.status(_err.status || 500).json({ errorMessage: _err.message });
-      }
-    })
-    .post(async (req, res) => {
-      // request body must contain a password and a  username
-      try {
-        const salt = await bcrypt.genSalt();
-        if (req.body.password !== req.body.cPassword) {
-          throw new CustomError("Password Mismatch.", "Password Mismatch");
-        }
-
-        if (!req.body.password || !req.body.username) {
-          throw new CustomError(
-            "Password and username required.",
-            "Missing Field"
-          );
-        }
-
-        // check if username already in use
-        const userExists = await getUserByUsername(req.body.username);
-        if (userExists && userExists.email !== req.body.email) {
-          // return res.status(400).json({ message: "Username already in use" });
-          throw new CustomError(
-            "Username already in use.",
-            "Unavailable username"
-          );
-        }
-
-        const hashedPassword = await bcrypt.hash(req.body.password, salt);
-
-        await User.findOneAndUpdate(
-          { email: req.body.email },
-          {
-            $set: {
-              username: req.body.username,
-              password: hashedPassword,
-            },
-          },
-          { new: true, runValidators: true }
-        ).then((user) => {
-          const jwtToken = issueJwt(user._id);
-          delete user.password;
-
-          return res
-            .header("Authorization", jwtToken.token)
-            .status(201)
-            .json({
-              message: user.username + " account successfully created.",
-              success: true,
-            });
-        });
-      } catch (error) {
-        console.log(error);
-        res.json({ errorMessage: error.message, code: error.name });
-      }
-    });
 
   // registration endpoint for all account types
   authRouter

@@ -66,6 +66,7 @@ export default function SignIn() {
       )
       .then((response) => {
         if (response) {
+          console.log(response)
           console.log("token :",response?.headers.get("authorization"));
           if (response.data && response?.data?.errorMessage) {
             return alert(response?.data?.errorMessage);
@@ -75,15 +76,22 @@ export default function SignIn() {
           } */
           //storing token in local storage
           const jwtToken=response?.headers?.get("authorization");
-          console.log(jwtToken)
-          localStorage.setItem("token",jwtToken);
-           //retrieve stored token
-           const storedToken=localStorage.getItem("token");
-           if(storedToken){
-            console.log(storedToken);
-            tokenContext.setToken(storedToken);
+          // console.log(jwtToken)
+          // localStorage.setItem("token",jwtToken);
+          //  //retrieve stored token
+          //  const storedToken=localStorage.getItem("token");
+          //  if(storedToken){
+          //   console.log(storedToken);
+            tokenContext.setToken(jwtToken);
+          //  }
+           if(response.status===200){
+            navigate("/dashboard", { replace: true });
+            return alert("Welcome!! successfully logged in :)")
            }
-           navigate("/dashboard", { replace: true });
+           else{
+            navigate("/", { replace: true });
+            return alert("Sorry!! couldn't log you in :(")
+           }
         }
       })
       .catch((error) => {
@@ -91,6 +99,7 @@ export default function SignIn() {
         if (error?.response?.data) alert(error?.response?.data?.errorMessage);
       });
   };
+  console.log(tokenContext);
  
   return (
     <>
@@ -153,15 +162,14 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
               onClick={signInHandler}
-              // onSubmit={handleRouteGuard}
             >
               Sign In
             </Button>
             <Grid container>
               <Grid item>
-                {/* <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link> */}
+                <Link href="/forgot-password" variant="body2">
+                  {"Forgot Password? Click here"}
+                </Link>
               </Grid>
             </Grid>
           </Box>

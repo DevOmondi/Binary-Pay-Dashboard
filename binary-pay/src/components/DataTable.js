@@ -7,6 +7,7 @@
            return(
                <DataGrid
                 autoHeight
+                checkboxSelection={true}
                 rows={rows}
                 columns={columns}
                 pageSize={pageSize}
@@ -15,7 +16,7 @@
                 pagination
                 disableSelectionOnClick
                 experimentalFeatures={{ newEditingApi: true }}
-                getRowId= {row => row._id}
+                getRowId= {row => row.id}
                />
           )
  }

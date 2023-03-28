@@ -109,7 +109,7 @@ const Purchase = () => {
                 </form> 
               </div>
                {/* loader implementation */}
-               {isLoading ? <PurchaseLoader/> : null} 
+               {isLoading && <PurchaseLoader/> } 
         </div>
       </Paper>   
   </Grid>     

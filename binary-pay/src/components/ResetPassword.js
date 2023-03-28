@@ -85,7 +85,7 @@ export default function SignUp() {
 
     // confirm token validity
     axios
-      .get(`${config.API_URL}/api/auth/self-register/`, {
+      .get(`${config.API_URL}/api/auth/password-reset/`, {
         headers: { tkn },
       })
       .then((response) => {
