@@ -1,7 +1,7 @@
 import * as React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import {TokenContext} from "../App";
+import { useState,useContext} from "react";
+import {useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -17,7 +17,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import config from "../config";
-import { storeToken } from "../utilities/utilityFunctions";
+
 
 function Copyright(props) {
   return (
@@ -39,40 +39,70 @@ function Copyright(props) {
 
 const theme = createTheme();
 
+//Sign in component
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
   const navigate = useNavigate();
-  // const handleRouteGuard = () => {
-  //   setLoggedIn(!loggedIn);
-  // };
+  
+  //context logic
+  const tokenContext=useContext(TokenContext)
+  console.log("some :", tokenContext);
 
   const signInHandler = (e) => {
     e.preventDefault();
-
-    axios
-      .post(`${config.API_URL}/auth/login`, {
-        username: userName,
-        password: passWord,
-      })
+    fetch
+      (`${config.API_URL}/api/auth/login`,
+       {
+        method: "post",
+        body:JSON.stringify( 
+          {
+            username: userName,
+            password: passWord,
+          }
+        ),
+        headers: {"Content-Type":"application/json"}
+       }
+      )
       .then((response) => {
         if (response) {
-          console.log(response.headers);
-          if (response.data && response.data.errorMessage) {
-            return alert(response.data.errorMessage);
+          console.log(response)
+          console.log("token :",response?.headers.get("authorization"));
+          if (response.data && response?.data?.errorMessage) {
+            return alert(response?.data?.errorMessage);
           }
-          if (response.data) alert(response.data.message);
-          if (response.headers) storeToken(response.headers.authorization);
-          navigate("/dashboard", { replace: true });
+         /*  if (response.data){
+            console.log(response.data.);
+          } */
+          //storing token in local storage
+          const jwtToken=response?.headers?.get("authorization");
+          // console.log(jwtToken)
+          // localStorage.setItem("token",jwtToken);
+          //  //retrieve stored token
+          //  const storedToken=localStorage.getItem("token");
+          //  if(storedToken){
+          //   console.log(storedToken);
+            tokenContext.setToken(jwtToken);
+          //  }
+           if(response.status===200){
+            navigate("/dashboard", { replace: true });
+            return alert("Welcome!! successfully logged in :)")
+           }
+           else{
+            navigate("/", { replace: true });
+            return alert("Sorry!! couldn't log you in :(")
+           }
         }
       })
       .catch((error) => {
         console.log("error: ", error);
-        if (error.response.data) alert(error.response.data.errorMessage);
+        if (error?.response?.data) alert(error?.response?.data?.errorMessage);
       });
   };
-
+  console.log(tokenContext);
+ 
   return (
+    <>
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -84,7 +114,10 @@ export default function SignIn() {
             alignItems: "center",
           }}
         >
-          <img src={Logo} alt="binary-pay-logo"></img>
+          <img 
+           src={Logo} 
+           alt="binary-pay-logo"
+           ></img>
           <Avatar sx={{ m: 1, bgcolor: "#F3B500", color: "#1B3B57" }}>
             <LockOutlinedIcon />
           </Avatar>
@@ -129,22 +162,23 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
               onClick={signInHandler}
-              // onSubmit={handleRouteGuard}
             >
               Sign In
             </Button>
             <Grid container>
               <Grid item>
-                {/* <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link> */}
+                <Link href="/forgot-password" variant="body2">
+                  {"Forgot Password? Click here"}
+                </Link>
               </Grid>
             </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
-      {/* <RequireAuth loggedIn={loggedIn} /> */}
     </ThemeProvider>
-  );
-}
+  </>
+  )};
+
+
+

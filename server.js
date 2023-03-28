@@ -17,6 +17,7 @@ const initializePassport = require("./passport-config");
 
 //Get environment variables and explicitly declare variables
 const port = process.env.PORT || 5001;
+const DB_URL = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/binarypay";
 const app = express();
 const pathToKey = path.join(__dirname, "./cryptography/id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
@@ -54,7 +55,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 initializePassport(passport);
 
-//connect to database and crate tables if they don't exist
+//connect to database and create tables if they don't exist
 db.sequelize
   .sync()
   .then(() => {

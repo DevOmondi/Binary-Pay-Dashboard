@@ -1,10 +1,17 @@
-import { Navigate,Outlet} from "react-router-dom";
+import { Navigate} from "react-router-dom";
+import { useContext } from "react";
+import {TokenContext} from "../App";
 
-const ProtectedRoutes = ()=>{
-   let auth = {"token": true}
-    return(
-        auth.token ? <Outlet/> : <Navigate  to="/"/>
-    )   
+
+const ProtectedRoutes = ({children})=>{
+   const tokenContext=useContext(TokenContext)
+   console.log("some :", tokenContext.token);
+    // if (tokenContext.token===null){
+    // return <Navigate to="/"/>
+    // }
+    // return children;
+    return (
+        tokenContext.token ? children : <Navigate to="/"/>
+    )
 }
-
 export default ProtectedRoutes;

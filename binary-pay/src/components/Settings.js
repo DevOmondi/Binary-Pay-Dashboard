@@ -1,5 +1,8 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
+import { useState,useNavigate } from "react";
+import axios from "axios";
+import config from "../config";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
@@ -28,42 +31,48 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignIn() {
-  const handleSubmit = (event) => {
+export default function Settings() {
+  /* state management for keyed in data */
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate=useNavigate();
+
+  const changePassword = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       password: data.get("password"),
     });
 
-    // axios
-    //   .post(
-    //     // import config
-    //     `${config.API_URL}/api/auth/password-update`,
+    axios
+      .post(
+        // import config
+        `${config.API_URL}/api/auth/password-update`,
 
-    //     {
-    //       // implement state and bind
-    //       currentPassword: currentPassword,
-    //       password: registerPassword,
-    //       cPassword: confirmPassword,
-    //     },
-    //     // TODO: fetch token from where it is stored and assign to tkn value
-    //     { headers: { tkn } }
-    //   )
-    //   .then((response) => {
-    //     if (response) {
-    //       if (response.data && response.data.errorMessage) {
-    //         return alert(response.data.errorMessage);
-    //       }
-    //       if (response.data) alert(response.data.message);
-    //       // declare navigate
-    //       navigate("/dashboard", { replace: true });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     // console.log(error);
-    //     if (error.response.data) alert(error.response.data.errorMessage);
-    //   });
+        {
+          // implement state and bind
+          currentPassword: currentPassword,
+          password: registerPassword,
+          cPassword: confirmPassword,
+        },
+        // TODO: fetch token from where it is stored and assign to tkn value
+        /* { headers: { tkn } } */
+      )
+      .then((response) => {
+        if (response) {
+          if (response.data && response.data.errorMessage) {
+            return alert(response.data.errorMessage);
+          }
+          if (response.data) alert(response.data.message);
+          // declare navigate
+          navigate("/dashboard", { replace: true });
+        }
+      })
+      .catch((error) => {
+        // console.log(error);
+        if (error.response.data) alert(error.response.data.errorMessage);
+      }); 
   };
 
   return (
@@ -83,7 +92,7 @@ export default function SignIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={changePassword}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -96,6 +105,7 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e)=> setCurrentPassword(e.target.value)}
             />
 
             <TextField
@@ -115,8 +125,9 @@ export default function SignIn() {
               name="password"
               label="Confirm Password"
               type="password"
-              id="new-password"
+              id="confirm-new-password"
               autoComplete="current-password"
+              onChange={(e)=> setConfirmPassword(e.target.value)}
             />
 
             <Button

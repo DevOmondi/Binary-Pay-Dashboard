@@ -89,7 +89,23 @@ function DashboardContent() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  React.useEffect(() => {
+    // Define the media query
+    const mediaQuery = window.matchMedia("(max-width: 600px)");
 
+    // Add a listener to the media query
+    const handleMediaQueryChange = mql => {
+      if (mql.matches) {
+        toggleDrawer();
+      }
+    };
+    mediaQuery.addListener(handleMediaQueryChange);
+
+    // Clean up function to remove the listener when the component unmounts
+    return () => {
+      mediaQuery.removeListener(handleMediaQueryChange);
+    };
+  });
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
@@ -105,7 +121,7 @@ function DashboardContent() {
               edge="start"
               color="inherit"
               aria-label="open drawer"
-              onClick={toggleDrawer}
+              //onClick={toggleDrawer}
               sx={{
                 color:"1B3B57",
                 marginRight: '36px',
