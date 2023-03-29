@@ -110,7 +110,6 @@ const authRoutes = (User) => {
 
       // check if email already in use
       const userExists = await getUserByEmail(req.body.email);
-      console.log("sss: ", userExists);
 
       if (userExists) {
         return sendRegistrationEmail(userExists);
@@ -355,7 +354,6 @@ const authRoutes = (User) => {
         await User.findOne({ where: { email: req.body.email } }).then(
           (_user) => {
             if (_user) {
-              console.log(_user);
               _user
                 .update({
                   username: req.body.username,
@@ -398,7 +396,6 @@ const authRoutes = (User) => {
   authRouter
     .route("/currentUser")
     .get(passport.authenticate("jwt", { session: false }), (req, res) => {
-      console.log("ss: ", req.user);
       return res.status(200).json(req.user);
     });
 

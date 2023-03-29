@@ -1,6 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
-import { useState,useNavigate } from "react";
+import { useState } from "react";
 import axios from "axios";
 import config from "../config";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -36,14 +36,14 @@ export default function Settings() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate=useNavigate();
+  // const navigate=useNavigate();
 
   const changePassword = (event) => {
+    const authTkn=sessionStorage.getItem("tkn");
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      password: data.get("password"),
-    });
+      password: data.get("password")
+  
 
     axios
       .post(
@@ -56,8 +56,7 @@ export default function Settings() {
           password: registerPassword,
           cPassword: confirmPassword,
         },
-        // TODO: fetch token from where it is stored and assign to tkn value
-        /* { headers: { tkn } } */
+       {Authorization:`Bearer ${authTkn}`}
       )
       .then((response) => {
         if (response) {
@@ -66,11 +65,10 @@ export default function Settings() {
           }
           if (response.data) alert(response.data.message);
           // declare navigate
-          navigate("/dashboard", { replace: true });
+          // navigate("/dashboard", { replace: true });
         }
       })
       .catch((error) => {
-        // console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
       }); 
   };
@@ -116,6 +114,7 @@ export default function Settings() {
               label="New Password"
               type="password"
               id="new-password"
+              onChange={(e)=> setRegisterPassword(e.target.value)}
             />
 
             <TextField

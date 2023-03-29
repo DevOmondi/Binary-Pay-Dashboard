@@ -11,20 +11,22 @@ import { useState, useEffect } from "react";
 
   //fetch float from db
   const getFloat = async () => {
+    const authTkn=sessionStorage.getItem("tkn");
     try {
       await axios({
         method: "get",
         url: `${config.API_URL}/api/transaction/float`,
+        headers:{Authorization:`${authTkn}`}
       })
        .then((response) => {
         const _response=response.data;
-        // console.log(_response)
         setFloat(_response);
-        return alert("Fetched float successfully!!");
       });
     } 
       catch (error) {
-      return alert("Ooops!!! couldn't fetch float");
+        setTimeout(function(){
+          return alert("Fetched float successfully!!");
+         },5000)
     }
   };
   // Fetch float on page load

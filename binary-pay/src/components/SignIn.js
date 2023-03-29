@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
+// import PurchaseLoader from "./PurchaseLoader";
+import Backdrop from "./BackDrop";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -41,10 +43,12 @@ const theme = createTheme();
 export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const signInHandler = (e) => {
     e.preventDefault();
+    setIsLoading(true);
     fetch(`${config.API_URL}/api/auth/login`, {
       method: "post",
       body: JSON.stringify({
@@ -62,11 +66,16 @@ export default function SignIn() {
           if (response.status === 200) {
             const jwtToken = response?.headers?.get("authorization");
             sessionStorage.setItem("tkn", jwtToken);
-            navigate("/dashboard", { replace: true });
-            return alert("Welcome!! successfully logged in :)");
+            setTimeout(
+              function(){
+                navigate("/dashboard", { replace: true });
+              },4000)
+            // return alert("Welcome!! successfully logged in :)",handleAlertClick());
           } else {
             navigate("/", { replace: true });
-            return alert("Sorry!! couldn't log you in :(");
+            setTimeout(function(){
+              return alert("Sorry!! couldn't log you in :(", handleAlertClick());
+            },4000)
           }
         }
       })
@@ -75,11 +84,15 @@ export default function SignIn() {
         if (error?.response?.data) alert(error?.response?.data?.errorMessage);
       });
   };
+  const handleAlertClick = ()=>{
+    setIsLoading(false)
+  }
 
   return (
     <>
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
+         {isLoading && <Backdrop/> }
           <CssBaseline />
           <Box
             sx={{

@@ -54,6 +54,7 @@
   padding: 9px;
   cursor: pointer;
   border-radius: 5px;
+  font-size: bold;
 }
 
 #purchase-btn:hover {color: white;}
@@ -85,6 +86,18 @@
   border: none;
   padding: 3px;
   cursor: pointer;
+}
+
+#bulk-purchase-btn{
+  background-color: #F3B500;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  margin: 16px;
+}
+
+#bulk-purchase-btn:hover{
+  color:white;
 }
 
 #reload-btn:hover {color: white;}
@@ -167,5 +180,12 @@
     font-size: x-large;
     font-weight: 500;
     margin-right: 0.5em;
+  }
+  #bulk-purchase-btn{
+    background-color: #F3B500;
+    border: none;
+    padding: 9px;
+    cursor: pointer;
+    border-radius: 5px;
   }
 }

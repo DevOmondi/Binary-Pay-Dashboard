@@ -5,7 +5,6 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
-// import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -13,7 +12,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import axios from "axios";
 import config from "../config";
-// import { storeToken } from "../utilities/utilityFunctions";
 
 function Copyright(props) {
   return (
@@ -38,7 +36,7 @@ const theme = createTheme();
 export default function AdminRegister() {
   const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
-  // console.log("loc: ", location);
+ 
 
   const signUpHandler = (e) => {
     e.preventDefault();
@@ -49,7 +47,6 @@ export default function AdminRegister() {
       })
       .then((response) => {
         if (response) {
-          console.log(response);
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
@@ -58,7 +55,7 @@ export default function AdminRegister() {
         }
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
       });
   };

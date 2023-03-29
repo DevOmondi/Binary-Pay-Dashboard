@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
+const passport = require("passport");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
@@ -234,7 +235,7 @@ const getToken = () => {
 const transactionRoutes = (Transaction, Confirmation) => {
   const transactionsRouter = express.Router();
 
-  transactionsRouter.route("/purchase").post(async (req, res) => {
+  transactionsRouter.route("/purchase").post(passport.authenticate("jwt", { session: false }),async (req, res) => {
     try {
       if (!req.body.accountNumber || !req.body.amountPaid) {
         logger.info("Purchase request failed, Missing info: " + req.body);
@@ -303,15 +304,16 @@ const transactionRoutes = (Transaction, Confirmation) => {
     }
   });
 
-  transactionsRouter.route("/bulk-purchase").post(async (req, res) => {
+  transactionsRouter.route("/bulk-purchase").post(passport.authenticate("jwt", { session: false }),async (req, res) => {
     try {
       if (req.body) {
+        console.log(req.body);
         const result = {
           success: { total: 0, succeeded: [] },
           fail: { total: 0, failed: [] },
         };
 
-        for (const _transactionId in req.body.transactions) {
+        for (let _transactionId of req.body.transactions) {
           await Transaction.findOne({
             where: { id: _transactionId },
           }).then(async (_updateTransaction) => {
@@ -541,7 +543,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
     }
   });
 
-  transactionsRouter.route("/history").get((req, res) => {
+  transactionsRouter.route("/history").get(passport.authenticate("jwt", { session: false }),(req, res) => {
     Transaction.findAll()
       .then((_res) => {
         let _transactionsList = [];
@@ -562,7 +564,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
       });
   });
 
-  transactionsRouter.route("/float").get((req, res) => {
+  transactionsRouter.route("/float").get(passport.authenticate("jwt", { session: false }),(req, res) => {
     Transaction.findOne({ order: [["updatedAt", "DESC"]] })
       .then((_res) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");

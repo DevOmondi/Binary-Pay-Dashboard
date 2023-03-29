@@ -4,6 +4,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export default function PurchaseLoader() {
   return (
-      <CircularProgress sx={{mt:"6px",color:"#F3B500"}}/>
+      <CircularProgress sx={{mt:"6px",color:"#F3B500",display:"block"}}/>
   );
 }

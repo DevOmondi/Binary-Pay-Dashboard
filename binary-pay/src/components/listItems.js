@@ -16,12 +16,10 @@ const logOutHandler = () => {
     method: "delete",
   })
     .then((response) => {
-      console.log(response);
       // delete token
       window.location.href = "/";
     })
     .catch((error) => {
-      console.log(error);
     });
 };
 
@@ -51,7 +49,7 @@ export const mainListItems = (
         <ListItemText primary="Register User" />
       </ListItemButton>
     </Link>
-    <Link id="Settings-link" href="/reset-password">
+    <Link id="Settings-link" href="/settings">
       <ListItemButton>
         <ListItemIcon>
           <SettingsIcon className="icon" />
