@@ -1,4 +1,3 @@
-
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
@@ -40,8 +39,17 @@ const services = {
     serviceCode: " KPLCPREPAID",
   },
 };
+const recursiveRemoveSpace = (_accNumber) => {
+  if (_accNumber.split(" ").length > 1) {
+    _accNumber = _accNumber.split(" ").join("");
+    recursiveRemoveSpace(_accNumber);
+  }
+  return _accNumber;
+};
 
 const formatAccNumber = (_accNumber) => {
+  _accNumber = recursiveRemoveSpace(_accNumber);
+
   if (_accNumber[0] === "0") {
     let _temp = _accNumber.split("");
     _temp.splice(0, 1, "254");
@@ -285,6 +293,99 @@ const transactionRoutes = (Transaction, Confirmation) => {
           errorMessage: "Confirmation failed: provider details false.",
           details: req.body,
         });
+      }
+    } catch (_err) {
+      logger.error(_err);
+      console.log(_err);
+      res.status(500).json({
+        errorMessage: "Sorry an error occured. Please try again.",
+      });
+    }
+  });
+
+  transactionsRouter.route("/bulk-purchase").post(async (req, res) => {
+    try {
+      if (req.body) {
+        const result = {
+          success: { total: 0, succeeded: [] },
+          fail: { total: 0, failed: [] },
+        };
+        for (const _transactionId in req.body.transactions) {
+          console.log(_transactionId);
+        }
+
+        for (const _transactionId in req.body.transactions) {
+          await Transaction.findOne({
+            where: { id: _transactionId },
+          }).then(async (_updateTransaction) => {
+            if (_updateTransaction && !_updateTransaction.statusComplete) {
+              const _accountProvider = getProvider(
+                _updateTransaction.accountNumber
+              );
+              if (_accountProvider) {
+                logger.info("Provider Set: " + _accountProvider);
+                logger.info(
+                  "Service Provider details: " +
+                    JSON.stringify(services[_accountProvider])
+                );
+                const _purchaseBody = {
+                  serviceID: services[_accountProvider].serviceID,
+                  serviceCode: services[_accountProvider].serviceCode,
+                  msisdn: formatAccNumber(_updateTransaction.accountNumber),
+                  accountNumber: formatAccNumber(
+                    _updateTransaction.accountNumber
+                  ),
+                  amountPaid: `${parseInt(_updateTransaction.amount)}`,
+                };
+                logger.info(
+                  "Initiating purchase for: " + JSON.stringify(_purchaseBody)
+                );
+
+                const _response = await purchaseTransaction(_purchaseBody);
+                if (!_response.error) {
+                  _updateTransaction
+                    .update({
+                      response: _response,
+                      ref: _response.ref_no,
+                      statusComplete: true,
+                    })
+                    .then((_res) => {
+                      logger.info(
+                        "successfully saved to DB: " + JSON.stringify(_res)
+                      );
+                      result.success.total = result.success.total + 1;
+                      result.success.succeeded = [
+                        ...result.success.succeeded,
+                        _transactionId,
+                      ];
+                    });
+                } else {
+                  result.fail.total = result.fail.total + 1;
+                  result.fail.failed = [...result.fail.failed, _transactionId];
+                  logger.info("Failed " + _response._error);
+                }
+              } else {
+                logger.info("Confirmation failed: provider details false.");
+                res.status(500).json({
+                  errorMessage: "Confirmation failed: provider details false.",
+                  details: req.body,
+                });
+              }
+            } else {
+              if (!_updateTransaction?.statusComplete) {
+                logger.info(
+                  "Already purchased: " + JSON.stringify(_transactionId)
+                );
+              } else {
+                logger.info(
+                  "Could not find initial transaction for: " +
+                    JSON.stringify(req.body)
+                );
+              }
+            }
+          });
+        }
+        res.status(200).json(result);
       }
     } catch (_err) {
       logger.error(_err);

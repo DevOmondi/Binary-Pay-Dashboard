@@ -1,7 +1,6 @@
 import * as React from "react";
-import {TokenContext} from "../App";
-import { useState,useContext} from "react";
-import {useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -17,7 +16,6 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../Website_logo.svg";
 import config from "../config";
-
 
 function Copyright(props) {
   return (
@@ -44,47 +42,32 @@ export default function SignIn() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
   const navigate = useNavigate();
-  
-  //context logic
-  const tokenContext=useContext(TokenContext)
-  console.log("some :", tokenContext);
 
   const signInHandler = (e) => {
     e.preventDefault();
-    fetch
-      (`${config.API_URL}/api/auth/login`,
-       {
-        method: "post",
-        body:JSON.stringify( 
-          {
-            username: userName,
-            password: passWord,
-          }
-        ),
-        headers: {"Content-Type":"application/json"}
-       }
-      )
+    fetch(`${config.API_URL}/api/auth/login`, {
+      method: "post",
+      body: JSON.stringify({
+        username: userName,
+        password: passWord,
+      }),
+      headers: { "Content-Type": "application/json" },
+    })
       .then((response) => {
         if (response) {
-          console.log(response)
-          console.log("token :",response?.headers.get("authorization"));
           if (response.data && response?.data?.errorMessage) {
             return alert(response?.data?.errorMessage);
           }
-         
-          //storing jwtToken in context
-          const jwtToken=response?.headers?.get("authorization");
-         
-          tokenContext.setToken(jwtToken);
-            // Login frontend validation
-           if(response.status===200){
+
+          if (response.status === 200) {
+            const jwtToken = response?.headers?.get("authorization");
+            sessionStorage.setItem("tkn", jwtToken);
             navigate("/dashboard", { replace: true });
-            return alert("Welcome!! successfully logged in :)")
-           }
-           else{
+            return alert("Welcome!! successfully logged in :)");
+          } else {
             navigate("/", { replace: true });
-            return alert("Sorry!! couldn't log you in :(")
-           }
+            return alert("Sorry!! couldn't log you in :(");
+          }
         }
       })
       .catch((error) => {
@@ -92,86 +75,80 @@ export default function SignIn() {
         if (error?.response?.data) alert(error?.response?.data?.errorMessage);
       });
   };
-  console.log(tokenContext);
- 
+
   return (
     <>
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <img 
-           src={Logo} 
-           alt="binary-pay-logo"
-           ></img>
-          <Avatar sx={{ m: 1, bgcolor: "#F3B500", color: "#1B3B57" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
+      <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
           <Box
-            component="form"
-            onSubmit={signInHandler}
-            noValidate
-            sx={{ mt: 1 }}
+            sx={{
+              marginTop: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              onChange={(e) => setUserName(e.target.value)}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              onChange={(e) => setPassWord(e.target.value)}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
-              onClick={signInHandler}
+            <img src={Logo} alt="binary-pay-logo"></img>
+            <Avatar sx={{ m: 1, bgcolor: "#F3B500", color: "#1B3B57" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <Box
+              component="form"
+              onSubmit={signInHandler}
+              noValidate
+              sx={{ mt: 1 }}
             >
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item>
-                <Link href="/forgot-password" variant="body2">
-                  {"Forgot Password? Click here"}
-                </Link>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                autoFocus
+                onChange={(e) => setUserName(e.target.value)}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                onChange={(e) => setPassWord(e.target.value)}
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
+                onClick={signInHandler}
+              >
+                Sign In
+              </Button>
+              <Grid container>
+                <Grid item>
+                  <Link href="/forgot-password" variant="body2">
+                    {"Forgot Password? Click here"}
+                  </Link>
+                </Grid>
               </Grid>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
-      </Container>
-    </ThemeProvider>
-  </>
-  )};
-
-
-
+          <Copyright sx={{ mt: 8, mb: 4 }} />
+        </Container>
+      </ThemeProvider>
+    </>
+  );
+}
