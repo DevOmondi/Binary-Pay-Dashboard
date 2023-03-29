@@ -310,9 +310,6 @@ const transactionRoutes = (Transaction, Confirmation) => {
           success: { total: 0, succeeded: [] },
           fail: { total: 0, failed: [] },
         };
-        for (const _transactionId in req.body.transactions) {
-          console.log(_transactionId);
-        }
 
         for (const _transactionId in req.body.transactions) {
           await Transaction.findOne({
