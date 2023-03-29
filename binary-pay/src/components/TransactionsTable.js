@@ -44,23 +44,7 @@ const columns = [
     width: 160,
     editable: true,
   },
-  {
-    field: 'Purchase',
-    renderCell: (cellValues)=> {
-      return (
-        <Button
-        variant='contained'
-        color='primary'
-        onClick={event => {
-        //  handleClick(event,cellValues)
-         }
-       }
-        >
-         Purchase
-        </Button>
-      )
-    }
-  }
+  
 ];
 
 

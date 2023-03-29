@@ -306,19 +306,20 @@ const transactionRoutes = (Transaction, Confirmation) => {
   transactionsRouter.route("/bulk-purchase").post(async (req, res) => {
     try {
       if (req.body) {
+        console.log(req.body);
         const result = {
           success: { total: 0, succeeded: [] },
           fail: { total: 0, failed: [] },
         };
+      
         for (const _transactionId in req.body.transactions) {
           console.log(_transactionId);
-        }
-
-        for (const _transactionId in req.body.transactions) {
           await Transaction.findOne({
             where: { id: _transactionId },
           }).then(async (_updateTransaction) => {
             if (_updateTransaction && !_updateTransaction.statusComplete) {
+              console.log(_updateTransaction)
+              console.log("idType: ",typeof(_transactionId));
               const _accountProvider = getProvider(
                 _updateTransaction.accountNumber
               );
