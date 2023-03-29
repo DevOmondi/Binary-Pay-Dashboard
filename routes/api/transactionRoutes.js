@@ -1,4 +1,3 @@
-
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
@@ -311,23 +310,24 @@ const transactionRoutes = (Transaction, Confirmation) => {
           success: { total: 0, succeeded: [] },
           fail: { total: 0, failed: [] },
         };
+        for (const _transactionId in req.body.transactions) {
+          console.log(_transactionId);
+        }
 
         for (const _transactionId in req.body.transactions) {
           await Transaction.findOne({
             where: { id: _transactionId },
           }).then(async (_updateTransaction) => {
-            if (_updateTransaction) {
-              console.log("found: ", _updateTransaction);
+            if (_updateTransaction && !_updateTransaction.statusComplete) {
               const _accountProvider = getProvider(
                 _updateTransaction.accountNumber
               );
-
               if (_accountProvider) {
                 logger.info("Provider Set: " + _accountProvider);
                 logger.info(
-                  "Service Provider details: " + services[_accountProvider]
+                  "Service Provider details: " +
+                    JSON.stringify(services[_accountProvider])
                 );
-
                 const _purchaseBody = {
                   serviceID: services[_accountProvider].serviceID,
                   serviceCode: services[_accountProvider].serviceCode,
@@ -337,13 +337,11 @@ const transactionRoutes = (Transaction, Confirmation) => {
                   ),
                   amountPaid: `${parseInt(_updateTransaction.amount)}`,
                 };
-
                 logger.info(
                   "Initiating purchase for: " + JSON.stringify(_purchaseBody)
                 );
 
                 const _response = await purchaseTransaction(_purchaseBody);
-
                 if (!_response.error) {
                   _updateTransaction
                     .update({
@@ -353,24 +351,19 @@ const transactionRoutes = (Transaction, Confirmation) => {
                     })
                     .then((_res) => {
                       logger.info(
-                        "succesfully saved to DB: " + JSON.stringify(_res)
+                        "successfully saved to DB: " + JSON.stringify(_res)
                       );
-                      logger.info(
-                        "Succesful transaction " +
-                          JSON.stringify(_data.toJSON())
-                      );
-
-                      result.success.total += 1;
-                      result.fail.success = [
-                        ...result.fail.success,
+                      result.success.total = result.success.total + 1;
+                      result.success.succeeded = [
+                        ...result.success.succeeded,
                         _transactionId,
                       ];
                     });
+                } else {
+                  result.fail.total = result.fail.total + 1;
+                  result.fail.failed = [...result.fail.failed, _transactionId];
+                  logger.info("Failed " + _response._error);
                 }
-                result.fail.total += 1;
-                result.fail.failed = [...result.fail.failed, _transactionId];
-
-                logger.info("Failed " + _response._error);
               } else {
                 logger.info("Confirmation failed: provider details false.");
                 res.status(500).json({
@@ -379,10 +372,16 @@ const transactionRoutes = (Transaction, Confirmation) => {
                 });
               }
             } else {
-              logger.info(
-                "Could not find initial transaction for: " +
-                  JSON.stringify(req.body)
-              );
+              if (!_updateTransaction?.statusComplete) {
+                logger.info(
+                  "Already purchased: " + JSON.stringify(_transactionId)
+                );
+              } else {
+                logger.info(
+                  "Could not find initial transaction for: " +
+                    JSON.stringify(req.body)
+                );
+              }
             }
           });
         }

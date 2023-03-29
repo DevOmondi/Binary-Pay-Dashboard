@@ -1,6 +1,5 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { useState,createContext} from "react";
 import Dashboard from "./components/Dashboard";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
@@ -9,23 +8,23 @@ import AdminRegister from "./components/AdminRegister";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import Settings from "./components/Settings";
-import ProtectedRoutes from "./components/ProtectedRoutes"; 
-
-//create token context
-export const TokenContext=createContext();
+import ProtectedRoutes from "./components/ProtectedRoutes";
 
 function App() {
-//implement token state
-const [token, setToken]=useState(null);
-
   return (
     <div className="App">
       {/* wrap calling components in provider  */}
-     <TokenContext.Provider value={{token,setToken}}>
-     <Routes>
+      <Routes>
         {/* <Route element={<ProtectedRoutes/>}>  */}
-           <Route path="/dashboard" element={<Dashboard />} />
-           {/* <Route 
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoutes>
+              <Dashboard />
+            </ProtectedRoutes>
+          }
+        />
+        {/* <Route 
             path="/settings"
             element={
                       <ProtectedRoutes>
@@ -36,18 +35,17 @@ const [token, setToken]=useState(null);
         <Route path="/" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/self-register" element={<SelfRegister />} />
-        <Route 
-         path="/admin-register"
-         element={
-             <ProtectedRoutes>
-               <AdminRegister />
-             </ProtectedRoutes>
-           } 
-         />
+        <Route
+          path="/admin-register"
+          element={
+            <ProtectedRoutes>
+              <AdminRegister />
+            </ProtectedRoutes>
+          }
+        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
-     </TokenContext.Provider>
     </div>
   );
 }
