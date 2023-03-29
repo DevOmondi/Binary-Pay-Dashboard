@@ -106,7 +106,7 @@ export default function ForgotPassword() {
               sx={{ mt: 3, mb: 2, backgroundColor: "#1B3B57" }}
               onClick={passwordResetHandler}
             >
-              Reset Password
+              Submit
             </Button>
           </Box>
         </Box>

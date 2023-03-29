@@ -13,15 +13,36 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 function App() {
   return (
     <div className="App">
+      {/* wrap calling components in provider  */}
       <Routes>
-        <Route element={<ProtectedRoutes />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
+        {/* <Route element={<ProtectedRoutes/>}>  */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoutes>
+              <Dashboard />
+            </ProtectedRoutes>
+          }
+        />
+        {/* <Route 
+            path="/settings"
+            element={
+                      <ProtectedRoutes>
+                          <Settings/>
+                      </ProtectedRoutes>
+                    } 
+            />  */}
         <Route path="/" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/self-register" element={<SelfRegister />} />
-        <Route path="/admin-register" element={<AdminRegister />} />
+        <Route
+          path="/admin-register"
+          element={
+            <ProtectedRoutes>
+              <AdminRegister />
+            </ProtectedRoutes>
+          }
+        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>

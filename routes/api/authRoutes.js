@@ -388,7 +388,8 @@ const authRoutes = (User) => {
     });
 
   authRouter.route("/logout").delete((req, res) => {
-    req.logOut();
+    // req.logOut();
+    //TODO: setup proper session logout
     res
       .status(200)
       .json({ message: "User succesfully logged out", success: true });

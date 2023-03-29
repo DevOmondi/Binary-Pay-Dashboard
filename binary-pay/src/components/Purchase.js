@@ -1,8 +1,10 @@
+import PurchaseLoader from "./PurchaseLoader";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import { useState } from "react";
+import { useState} from "react";
 import axios from "axios";
 import config from "../config";
+
 
 const Purchase = () => {
   const services = {
@@ -15,6 +17,7 @@ const Purchase = () => {
   const [accountNumber, setAccountNumber] = useState("");
   const [amountPaid, setAmountPaid] = useState("");
   const [payload, setPayload] = useState({});
+  const [isLoading,setIsLoading] = useState(false)
 
   const changeServiceFunc = (event) => {
     const _service = event.target.value;
@@ -24,7 +27,7 @@ const Purchase = () => {
       serviceID: services[_service].serviceID.toString(),
     });
   };
-
+  
   const purchaseHandler = (e) => {
     e.preventDefault();
     if (
@@ -35,6 +38,7 @@ const Purchase = () => {
     ) {
       return alert("Sorry! Some deails are missing.");
     }
+    setIsLoading(true);
     axios
       .post(`${config.API_URL}/api/transaction/purchase`, {
         accountNumber: accountNumber,
@@ -44,12 +48,18 @@ const Purchase = () => {
       })
       .then((response) => {
         console.log(response);
+        if(response.status === 200){
+          return alert("Transaction done successfully!!", handleAlertClick())
+        }
       })
       .catch((error) => {
-        return alert("Ooops!!! looks like something went wrong");
-      });
+        return alert("Ooops!!! looks like something went wrong", handleAlertClick());
+      });  
+      //function to stop loading after "ok" click on alert
+      const handleAlertClick = ()=> {
+        setIsLoading(false);
+      } 
   };
-
   return (
     <>
       <Grid item xs={12}>
@@ -58,13 +68,15 @@ const Purchase = () => {
             <h1 id="purchase-title">Manual purchase</h1>
             <div>
               <form className="purchase-form" onSubmit={purchaseHandler}>
+                {/* phone number */}
                 <label>Phone number :</label>
                 <input
                   typeof="number"
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder="254xxxxxxxxx"
-                ></input>
-
+                >
+                </input>
+                 {/* service */}
                 <label htmlFor="services">Type of Service:</label>
                 <select
                   id="services"
@@ -80,21 +92,28 @@ const Purchase = () => {
                     </option>
                   ))}
                 </select>
-
+                 {/* amount */}
                 <label id="amount-txt">Amount :</label>
-                <input
-                  typeof="number"
-                  onChange={(e) => setAmountPaid(e.target.value)}
-                ></input>
-                <button id="purchase-btn" type="submit">
-                  Purchase
+                <input 
+                 typeof="number"
+                 onChange={(e) => setAmountPaid(e.target.value)}
+                 required
+                >
+                </input>
+                <button 
+                id='purchase-btn'
+                type='submit'
+                >
+                SEND
                 </button>
-              </form>
-            </div>
-          </div>
-        </Paper>
-      </Grid>
-    </>
-  );
+                </form> 
+              </div>
+               {/* loader implementation */}
+               {isLoading && <PurchaseLoader/> } 
+        </div>
+      </Paper>   
+  </Grid>     
+</>
+)
 };
 export default Purchase;

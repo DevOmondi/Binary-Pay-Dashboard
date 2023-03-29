@@ -14,7 +14,11 @@ var XLSX = require("xlsx");
 
 
 const columns = [
-  { field: '_id', headerName: 'ID', width: 220 },
+  { 
+    field: 'ref', 
+    headerName: 'REF', 
+    width: 160 
+  },
   {
     field: 'accountNumber',
     headerName: 'Phone Number',
@@ -24,33 +28,21 @@ const columns = [
   {
     field: 'amount',
     headerName: 'Amount',
+    width: 60,
+    editable: true,
+  },
+  {
+    field: 'statusComplete',
+    headerName: 'Purchase Complete?',
     width: 110,
     editable: true,
   },
   {
-    field: 'date',
+    field: 'updatedAt',
     headerName: 'Date',
     type: 'date',
     width: 160,
     editable: true,
-  },
-  {
-    field: 'Reverse',
-    renderCell: (cellValues)=> {
-      return (
-        <Button
-        variant='contained'
-        color='primary'
-        onClick={event => {
-        //  handleClick(event,cellValues)
-         }
-       }
-        >
-         Reverse
-        </Button>
-      )
-    },
-    width:110
   },
   {
     field: 'Purchase',

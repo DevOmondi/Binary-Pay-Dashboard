@@ -1,10 +1,8 @@
-import { Navigate,Outlet} from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
-const ProtectedRoutes = ()=>{
-   let auth = {"token": true}
-    return(
-        auth.token ? <Outlet/> : <Navigate  to="/"/>
-    )   
-}
+const ProtectedRoutes = ({ children }) => {
+  const authTkn = sessionStorage.getItem("tkn");
 
+  return authTkn ? children : <Navigate to="/" />;
+};
 export default ProtectedRoutes;
