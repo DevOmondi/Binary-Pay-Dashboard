@@ -37,7 +37,6 @@ const theme = createTheme();
 
 export default function ForgotPassword() {
   const [userEmail, setUserEmail] = useState("");
-  // console.log("loc: ", location);
 
   const passwordResetHandler = (e) => {
     e.preventDefault();
@@ -48,7 +47,6 @@ export default function ForgotPassword() {
       })
       .then((response) => {
         if (response) {
-          console.log(response);
           if (response.data && response.data.errorMessage) {
             return alert(response.data.errorMessage);
           }
@@ -56,7 +54,6 @@ export default function ForgotPassword() {
         }
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.data) alert(error.response.data.errorMessage);
       });
   };

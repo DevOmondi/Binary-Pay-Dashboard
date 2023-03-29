@@ -47,18 +47,25 @@ export default function TransactionsTable() {
   
 
   const getTransactions = async () => {
+    const authTkn=sessionStorage.getItem("tkn")
+    console.log("session: ",authTkn);
     // e.preventDefault();
     try {
       const response = await axios.get(
-        `${config.API_URL}/api/transaction/history`
+        `${config.API_URL}/api/transaction/history`,
+        { headers:{"Authorization":`${authTkn}`}}
       );
       const _data = response.data;
       console.log(_data);
       setTransactions(_data);
-      return alert("Fetched Transactions successfully :)")
+      setTimeout(function(){
+        return alert("Fetched Transactions successfully :)")
+      },3000)
     } catch (error) {
       console.log(error);
-      return alert("Ooops!! looks like something went wrong :(")
+      setTimeout(function(){
+        return alert("Ooops!! looks like something went wrong :(")
+      },3000)
     }
   };
 

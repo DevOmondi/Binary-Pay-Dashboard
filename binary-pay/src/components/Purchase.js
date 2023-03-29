@@ -1,4 +1,4 @@
-import PurchaseLoader from "./PurchaseLoader";
+import Backdrop from "./BackDrop";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import { useState} from "react";
@@ -29,6 +29,7 @@ const Purchase = () => {
   };
   
   const purchaseHandler = (e) => {
+    const authTkn=sessionStorage.getItem("tkn");
     e.preventDefault();
     if (
       !accountNumber ||
@@ -40,20 +41,26 @@ const Purchase = () => {
     }
     setIsLoading(true);
     axios
-      .post(`${config.API_URL}/api/transaction/purchase`, {
-        accountNumber: accountNumber,
-        amountPaid: amountPaid,
-        serviceCode: payload.serviceCode,
-        serviceID: payload.serviceID,
-      })
+      .post(`${config.API_URL}/api/transaction/purchase`,
+          {
+            accountNumber: accountNumber,
+            amountPaid: amountPaid,
+            serviceCode: payload.serviceCode,
+            serviceID: payload.serviceID,
+          },
+       {headers:{"Authorization":`${authTkn}`}}
+      )
       .then((response) => {
-        console.log(response);
         if(response.status === 200){
-          return alert("Transaction done successfully!!", handleAlertClick())
+          setTimeout(function(){
+            return alert("Transaction completed successfully!! :)", handleAlertClick());
+          },3000)
         }
       })
       .catch((error) => {
-        return alert("Ooops!!! looks like something went wrong", handleAlertClick());
+       setTimeout(function(){
+        return alert("Ow Snap!!! looks like something went wrong :(", handleAlertClick());
+       },3000)
       });  
       //function to stop loading after "ok" click on alert
       const handleAlertClick = ()=> {
@@ -64,6 +71,7 @@ const Purchase = () => {
     <>
       <Grid item xs={12}>
         <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+          {isLoading && <Backdrop/>}
           <div className="purchase-section">
             <h1 id="purchase-title">Manual purchase</h1>
             <div>
@@ -108,8 +116,6 @@ const Purchase = () => {
                 </button>
                 </form> 
               </div>
-               {/* loader implementation */}
-               {isLoading && <PurchaseLoader/> } 
         </div>
       </Paper>   
   </Grid>     

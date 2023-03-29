@@ -16,12 +16,10 @@ const logOutHandler = () => {
     method: "delete",
   })
     .then((response) => {
-      console.log(response);
       // delete token
       window.location.href = "/";
     })
     .catch((error) => {
-      console.log(error);
     });
 };
 

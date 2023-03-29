@@ -2,11 +2,7 @@
  import {useState} from "react"
  import { DataGrid } from "@mui/x-data-grid";
  import config from "../config";
-import Backdrop from "./BackDrop";
-//  import PurchaseLoader from "./PurchaseLoader";
-
- 
-
+ import Backdrop from "./BackDrop";
 
  const DataTable = ({rows,columns})=>{
   const [pageSize, setPageSize] = React.useState(10);
@@ -14,51 +10,53 @@ import Backdrop from "./BackDrop";
   const [failedList,setFailedList]= useState([])
   const [purchaseArray, setPurchaseArray] = useState([])
 
-  //Create loading conte
-  
   // Pick ids of selected rows
   const onRowsSelectionHandler = (ids) => {
     const selectedRowsData = ids.map((id) => rows.find((row) => row.id === id));
-    console.log(selectedRowsData);
     selectedRowsData.map((selectedRowData)=> {
       const selectedRowId = selectedRowData.id;
-      console.log(selectedRowId)
       setPurchaseArray([...purchaseArray,selectedRowId]);
     } )
 
   };
-  console.log(purchaseArray); //log array of selected rows ids
  //Filter Failed Transactions
   const getFailedTransactions = ()=>{
+    const authTkn=sessionStorage.getItem("tkn");
     const failedTransactions= rows.filter(function(row){
       return row.statusComplete === false;
     })
-    console.log(failedTransactions);
-    const failedTransaction=failedTransactions.map((failedTransaction)=> failedTransaction.id)
-    console.log(failedTransaction);
-    setFailedList(failedTransaction);
+    const failedTransactionsId=failedTransactions.map((failedTransaction)=> failedTransaction.id)
+    setFailedList(failedTransactionsId);
     setIsLoading(true);
     fetch(`${config.API_URL}/api/transaction/bulk-purchase`,
     {
      method:"post",
      body: JSON.stringify(
        {
-         transactions:failedTransaction
+         transactions:failedTransactionsId
        }
      ),
-     headers:{"Content-Type":"application/json"}
+     headers:{
+      "Content-Type":"application/json",
+      Authorization:`${authTkn}`
+    }
     }  
    )
    .then((response)=>{
-    console.log("bulk", response)
     if(response.status===200){
+     setTimeout(function(){
       return alert("Purchase for selected numbers successful :)",handleAlertClick())
+     },3000)
     }
+    else{
+      setTimeout(function(){
+        return alert("Ow Snap!! looks like something went wrong :(",handleAlertClick())
+       },3000)
    }
-   )
+  }
+)
    .catch((error)=>{
-    console.log("bulk error", error)
-    return alert("Sorry!! Looks like something went wrong :(",handleAlertClick() )
+    // return alert("Sorry!! Looks like something went wrong :(",handleAlertClick() )
    }
     
    )
@@ -82,11 +80,9 @@ import Backdrop from "./BackDrop";
   //          }   
   //   )
   //    .then((response)=>{
-  //     console.log("bulk", response)
   //    }
   //    )
   //    .catch((error)=>{
-  //     console.log("bulk error", error)
   //    }
       
   //    )
@@ -113,7 +109,6 @@ import Backdrop from "./BackDrop";
                experimentalFeatures={{ newEditingApi: true }}
                getRowId= {row => row.id}
                selectionModel={failedList}
-              //  onSelectionModelChange={item=> console.log(item)}
               onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
               />
              </div>

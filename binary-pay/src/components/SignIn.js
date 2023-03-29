@@ -66,11 +66,16 @@ export default function SignIn() {
           if (response.status === 200) {
             const jwtToken = response?.headers?.get("authorization");
             sessionStorage.setItem("tkn", jwtToken);
-            navigate("/dashboard", { replace: true });
+            setTimeout(
+              function(){
+                navigate("/dashboard", { replace: true });
+              },4000)
             // return alert("Welcome!! successfully logged in :)",handleAlertClick());
           } else {
             navigate("/", { replace: true });
-            return alert("Sorry!! couldn't log you in :(", handleAlertClick());
+            setTimeout(function(){
+              return alert("Sorry!! couldn't log you in :(", handleAlertClick());
+            },4000)
           }
         }
       })
