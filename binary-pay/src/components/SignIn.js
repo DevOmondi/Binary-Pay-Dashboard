@@ -71,19 +71,12 @@ export default function SignIn() {
           if (response.data && response?.data?.errorMessage) {
             return alert(response?.data?.errorMessage);
           }
-         /*  if (response.data){
-            console.log(response.data.);
-          } */
-          //storing token in local storage
+         
+          //storing jwtToken in context
           const jwtToken=response?.headers?.get("authorization");
-          // console.log(jwtToken)
-          // localStorage.setItem("token",jwtToken);
-          //  //retrieve stored token
-          //  const storedToken=localStorage.getItem("token");
-          //  if(storedToken){
-          //   console.log(storedToken);
-            tokenContext.setToken(jwtToken);
-          //  }
+         
+          tokenContext.setToken(jwtToken);
+            // Login frontend validation
            if(response.status===200){
             navigate("/dashboard", { replace: true });
             return alert("Welcome!! successfully logged in :)")

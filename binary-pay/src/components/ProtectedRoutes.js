@@ -5,11 +5,7 @@ import {TokenContext} from "../App";
 
 const ProtectedRoutes = ()=>{
    const tokenContext=useContext(TokenContext)
-   console.log("some :", tokenContext.token);
-    // if (tokenContext.token===null){
-    // return <Navigate to="/"/>
-    // }
-    // return children;
+   console.log("some token:", tokenContext.token);
     return (
         tokenContext.token ? <Outlet/> : <Navigate to="/"/>
     )
