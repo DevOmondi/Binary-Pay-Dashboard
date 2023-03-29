@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import axios from 'axios';
 import config from "../config";
 import { Button } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {jsPDF} from "jspdf";
 import 'jspdf-autotable';
 var XLSX = require("xlsx");
@@ -65,6 +65,11 @@ export default function TransactionsTable() {
    
   }
 
+  // TODO: Fetch transactions on page load
+  useEffect(()=>{
+    getTransactions()
+  },[])
+
    //exporting to excel sheet
  const downloadExcel = ()=>{
   const workSheet = XLSX.utils.json_to_sheet(transactions);
@@ -102,7 +107,7 @@ const downloadPDF = () => {
                 
                     <label>End date :</label>
                     <input typeof="date"></input>
-                    <button id='reload-btn' onClick={getTransactions}>Reload</button>
+                    <button id='reload-btn'>Reload</button>
         </form>
         <form className='export-section'>
                     <label>Export:</label>

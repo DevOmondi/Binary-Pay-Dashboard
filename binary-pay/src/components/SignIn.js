@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import PurchaseLoader from "./PurchaseLoader";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
