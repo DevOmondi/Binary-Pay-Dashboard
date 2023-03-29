@@ -311,15 +311,12 @@ const transactionRoutes = (Transaction, Confirmation) => {
           success: { total: 0, succeeded: [] },
           fail: { total: 0, failed: [] },
         };
-      
-        for (const _transactionId in req.body.transactions) {
-          console.log(_transactionId);
+
+        for (let _transactionId of req.body.transactions) {
           await Transaction.findOne({
             where: { id: _transactionId },
           }).then(async (_updateTransaction) => {
             if (_updateTransaction && !_updateTransaction.statusComplete) {
-              console.log(_updateTransaction)
-              console.log("idType: ",typeof(_transactionId));
               const _accountProvider = getProvider(
                 _updateTransaction.accountNumber
               );
