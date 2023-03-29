@@ -549,6 +549,9 @@ const transactionRoutes = (Transaction, Confirmation) => {
         if (_res) {
           _transactionsList = _res.map((_item) => {
             const _newItem = _item.toJSON();
+            _newItem.updatedAt = new Date(
+              _newItem.updatedAt
+            ).toLocaleDateString("en-GB");
             return _newItem;
           });
         }
