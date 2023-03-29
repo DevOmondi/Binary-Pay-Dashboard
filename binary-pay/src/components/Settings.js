@@ -1,6 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
-import { useState,useNavigate } from "react";
+import { useState } from "react";
 import axios from "axios";
 import config from "../config";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -36,7 +36,7 @@ export default function Settings() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate=useNavigate();
+  // const navigate=useNavigate();
 
   const changePassword = (event) => {
     event.preventDefault();
@@ -66,7 +66,7 @@ export default function Settings() {
           }
           if (response.data) alert(response.data.message);
           // declare navigate
-          navigate("/dashboard", { replace: true });
+          // navigate("/dashboard", { replace: true });
         }
       })
       .catch((error) => {
@@ -116,6 +116,7 @@ export default function Settings() {
               label="New Password"
               type="password"
               id="new-password"
+              onChange={(e)=> setRegisterPassword(e.target.value)}
             />
 
             <TextField

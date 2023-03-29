@@ -54,6 +54,7 @@
   padding: 9px;
   cursor: pointer;
   border-radius: 5px;
+  font-size: bold;
 }
 
 #purchase-btn:hover {color: white;}

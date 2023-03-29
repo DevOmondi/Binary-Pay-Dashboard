@@ -2,7 +2,10 @@
  import {useState} from "react"
  import { DataGrid } from "@mui/x-data-grid";
  import config from "../config";
- import PurchaseLoader from "./PurchaseLoader";
+import Backdrop from "./BackDrop";
+//  import PurchaseLoader from "./PurchaseLoader";
+
+ 
 
 
  const DataTable = ({rows,columns})=>{
@@ -10,6 +13,8 @@
   const [isLoading, setIsLoading]= useState(false)
   const [failedList,setFailedList]= useState([])
   const [purchaseArray, setPurchaseArray] = useState([])
+
+  //Create loading conte
   
   // Pick ids of selected rows
   const onRowsSelectionHandler = (ids) => {
@@ -60,6 +65,7 @@
   //  TODO: func to stop loader
   const handleAlertClick = ()=>{
     setIsLoading(false)
+    setFailedList([]);
   }
   }
  
@@ -86,9 +92,13 @@
   //    )
   //  }
   return (
-             <>
-              <button onClick={getFailedTransactions} id="bulk-purchase-btn">Select Failed & Purchase</button>
-              {isLoading && <PurchaseLoader style={{display:"block"}}/>}
+             <div>
+              <button 
+              onClick={getFailedTransactions} 
+              id="bulk-purchase-btn">
+                Select Failed & Purchase
+              </button>
+              {isLoading && <Backdrop/>}
               {/* <button onClick={makeBulkPurchase}>Purchase For Selected</button> */}
               <DataGrid
                autoHeight
@@ -106,7 +116,7 @@
               //  onSelectionModelChange={item=> console.log(item)}
               onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
               />
-             </>
+             </div>
          )
  }
  export default DataTable;

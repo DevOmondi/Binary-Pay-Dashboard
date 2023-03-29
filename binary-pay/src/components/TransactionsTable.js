@@ -3,8 +3,8 @@ import DataTable from "./DataTable";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import config from "../config";
-import { Button } from "@mui/material";
-import { useState } from "react";
+// import { Button } from "@mui/material";
+import { useState,useEffect } from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 var XLSX = require("xlsx");
@@ -44,9 +44,10 @@ const columns = [
 
 export default function TransactionsTable() {
   const [transactions, setTransactions] = useState([]);
+  
 
-  const getTransactions = async (e) => {
-    e.preventDefault();
+  const getTransactions = async () => {
+    // e.preventDefault();
     try {
       const response = await axios.get(
         `${config.API_URL}/api/transaction/history`
@@ -54,10 +55,17 @@ export default function TransactionsTable() {
       const _data = response.data;
       console.log(_data);
       setTransactions(_data);
+      return alert("Fetched Transactions successfully :)")
     } catch (error) {
       console.log(error);
+      return alert("Ooops!! looks like something went wrong :(")
     }
   };
+
+  // TODO: Fetch Transactions on page load
+  useEffect(()=>{
+    getTransactions();
+  },[])
 
   //exporting to excel sheet
   const downloadExcel = () => {
@@ -104,7 +112,10 @@ export default function TransactionsTable() {
         <button onClick={downloadExcel}>Excel</button>
         <button onClick={downloadPDF}>PDF</button>
       </form>
-      <DataTable rows={transactions} columns={columns} />
+      <DataTable 
+        rows={transactions} 
+        columns={columns} 
+       />
     </Box>
   );
 }

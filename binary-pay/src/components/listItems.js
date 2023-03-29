@@ -51,7 +51,7 @@ export const mainListItems = (
         <ListItemText primary="Register User" />
       </ListItemButton>
     </Link>
-    <Link id="Settings-link" href="/reset-password">
+    <Link id="Settings-link" href="/settings">
       <ListItemButton>
         <ListItemIcon>
           <SettingsIcon className="icon" />
