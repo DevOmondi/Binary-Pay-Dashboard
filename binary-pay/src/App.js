@@ -24,14 +24,14 @@ function App() {
             </ProtectedRoutes>
           }
         />
-         <Route 
-            path="/settings"
-            element={
+        <Route
+          path="/settings"
+          element={
             <ProtectedRoutes>
-                <Settings/>
+              <Settings />
             </ProtectedRoutes>
-          } 
-            /> 
+          }
+        />
         <Route path="/" element={<SignIn />} />
         {/* <Route 
           path="/signup" 
@@ -41,14 +41,7 @@ function App() {
             </ProtectedRoutes>
           }
         /> */}
-        <Route 
-          path="/self-register"
-          element={
-            <ProtectedRoutes>
-              <SelfRegister />
-            </ProtectedRoutes>
-          }
-           />
+        <Route path="/self-register" element={<SelfRegister />} />
         <Route
           path="/admin-register"
           element={
@@ -57,22 +50,8 @@ function App() {
             </ProtectedRoutes>
           }
         />
-        <Route
-         path="/forgot-password"
-         element={
-            <ProtectedRoutes>
-              <ForgotPassword />
-            </ProtectedRoutes>
-          }
-           />
-        <Route
-         path="/reset-password"
-          element={
-            <ProtectedRoutes>
-              <ResetPassword/>
-            </ProtectedRoutes>
-          } 
-          />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </div>
   );
