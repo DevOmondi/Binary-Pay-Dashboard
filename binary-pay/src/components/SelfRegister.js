@@ -46,6 +46,7 @@ export default function SignUp() {
   const signUpHandler = (e) => {
     e.preventDefault();
     // check if token verified to an email
+    console.log("called: ", userEmail);
     if (userEmail) {
       axios
         .post(`${config.API_URL}/api/auth/self-register`, {

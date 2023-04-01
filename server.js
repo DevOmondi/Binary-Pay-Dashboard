@@ -1,4 +1,3 @@
-
 const express = require("express");
 
 const fs = require("fs");
@@ -20,9 +19,14 @@ const app = express();
 const pathToKey = path.join(__dirname, "./cryptography/id_rsa_pub.pem");
 const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
 
+app.use((req, res, next) => {
+  console.log(req);
+  next();
+});
 //middlewares
 app.use(
   cors({
+    origin: "*",
     credentials: true,
     mehods: ["GET, PATCH, POST, DELETE"],
     allowedHeaders: ["Authorization", "Content-Type", "credentials"],

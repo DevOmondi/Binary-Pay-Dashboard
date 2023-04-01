@@ -16,7 +16,8 @@
     "gen:keypair": "node ./cryptography/generateKeypair.js",
     "postinstall": "cd binary-pay && npm run build",
     "run:migrations": "db-migrate create initialize --sql-file",
-    "migrate": "sequelize db:migrate"
+    "migrate": "sequelize db:migrate",
+    "test:email":"node ./emailing/emailTests.js"
   },
   "repository": {
     "type": "git",
