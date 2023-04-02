@@ -17,7 +17,7 @@
     "postinstall": "cd binary-pay && npm run build",
     "run:migrations": "db-migrate create initialize --sql-file",
     "migrate": "sequelize db:migrate",
-    "test:email":"node ./emailing/emailTests.js"
+    "test:email": "node ./emailing/emailTests.js"
   },
   "repository": {
     "type": "git",
@@ -53,6 +53,7 @@
     "express": "^4.18.1",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^8.5.1",
+    "mailersend": "^2.0.5",
     "mongoose": "^6.3.3",
     "nodemon": "^2.0.16",
     "passport": "^0.6.0",

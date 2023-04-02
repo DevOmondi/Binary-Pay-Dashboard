@@ -8,7 +8,6 @@ function sendEmail({
   subject,
   text,
   templatePath,
-  sender = "tests@themillennialmumstory.com",
   substitute = {},
 }) {
   const mailerSend = new MailerSend({
@@ -27,7 +26,12 @@ function sendEmail({
     : "This Email has no content. It is a test email please ignore or report to support regards";
 
   const switchWords = (_emailContent) => {
-    if (Object.keys(substitute).length) {
+    const commonSubstitutions = {
+      _UNSUBSCRIBE_EMAILS_LINK_: "",
+      _PRIVACY_POLICY_LINK_: "https://binarypay.co.ke/privacy-policy",
+      _LANDING_PAGE_: "https://binarypay.co.ke",
+    };
+    if (Object.keys({ ...substitute, ...commonSubstitutions }).length) {
       for (const [_key, _value] of Object.entries(substitute)) {
         _emailContent = _emailContent.replace(_key, _value);
       }
@@ -52,6 +56,7 @@ function sendEmail({
     .catch((error) => {
       // TODO: log this error
       console.log("an error occured: ", error);
+      // console.log("ss: ", error.body.errors);
     });
 }
 

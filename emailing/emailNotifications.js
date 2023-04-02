@@ -2,13 +2,13 @@ const fs = require("fs");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 
-const sendEmail = require("./sendGrid");
+const sendEmail = require("./mailersend");
 const { CustomError } = require("../utility");
 
 const emailNotifications = async (
   _type,
   _details,
-  _receipient = "support@binarypay.co.ke"
+  _receipient = "olivermirimu@gmail.com"
 ) => {
   try {
     switch (_type) {
