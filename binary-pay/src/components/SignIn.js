@@ -57,25 +57,29 @@ export default function SignIn() {
       }),
       headers: { "Content-Type": "application/json" },
     })
-      .then((response) => {
-        if (response) {
-          if (response.data && response?.data?.errorMessage) {
-            return alert(response?.data?.errorMessage);
+      .then(async (_res) => ({ response: _res, processed: await _res.json() }))
+      .then(({ response, processed }) => {
+        if (response && processed) {
+          console.log();
+          if (processed?.errorMessage) {
+            return alert(processed?.errorMessage);
           }
 
-          if (response.status === 200) {
+          if (response.status === 200 && processed.message) {
             const jwtToken = response?.headers?.get("authorization");
             sessionStorage.setItem("tkn", jwtToken);
-            setTimeout(
-              function(){
-                navigate("/dashboard", { replace: true });
-              },4000)
+            setTimeout(function () {
+              navigate("/dashboard", { replace: true });
+            }, 4000);
             // return alert("Welcome!! successfully logged in :)",handleAlertClick());
           } else {
             navigate("/", { replace: true });
-            setTimeout(function(){
-              return alert("Sorry!! couldn't log you in :(", handleAlertClick());
-            },4000)
+            setTimeout(function () {
+              return alert(
+                "Sorry!! couldn't log you in :(",
+                handleAlertClick()
+              );
+            }, 4000);
           }
         }
       })
@@ -84,15 +88,15 @@ export default function SignIn() {
         if (error?.response?.data) alert(error?.response?.data?.errorMessage);
       });
   };
-  const handleAlertClick = ()=>{
-    setIsLoading(false)
-  }
+  const handleAlertClick = () => {
+    setIsLoading(false);
+  };
 
   return (
     <>
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
-         {isLoading && <Backdrop/> }
+          {isLoading && <Backdrop />}
           <CssBaseline />
           <Box
             sx={{
