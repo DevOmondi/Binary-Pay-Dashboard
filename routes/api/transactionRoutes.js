@@ -40,6 +40,7 @@ const services = {
     serviceCode: " KPLCPREPAID",
   },
 };
+
 const recursiveRemoveSpace = (_accNumber) => {
   if (_accNumber.split(" ").length > 1) {
     _accNumber = _accNumber.split(" ").join("");
@@ -75,7 +76,6 @@ const getProvider = (_accNo) => {
       "254769",
       "25479",
       "25411",
-      "25411",
     ],
     airtel: [
       "25473",
@@ -89,6 +89,7 @@ const getProvider = (_accNo) => {
       "254762",
       "25478",
       "25410",
+      "25420",
     ],
     telkom: ["25477"],
     "kplc-prepaid": [],
@@ -235,165 +236,182 @@ const getToken = () => {
 const transactionRoutes = (Transaction, Confirmation) => {
   const transactionsRouter = express.Router();
 
-  transactionsRouter.route("/purchase").post(passport.authenticate("jwt", { session: false }),async (req, res) => {
-    try {
-      if (!req.body.accountNumber || !req.body.amountPaid) {
-        logger.info("Purchase request failed, Missing info: " + req.body);
-        res.status(400).json({
-          errorMessage:
-            "Missing info from purchase request. Amount and account number are required.",
-        });
-      }
+  transactionsRouter
+    .route("/purchase")
+    .post(
+      passport.authenticate("jwt", { session: false }),
+      async (req, res) => {
+        try {
+          if (!req.body.accountNumber || !req.body.amountPaid) {
+            logger.info("Purchase request failed, Missing info: " + req.body);
+            res.status(400).json({
+              errorMessage:
+                "Missing info from purchase request. Amount and account number are required.",
+            });
+          }
 
-      const _transaction = {
-        accountNumber: req.body.accountNumber,
-        amount: req.body.amountPaid,
-        statusComplete: false,
-      };
+          const _transaction = {
+            accountNumber: req.body.accountNumber,
+            amount: req.body.amountPaid,
+            statusComplete: false,
+          };
 
-      const _accountProvider = getProvider(req.body.accountNumber);
+          const _accountProvider = getProvider(req.body.accountNumber);
 
-      if (_accountProvider) {
-        logger.info("Provider Set: " + _accountProvider);
-        logger.info("Service Provider details: " + services[_accountProvider]);
+          if (_accountProvider) {
+            logger.info("Provider Set: " + _accountProvider);
+            logger.info(
+              "Service Provider details: " + services[_accountProvider]
+            );
 
-        const _purchaseBody = {
-          serviceID: services[_accountProvider].serviceID,
-          serviceCode: services[_accountProvider].serviceCode,
-          msisdn: formatAccNumber(req.body.accountNumber),
-          accountNumber: formatAccNumber(req.body.accountNumber),
-          amountPaid: `${parseInt(req.body.amountPaid)}`,
-        };
+            const _purchaseBody = {
+              serviceID: services[_accountProvider].serviceID,
+              serviceCode: services[_accountProvider].serviceCode,
+              msisdn: formatAccNumber(req.body.accountNumber),
+              accountNumber: formatAccNumber(req.body.accountNumber),
+              amountPaid: `${parseInt(req.body.amountPaid)}`,
+            };
 
-        logger.info(
-          "Initiating purchase for: " + JSON.stringify(_purchaseBody)
-        );
+            logger.info(
+              "Initiating purchase for: " + JSON.stringify(_purchaseBody)
+            );
 
-        const _response = await purchaseTransaction(_purchaseBody);
+            const _response = await purchaseTransaction(_purchaseBody);
 
-        if (_response.error) {
-          logger.info("Failed " + _response._error);
-          throw _response.error;
-        }
-
-        _transaction.statusComplete = true;
-        Transaction.create({
-          ..._transaction,
-          details: req.body,
-          response: _response,
-          ref: _response.ref_no,
-        }).then((_data) => {
-          logger.info(
-            "Succesful transaction " + JSON.stringify(_data.toJSON())
-          );
-          res.status(200).json(_response);
-        });
-      } else {
-        logger.info("Confirmation failed: provider details false.");
-        res.status(500).json({
-          errorMessage: "Confirmation failed: provider details false.",
-          details: req.body,
-        });
-      }
-    } catch (_err) {
-      logger.error(_err);
-      console.log(_err);
-      res.status(500).json({
-        errorMessage: "Sorry an error occured. Please try again.",
-      });
-    }
-  });
-
-  transactionsRouter.route("/bulk-purchase").post(passport.authenticate("jwt", { session: false }),async (req, res) => {
-    try {
-      if (req.body) {
-        console.log(req.body);
-        const result = {
-          success: { total: 0, succeeded: [] },
-          fail: { total: 0, failed: [] },
-        };
-
-        for (let _transactionId of req.body.transactions) {
-          await Transaction.findOne({
-            where: { id: _transactionId },
-          }).then(async (_updateTransaction) => {
-            if (_updateTransaction && !_updateTransaction.statusComplete) {
-              const _accountProvider = getProvider(
-                _updateTransaction.accountNumber
-              );
-              if (_accountProvider) {
-                logger.info("Provider Set: " + _accountProvider);
-                logger.info(
-                  "Service Provider details: " +
-                    JSON.stringify(services[_accountProvider])
-                );
-                const _purchaseBody = {
-                  serviceID: services[_accountProvider].serviceID,
-                  serviceCode: services[_accountProvider].serviceCode,
-                  msisdn: formatAccNumber(_updateTransaction.accountNumber),
-                  accountNumber: formatAccNumber(
-                    _updateTransaction.accountNumber
-                  ),
-                  amountPaid: `${parseInt(_updateTransaction.amount)}`,
-                };
-                logger.info(
-                  "Initiating purchase for: " + JSON.stringify(_purchaseBody)
-                );
-
-                const _response = await purchaseTransaction(_purchaseBody);
-                if (!_response.error) {
-                  _updateTransaction
-                    .update({
-                      response: _response,
-                      ref: _response.ref_no,
-                      statusComplete: true,
-                    })
-                    .then((_res) => {
-                      logger.info(
-                        "successfully saved to DB: " + JSON.stringify(_res)
-                      );
-                      result.success.total = result.success.total + 1;
-                      result.success.succeeded = [
-                        ...result.success.succeeded,
-                        _transactionId,
-                      ];
-                    });
-                } else {
-                  result.fail.total = result.fail.total + 1;
-                  result.fail.failed = [...result.fail.failed, _transactionId];
-                  logger.info("Failed " + _response._error);
-                }
-              } else {
-                logger.info("Confirmation failed: provider details false.");
-                res.status(500).json({
-                  errorMessage: "Confirmation failed: provider details false.",
-                  details: req.body,
-                });
-              }
-            } else {
-              if (!_updateTransaction?.statusComplete) {
-                logger.info(
-                  "Already purchased: " + JSON.stringify(_transactionId)
-                );
-              } else {
-                logger.info(
-                  "Could not find initial transaction for: " +
-                    JSON.stringify(req.body)
-                );
-              }
+            if (_response.error) {
+              logger.info("Failed " + _response._error);
+              throw _response.error;
             }
+
+            _transaction.statusComplete = true;
+            Transaction.create({
+              ..._transaction,
+              details: req.body,
+              response: _response,
+              ref: _response.ref_no,
+            }).then((_data) => {
+              logger.info(
+                "Succesful transaction " + JSON.stringify(_data.toJSON())
+              );
+              res.status(200).json(_response);
+            });
+          } else {
+            logger.info("Confirmation failed: provider details false.");
+            res.status(500).json({
+              errorMessage: "Confirmation failed: provider details false.",
+              details: req.body,
+            });
+          }
+        } catch (_err) {
+          logger.error(_err);
+          console.log(_err);
+          res.status(500).json({
+            errorMessage: "Sorry an error occured. Please try again.",
           });
         }
-        res.status(200).json(result);
       }
-    } catch (_err) {
-      logger.error(_err);
-      console.log(_err);
-      res.status(500).json({
-        errorMessage: "Sorry an error occured. Please try again.",
-      });
-    }
-  });
+    );
+
+  transactionsRouter
+    .route("/bulk-purchase")
+    .post(
+      passport.authenticate("jwt", { session: false }),
+      async (req, res) => {
+        try {
+          if (req.body) {
+            console.log(req.body);
+            const result = {
+              success: { total: 0, succeeded: [] },
+              fail: { total: 0, failed: [] },
+            };
+
+            for (let _transactionId of req.body.transactions) {
+              await Transaction.findOne({
+                where: { id: _transactionId },
+              }).then(async (_updateTransaction) => {
+                if (_updateTransaction && !_updateTransaction.statusComplete) {
+                  const _accountProvider = getProvider(
+                    _updateTransaction.accountNumber
+                  );
+                  if (_accountProvider) {
+                    logger.info("Provider Set: " + _accountProvider);
+                    logger.info(
+                      "Service Provider details: " +
+                        JSON.stringify(services[_accountProvider])
+                    );
+                    const _purchaseBody = {
+                      serviceID: services[_accountProvider].serviceID,
+                      serviceCode: services[_accountProvider].serviceCode,
+                      msisdn: formatAccNumber(_updateTransaction.accountNumber),
+                      accountNumber: formatAccNumber(
+                        _updateTransaction.accountNumber
+                      ),
+                      amountPaid: `${parseInt(_updateTransaction.amount)}`,
+                    };
+                    logger.info(
+                      "Initiating purchase for: " +
+                        JSON.stringify(_purchaseBody)
+                    );
+
+                    const _response = await purchaseTransaction(_purchaseBody);
+                    if (!_response.error) {
+                      _updateTransaction
+                        .update({
+                          response: _response,
+                          ref: _response.ref_no,
+                          statusComplete: true,
+                        })
+                        .then((_res) => {
+                          logger.info(
+                            "successfully saved to DB: " + JSON.stringify(_res)
+                          );
+                          result.success.total = result.success.total + 1;
+                          result.success.succeeded = [
+                            ...result.success.succeeded,
+                            _transactionId,
+                          ];
+                        });
+                    } else {
+                      result.fail.total = result.fail.total + 1;
+                      result.fail.failed = [
+                        ...result.fail.failed,
+                        _transactionId,
+                      ];
+                      logger.info("Failed " + _response._error);
+                    }
+                  } else {
+                    logger.info("Confirmation failed: provider details false.");
+                    res.status(500).json({
+                      errorMessage:
+                        "Confirmation failed: provider details false.",
+                      details: req.body,
+                    });
+                  }
+                } else {
+                  if (!_updateTransaction?.statusComplete) {
+                    logger.info(
+                      "Already purchased: " + JSON.stringify(_transactionId)
+                    );
+                  } else {
+                    logger.info(
+                      "Could not find initial transaction for: " +
+                        JSON.stringify(req.body)
+                    );
+                  }
+                }
+              });
+            }
+            res.status(200).json(result);
+          }
+        } catch (_err) {
+          logger.error(_err);
+          console.log(_err);
+          res.status(500).json({
+            errorMessage: "Sorry an error occured. Please try again.",
+          });
+        }
+      }
+    );
 
   transactionsRouter.route("/validation").post(async (req, res) => {
     try {
@@ -543,7 +561,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
     }
   });
 
-  transactionsRouter.route("/history").get(passport.authenticate("jwt", { session: false }),(req, res) => {
+  transactionsRouter.route("/history").get((req, res) => {
     Transaction.findAll()
       .then((_res) => {
         let _transactionsList = [];
@@ -564,22 +582,24 @@ const transactionRoutes = (Transaction, Confirmation) => {
       });
   });
 
-  transactionsRouter.route("/float").get(passport.authenticate("jwt", { session: false }),(req, res) => {
-    Transaction.findOne({ order: [["updatedAt", "DESC"]] })
-      .then((_res) => {
-        const [toDiscard, ..._float] = _res.response.message.split(".");
-        logger.info("Float balance fetched: ", _float.join("."));
-        res.status(200).json({
-          message: _float.join("."),
+  transactionsRouter
+    .route("/float")
+    .get(passport.authenticate("jwt", { session: false }), (req, res) => {
+      Transaction.findOne({ order: [["updatedAt", "DESC"]] })
+        .then((_res) => {
+          const [toDiscard, ..._float] = _res.response.message.split(".");
+          logger.info("Float balance fetched: ", _float.join("."));
+          res.status(200).json({
+            message: _float.join("."),
+          });
+        })
+        .catch((_err) => {
+          logger.error("Failed to fetch float: " + _err);
+          res.status(500).json({
+            errorMessage: "Sorry an error occured. Please try again.",
+          });
         });
-      })
-      .catch((_err) => {
-        logger.error("Failed to fetch float: " + _err);
-        res.status(500).json({
-          errorMessage: "Sorry an error occured. Please try again.",
-        });
-      });
-  });
+    });
 
   return transactionsRouter;
 };
