@@ -50,6 +50,7 @@ const recursiveRemoveSpace = (_accNumber) => {
 };
 
 const formatAccNumber = (_accNumber) => {
+  _accNumber = _accNumber.replace("+", "");
   _accNumber = recursiveRemoveSpace(_accNumber);
 
   if (_accNumber[0] === "0") {
