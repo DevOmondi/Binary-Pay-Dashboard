@@ -588,10 +588,10 @@ const transactionRoutes = (Transaction, Confirmation) => {
     .get(passport.authenticate("jwt", { session: false }), (req, res) => {
       Transaction.findOne({ order: [["updatedAt", "DESC"]] })
         .then((_res) => {
-          const [toDiscard, ..._float] = _res.response.message.split(".");
-          logger.info("Float balance fetched: ", _float.join("."));
+          const _float = _res.response.float_bal;
+          logger.info("Float balance fetched: ", _float);
           res.status(200).json({
-            message: _float.join("."),
+            message: _float,
           });
         })
         .catch((_err) => {
