@@ -22,7 +22,7 @@ const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
 //middlewares
 app.use(
   cors({
-    origin: process.env.DASHBOARD_URI,
+    origin: [process.env.DASHBOARD_URI, process.env.DASHBOARD_URI2],
     credentials: true,
     methods: ["GET, PATCH, POST, DELETE"],
     allowedHeaders: ["Authorization", "Content-Type", "credentials"],
