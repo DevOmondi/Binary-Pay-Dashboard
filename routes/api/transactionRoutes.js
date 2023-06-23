@@ -570,7 +570,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
         const [toDiscard, ..._float] = _res.response.message.split(".");
         logger.info("Float balance fetched: ", _float.join("."));
         res.status(200).json({
-          message: _float.join("."),
+          balance: _float.join("."),
         });
       })
       .catch((_err) => {

@@ -75,11 +75,15 @@
 
 .revenue-form {display: inline;}
 
-.revenue-form input {margin-right: 7px;border: solid 1px #1B3B57;}
+.datepicker {
+  border:solid 1px #1B3B57;
+  padding: 7px;
+  border-radius: 5px;
+} 
 
-.revenue-form input:focus-visible {outline: none;}
+.datepicker:focus-visible {outline: none;}
 
-.revenue-form input:focus {border: solid 1px #F3B500;}
+.datepicker:focus {border: solid 1px #F3B500;}
 
 #reload-btn {
   background-color: #F3B500;
@@ -116,6 +120,8 @@
 .export-section button:hover {filter: brightness(1.5);}
 
 .transactions-form {margin-bottom: 7px;}
+
+/* .table-paper {max-height:fit-content} */
 
 #entries {background-color: #F3B500; color: white;}
 

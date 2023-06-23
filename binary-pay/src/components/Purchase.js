@@ -41,7 +41,7 @@ const Purchase = () => {
     }
     setIsLoading(true);
     axios
-      .post(`${config.API_URL}/api/transaction/purchase`,
+       .post(`${config.API_URL}/api/transaction/purchase`,
           {
             accountNumber: accountNumber,
             amountPaid: amountPaid,

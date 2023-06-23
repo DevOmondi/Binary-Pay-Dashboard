@@ -220,16 +220,15 @@ function DashboardContent() {
               
               {/* Transactions*/}
               <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                {/* <Paper className='table-paper' sx={{ p: 2, display: 'flex', flexDirection: 'column' }}> */}
                   <TransactionsTable/>
-                </Paper>
+                {/* </Paper> */}
               </Grid>
             </Grid>
-            <Copyright sx={{ pt: 4 }} />
+            {/* <Copyright sx={{ pt: 4 }} /> */}
           </Container>
         </Box>
       </Box>
-      
     </ThemeProvider>
   );
 }

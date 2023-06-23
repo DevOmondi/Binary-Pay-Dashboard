@@ -1,5 +1,4 @@
 const express = require("express");
-
 const fs = require("fs");
 const session = require("express-session");
 const cors = require("cors");
@@ -22,7 +21,7 @@ const PUB_KEY = fs.readFileSync(pathToKey, "utf-8");
 //middlewares
 app.use(
   cors({
-    origin: process.env.DASHBOARD_URI,
+    origin:process.env.DASHBOARD_URI,
     credentials: true,
     methods: ["GET, PATCH, POST, DELETE"],
     allowedHeaders: ["Authorization", "Content-Type", "credentials"],

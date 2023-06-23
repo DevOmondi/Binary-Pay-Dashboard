@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useState } from "react";
-// import PurchaseLoader from "./PurchaseLoader";
 import Backdrop from "./BackDrop";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
@@ -88,6 +87,7 @@ export default function SignIn() {
         if (error?.response?.data) alert(error?.response?.data?.errorMessage);
       });
   };
+  // Func to remove loader after alert click
   const handleAlertClick = () => {
     setIsLoading(false);
   };
