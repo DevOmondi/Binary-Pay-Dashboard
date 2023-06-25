@@ -13,11 +13,11 @@ const DataTable = ({ rows, columns }) => {
   // Pick ids of selected rows
   const onRowsSelectionHandler = (ids) => {
     const selectedRowsData = ids.map((id) => rows.find((row) => row.id === id));
-    console.log(selectedRowsData);
+    // console.log(selectedRowsData);
     const selectedRowsId = selectedRowsData.map(
       (selectedRowData) => selectedRowData.id
     );
-    console.log(selectedRowsId);
+    // console.log(selectedRowsId);
     selectedRowsId.map((_id) => {
       if (selectedRowsId.includes(_id)) {
         const newArray = purchaseArray.filter(
@@ -29,10 +29,10 @@ const DataTable = ({ rows, columns }) => {
       }
     });
 
-    console.log(selectedRowsId);
-    return selectedRowsId;
+    // console.log(selectedRowsId);
+    // return selectedRowsId;
   };
-  console.log("purchase array:", purchaseArray);
+  // console.log("purchase array:", purchaseArray);
   //Filter Failed Transactions
   //   const getFailedTransactions = ()=>{
   //     const authTkn=sessionStorage.getItem("tkn");
@@ -81,7 +81,7 @@ const DataTable = ({ rows, columns }) => {
   //   }
   //   }
 
-  const makeBulkPurchase = (selectedRowsId) => {
+  const makeBulkPurchase = () => {
     const authTkn = sessionStorage.getItem("tkn");
     fetch(`${config.API_URL}/api/transaction/bulk-purchase`, {
       method: "post",
@@ -111,7 +111,7 @@ const DataTable = ({ rows, columns }) => {
     //  TODO: func to stop loader
     const handleAlertClick = () => {
       setIsLoading(false);
-      setFailedList([]);
+      // setFailedList([]);
     };
   };
   return (

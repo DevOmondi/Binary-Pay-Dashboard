@@ -18,15 +18,22 @@ const columns = [
     field: "updatedAt",
     headerName: "DATE",
     valueGetter: ({ value }) => {
+      // extract the date and time to display
       const dateObject = new Date(value.toString());
       const transYear = dateObject.getFullYear();
       const transMonth = dateObject.getMonth() + 1;
       const transDate = dateObject.getDate();
-      const fullTransDate = `${transDate}/${transMonth}/${transYear}`;
+      const transHour = dateObject.getHours();
+      const transMinute = dateObject.getMinutes();
+      const fullTransDate = `${transDate}/${transMonth}/${transYear} at ${
+        transHour > 12 ? transHour % 12 : transHour
+      }:${transMinute < 10 ? "0" : ""}${transMinute} ${
+        transHour >= 12 ? "PM" : "AM"
+      }`;
       // console.log(fullTransDate);
       return fullTransDate;
     },
-    width: 120,
+    width: 170,
   },
   {
     field: "ref",
@@ -36,21 +43,27 @@ const columns = [
   {
     field: "accountNumber",
     headerName: "Phone Number",
-    width: 160,
+    width: 140,
     editable: true,
   },
   {
     field: "amount",
     headerName: "Amount",
-    width: 60,
     editable: true,
-    flex: 1,
+    maxWidth: 100,
   },
   {
     field: "statusComplete",
-    headerName: "Purchase Complete?",
-    width: 110,
+    headerName: "Purchase successful?",
+    width: 160,
     editable: true,
+  },
+  {
+    field: "response",
+    headerName: "Message",
+    width: 300,
+    editable: true,
+    valueGetter: ({ value }) => (value?.message ? value.message : ""),
   },
 ];
 
@@ -62,7 +75,7 @@ export default function TransactionsTable() {
 
   const getTransactions = async () => {
     const authTkn = sessionStorage.getItem("tkn");
-    console.log("session: ", authTkn);
+    // console.log("session: ", authTkn);
     // e.preventDefault();
     try {
       const response = await axios.get(
@@ -70,7 +83,7 @@ export default function TransactionsTable() {
         { headers: { Authorization: `${authTkn}` } }
       );
       const _data = response.data;
-      console.log(_data);
+      // console.log(_data);
       // getTimestamps();
       setTransactions(_data);
       setTimeout(function () {

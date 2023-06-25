@@ -198,6 +198,9 @@ const purchaseTransaction = (_payload) => {
         if (_data.status === "200") {
           logger.info("Succesfully purchased from favoured");
           return _data;
+        } else if (Number(_data.status) < 500) {
+          logger.info("Failed with error from favoured");
+          return _data;
         }
         console.log(_data);
         return { error: _data };
@@ -591,7 +594,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
           const _float = _res.response.float_bal;
           logger.info("Float balance fetched: ", _float);
           res.status(200).json({
-            message: _float,
+            balance: _float,
           });
         })
         .catch((_err) => {
