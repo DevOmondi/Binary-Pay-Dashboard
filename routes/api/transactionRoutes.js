@@ -200,7 +200,7 @@ const purchaseTransaction = (_payload) => {
           return _data;
         } else if (Number(_data.status) < 500) {
           logger.info("Failed with error from favoured");
-          return _data;
+          return { ..._data, failedResponse: true };
         }
         console.log(_data);
         return { error: _data };
@@ -287,7 +287,11 @@ const transactionRoutes = (Transaction, Confirmation) => {
               throw _response.error;
             }
 
-            _transaction.statusComplete = true;
+            // check if response was return but failed
+            _transaction.statusComplete = _response.failedResponse
+              ? false
+              : true;
+
             Transaction.create({
               ..._transaction,
               details: req.body,
