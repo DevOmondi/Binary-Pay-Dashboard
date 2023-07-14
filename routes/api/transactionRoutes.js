@@ -288,9 +288,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
             }
 
             // check if response was return but failed
-            _transaction.statusComplete = _response.failedResponse
-              ? false
-              : true;
+            _transaction.statusComplete = !_response.failedResponse;
 
             Transaction.create({
               ..._transaction,
@@ -362,12 +360,13 @@ const transactionRoutes = (Transaction, Confirmation) => {
                     );
 
                     const _response = await purchaseTransaction(_purchaseBody);
+
                     if (!_response.error) {
                       _updateTransaction
                         .update({
                           response: _response,
                           ref: _response.ref_no,
-                          statusComplete: true,
+                          statusComplete: !_response.failedResponse,
                         })
                         .then((_res) => {
                           logger.info(
@@ -535,7 +534,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
               _updateTransaction
                 .update({
                   response: _response,
-                  statusComplete: true,
+                  statusComplete: !_response.failedResponse,
                 })
                 .then((_res) => {
                   logger.info(
