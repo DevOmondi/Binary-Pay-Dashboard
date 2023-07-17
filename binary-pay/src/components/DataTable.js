@@ -88,7 +88,10 @@ const DataTable = ({ rows, columns }) => {
       body: JSON.stringify({
         transactions: purchaseArray,
       }),
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${authTkn}`,
+      },
     })
       .then((response) => {
         if (response.status === 200) {

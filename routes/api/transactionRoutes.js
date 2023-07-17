@@ -237,9 +237,22 @@ const getToken = () => {
     });
 };
 
+/**
+ * 
+ * @param {*} Transaction 
+ * @param {*} Confirmation 
+ * @returns 
+ */
 const transactionRoutes = (Transaction, Confirmation) => {
   const transactionsRouter = express.Router();
 
+  /**
+   * single account purchase expects JSON
+   * {
+      "accountNumber": "2547******",
+      "amountPaid": 5
+    }
+   */
   transactionsRouter
     .route("/purchase")
     .post(
@@ -339,6 +352,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
                   const _accountProvider = getProvider(
                     _updateTransaction.accountNumber
                   );
+
                   if (_accountProvider) {
                     logger.info("Provider Set: " + _accountProvider);
                     logger.info(
@@ -411,7 +425,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
             res.status(200).json(result);
           }
         } catch (_err) {
-          logger.error(_err);
+          logger.error(JSON.stringify(_err));
           console.log(_err);
           res.status(500).json({
             errorMessage: "Sorry an error occured. Please try again.",
