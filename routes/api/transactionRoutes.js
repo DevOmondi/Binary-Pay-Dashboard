@@ -200,7 +200,7 @@ const purchaseTransaction = (_payload) => {
           return _data;
         } else if (Number(_data.status) < 500) {
           logger.info("Failed with error from favoured");
-          return _data;
+          return { ..._data, failedResponse: true };
         }
         console.log(_data);
         return { error: _data };
@@ -237,9 +237,22 @@ const getToken = () => {
     });
 };
 
+/**
+ * 
+ * @param {*} Transaction 
+ * @param {*} Confirmation 
+ * @returns 
+ */
 const transactionRoutes = (Transaction, Confirmation) => {
   const transactionsRouter = express.Router();
 
+  /**
+   * single account purchase expects JSON
+   * {
+      "accountNumber": "2547******",
+      "amountPaid": 5
+    }
+   */
   transactionsRouter
     .route("/purchase")
     .post(
@@ -287,7 +300,9 @@ const transactionRoutes = (Transaction, Confirmation) => {
               throw _response.error;
             }
 
-            _transaction.statusComplete = true;
+            // check if response was return but failed
+            _transaction.statusComplete = !_response.failedResponse;
+
             Transaction.create({
               ..._transaction,
               details: req.body,
@@ -337,6 +352,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
                   const _accountProvider = getProvider(
                     _updateTransaction.accountNumber
                   );
+
                   if (_accountProvider) {
                     logger.info("Provider Set: " + _accountProvider);
                     logger.info(
@@ -358,12 +374,13 @@ const transactionRoutes = (Transaction, Confirmation) => {
                     );
 
                     const _response = await purchaseTransaction(_purchaseBody);
+
                     if (!_response.error) {
                       _updateTransaction
                         .update({
                           response: _response,
                           ref: _response.ref_no,
-                          statusComplete: true,
+                          statusComplete: !_response.failedResponse,
                         })
                         .then((_res) => {
                           logger.info(
@@ -531,7 +548,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
               _updateTransaction
                 .update({
                   response: _response,
-                  statusComplete: true,
+                  statusComplete: !_response.failedResponse,
                 })
                 .then((_res) => {
                   logger.info(

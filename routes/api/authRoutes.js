@@ -112,7 +112,6 @@ const authRoutes = (User) => {
       const userExists = await getUserByEmail(req.body.email);
 
       if (userExists) {
-        
         return sendRegistrationEmail(userExists);
       }
 
