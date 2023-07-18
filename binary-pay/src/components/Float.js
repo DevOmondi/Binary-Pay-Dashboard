@@ -36,7 +36,7 @@ export default function Float() {
       <Title>Current Total Float</Title>
       <Typography component="p" variant="h4" sx={{ color: "#1B3B57" }}>
         {/* TODO:  update message format to collect numerical values only, use string.split */}
-        Ksh. {Number(float.message || 0)?.toFixed(2)}
+        Ksh. {Number(float.balance || 0)?.toFixed(2)}
       </Typography>
     </React.Fragment>
   );

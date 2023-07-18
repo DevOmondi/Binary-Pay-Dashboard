@@ -408,7 +408,7 @@ const transactionRoutes = (Transaction, Confirmation) => {
             res.status(200).json(result);
           }
         } catch (_err) {
-          logger.error(_err);
+          logger.error(JSON.stringify(_err));
           console.log(_err);
           res.status(500).json({
             errorMessage: "Sorry an error occured. Please try again.",

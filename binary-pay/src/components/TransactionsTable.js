@@ -83,7 +83,7 @@ export default function TransactionsTable() {
         { headers: { Authorization: `${authTkn}` } }
       );
       const _data = response.data;
-      // console.log(_data);
+      console.log(_data);
       // getTimestamps();
       setTransactions(_data);
       setTimeout(function () {
@@ -140,10 +140,10 @@ export default function TransactionsTable() {
       // console.log(new Date((transaction.updatedAt).toString()).getTime())
       // console.log(new Date((transaction.updatedAt)).getMilliseconds())
     );
-    console.log(filteredTransactions);
+    // console.log(filteredTransactions);
     setTransactions(filteredTransactions);
-    console.log("Start date:", startDate.$d);
-    console.log("End date:", endDate.$d);
+    // console.log("Start date:", startDate.$d);
+    // console.log("End date:", endDate.$d);
   }
 
   return (

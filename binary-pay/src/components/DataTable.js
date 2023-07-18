@@ -86,9 +86,9 @@ const DataTable = ({ rows, columns }) => {
     fetch(`${config.API_URL}/api/transaction/bulk-purchase`, {
       method: "post",
       body: JSON.stringify({
-        transactions: purchaseArray,
+        transactions: purchaseArray
       }),
-      headers: { "Content-Type": "application/json" },
+      headers: { Authorization: `${authTkn}` },
     })
       .then((response) => {
         if (response.status === 200) {
@@ -107,7 +107,7 @@ const DataTable = ({ rows, columns }) => {
           }, 3000);
         }
       })
-      .catch((error) => {});
+      .catch((error) => {console.log("bulk purchase error",error)});
     //  TODO: func to stop loader
     const handleAlertClick = () => {
       setIsLoading(false);
