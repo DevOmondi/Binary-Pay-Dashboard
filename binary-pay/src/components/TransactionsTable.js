@@ -6,11 +6,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Box from "@mui/material/Box";
+import PurchaseLoader from "./PurchaseLoader";
 import axios from "axios";
 import config from "../config";
 import { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import { response } from "express";
 var XLSX = require("xlsx");
 
 const columns = [
@@ -69,31 +71,36 @@ const columns = [
 
 export default function TransactionsTable() {
   const [transactions, setTransactions] = useState([]);
-  const [transactionDatesArray, setTransactionDatesArray] = useState([]);
+  // const [transactionDatesArray, setTransactionDatesArray] = useState([]);
   const [startDate, setStartDate] = useState(dayjs("2023-01-01T00:01"));
   const [endDate, setEndDate] = useState(dayjs("2023-12-31T23:59"));
+  const [isLoading, setIsLoading] = useState(false);
 
   const getTransactions = async () => {
     const authTkn = sessionStorage.getItem("tkn");
     // console.log("session: ", authTkn);
     // e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `${config.API_URL}/api/transaction/history`,
         { headers: { Authorization: `${authTkn}` } }
       );
       const _data = response.data;
-      console.log(_data);
+      // console.log(_data);
       // getTimestamps();
       setTransactions(_data);
-      setTimeout(function () {
-        return alert("Fetched Transactions successfully :)");
-      }, 3000);
+      setIsLoading(false);
+      // setTimeout(function () {
+      //   if(!transactions){
+      //     return alert("Ooops!! Couldn't fetch transactions :(");
+      //   }
+      // }, 3000);
+      // setTimeout(function () {
+      //   return alert("Fetched Transactions successfully :)");
+      // }, 3000);
     } catch (error) {
       console.log(error);
-      setTimeout(function () {
-        return alert("Ooops!! looks like something went wrong :(");
-      }, 3000);
     }
   };
 
@@ -175,7 +182,11 @@ export default function TransactionsTable() {
         <button onClick={downloadExcel}>Excel</button>
         <button onClick={downloadPDF}>PDF</button>
       </form>
-      <DataTable rows={transactions} columns={columns} />
+      {isLoading ? (
+        <PurchaseLoader />
+      ) : (
+        <DataTable rows={transactions} columns={columns} />
+      )}
     </Box>
   );
 }

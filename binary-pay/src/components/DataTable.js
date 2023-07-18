@@ -83,19 +83,16 @@ const DataTable = ({ rows, columns }) => {
 
   const makeBulkPurchase = () => {
     const authTkn = sessionStorage.getItem("tkn");
+    setIsLoading(true);
     fetch(`${config.API_URL}/api/transaction/bulk-purchase`, {
       method: "post",
       body: JSON.stringify({
-        transactions: purchaseArray
+        transactions: purchaseArray,
       }),
-<<<<<<< HEAD
-      headers: { Authorization: `${authTkn}` },
-=======
       headers: {
         "Content-Type": "application/json",
         Authorization: `${authTkn}`,
       },
->>>>>>> 4a08589f525034ab96d472b54a6df3d014943765
     })
       .then((response) => {
         if (response.status === 200) {
@@ -114,13 +111,23 @@ const DataTable = ({ rows, columns }) => {
           }, 3000);
         }
       })
-      .catch((error) => {console.log("bulk purchase error",error)});
+      // .catch((error) => {console.log("bulk purchase error",error)});
+      .catch((error) => {
+        setTimeout(function () {
+          return alert(
+            "Ow Snap!!! looks like something went wrong :(",
+            handleAlertClick()
+          );
+        }, 3000);
+      });
     //  TODO: func to stop loader
     const handleAlertClick = () => {
+      setPurchaseArray([]);
       setIsLoading(false);
       // setFailedList([]);
     };
   };
+  console.log("purchase array:", purchaseArray);
   return (
     <div>
       {/* <button 
