@@ -12,7 +12,6 @@ import config from "../config";
 import { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import { response } from "express";
 var XLSX = require("xlsx");
 
 const columns = [
