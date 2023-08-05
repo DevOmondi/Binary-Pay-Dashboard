@@ -14,7 +14,6 @@
     "server-build": "cd binary-pay && build:rollup",
     "build": "cd binary-pay && npm run build",
     "gen:keypair": "node ./cryptography/generateKeypair.js",
-    "postinstall": "cd binary-pay && npm run build",
     "run:migrations": "db-migrate create initialize --sql-file",
     "migrate": "sequelize db:migrate",
     "test:email": "node ./emailing/emailTests.js"
