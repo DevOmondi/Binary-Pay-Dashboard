@@ -10,6 +10,7 @@
     "api:dev": "nodemon server.js",
     "start": "node server.js",
     "restart": "pm2 restart server.js",
+    "start:prod": "pm2 start --name binarypay server.js",
     "preinstall": "npm run gen:keypair",
     "server-build": "cd binary-pay && build:rollup",
     "build": "cd binary-pay && npm run build",
