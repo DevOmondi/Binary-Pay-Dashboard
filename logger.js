@@ -13,10 +13,16 @@ const logger = winston.createLogger({
     // - Write all logs with importance level of `info` or less to `combined.log`
     //
     new winston.transports.File({
-      filename: "error.log",
+      filename: `./logs/${new Date()
+        .toLocaleDateString("en-GB", {})
+        .replace(/\//g, "-")}-error.log`,
       level: "error",
     }),
-    new winston.transports.File({ filename: "app.log" }),
+    new winston.transports.File({
+      filename: `./logs/${new Date()
+        .toLocaleDateString("en-GB", {})
+        .replace(/\//g, "-")}-app.log`,
+    }),
   ],
 });
 
