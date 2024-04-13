@@ -154,6 +154,7 @@ const testTransaction = (_payload) => {
     };
   }
 };
+
 // helper functions
 const purchaseTransaction = (_payload) => {
   logger.info("initiating favoured api call.");
@@ -238,10 +239,10 @@ const getToken = () => {
 };
 
 /**
- * 
- * @param {*} Transaction 
- * @param {*} Confirmation 
- * @returns 
+ *
+ * @param {*} Transaction
+ * @param {*} Confirmation
+ * @returns
  */
 const transactionRoutes = (Transaction, Confirmation) => {
   const transactionsRouter = express.Router();
@@ -492,6 +493,15 @@ const transactionRoutes = (Transaction, Confirmation) => {
     }
   });
 
+  /**
+   * Request body
+   {
+    "ShortCode": "4074759",
+    "ResponseType": "Completed",
+    "ConfirmationURL":"https://api.dondaa.co.ke/payment/c2b",
+    "ValidationURL": "https://api.dondaa.co.ke/payment/validation/c2b"
+    }
+   */
   transactionsRouter.route("/confirmation").post(async (req, res) => {
     const _host = req.protocol + "://" + req.get("host") + "/";
     logger.info("confirmation request, mpesa payment: " + req.body);
